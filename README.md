@@ -2,7 +2,7 @@
 
 # Cash in on Expressed Barcode Tags (EBTs) from NGS Sequencing Data *with Python*
 
-[Cashier](https://github.com/russelldurrett/cashier) is a tool developed by Russell Durrett for the analysis of and extraction of expressed barcode tags.
+[Cashier](https://github.com/russelldurrett/cashier) is a tool developed by Russell Durrett for the analysis and extraction of expressed barcode tags.
 
 This python implementation offers the same flexibility and simple command line operation.
 
@@ -18,7 +18,7 @@ Like it's predecessor it is a wrapper for the tools cutadapt, fastx-toolkit, and
 
 
 ```bash
-git clone (link here)
+git clone https://github.com/DaylinMorgan/pycashier.git
 cd pycashier
 pip install .
 ```
@@ -30,6 +30,8 @@ Pycashier has one required argument which is the directory containing the fastq'
 ```bash
 cashier ./fastqs
 ```
+For additional parameters see `cashier -h`.
+
 As the files are process two additional directories will be created `pipeline` and `outs`.
 
 Currently all intermediary files generated as a result of the program will be found in `pipeline`.
