@@ -7,7 +7,6 @@ from .utils import fastq_to_csv
 def extract(sample,fastq,fastqdir,error_rate,threads,barcode_length,upstream_adapter,downstream_adapter,unlinked_adapters,quality,**kwargs):
 
     print(sample)
-    #check for unlinked adapters
 
     barcode_fastq = '{}.barcode.fastq'.format(sample)
     input_file = os.path.join('../',fastqdir,fastq)
@@ -20,7 +19,7 @@ def extract(sample,fastq,fastqdir,error_rate,threads,barcode_length,upstream_ada
 
     if not os.path.isfile(filtered_barcode_fastq):
         
-        print('Perfroming extraction on sample: {}'.format(sample))
+        print('Performing extraction on sample: {}'.format(sample))
     
         command = 'cutadapt -e {error_rate} -j {threads} --minimum-length={barcode_length} --maximum-length={barcode_length} --max-n=0 --trimmed-only {adapter_string} -n 2 -o {barcode_fastq} {input_file}'.format(
             error_rate = error_rate,

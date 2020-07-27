@@ -5,8 +5,8 @@ import shlex
 from .utils import extract_csv_column, post_clustering_min
 
 
-def cluster(sample,ratio,distance,quality,threads,minimum,**kwargs):
-
+def cluster(sample,ratio,distance,quality,threads,filter_count,**kwargs):
+    filter
     
     extracted_csv = '{}.barcodes.q{}.tsv'.format(sample,quality)
 
@@ -32,7 +32,7 @@ def cluster(sample,ratio,distance,quality,threads,minimum,**kwargs):
     else:
         print('Found clustered reads form sample: {}\n'.format(sample))
 
-    post_clustering_min(output_file,minimum)
+    post_clustering_min(output_file,filter_count)
 
     print('Processing for {} complete!'.format(sample))
 
