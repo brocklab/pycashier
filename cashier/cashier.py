@@ -34,7 +34,7 @@ def main():
 
             m=re.search(r'(.+?)\..*R.*\.fastq\.gz',f)
             if m:
-                samples.append(m.groups(0))
+                samples.append(m.group(1))
             else:
                 print('Failed to obtain sample name from {}'.format(f))
                 exit()
@@ -58,7 +58,7 @@ def main():
             if "R1" in f or "R2" in f:
                 os.remove(f)
 
-        print("All samples have been merged and can be found in {directory}".format(directory = mergedfastqs))
+        print("All samples have been merged and can be found in mergedfastqs")
         exit()
     
 
