@@ -12,6 +12,7 @@ Like it's predecessor it is a wrapper for the tools cutadapt, fastx-toolkit, and
 - cutadapt
 - starcode
 - fastx-toolkit
+- usearch
 
 
 ## Recommended Installation Procedure
@@ -40,3 +41,11 @@ While the final processed files will be found with the `outs` directory.
 
 Pycashier will **NOT** overwrite intermediary files. If there is an issue in the process please delete either the pipeline directory or the requisite intermediary files for the sample you wish to reprocess. This will allow the user to place new fastqs within the raw directory or a project folder without reprocessing all samples each time.
 
+## Merging Files
+
+Pycashier can now take paired end reads and perform a merging of the reads. 
+
+### Note 
+- Only accepts fastq.gz
+- Usearch expects files to have `_R1` in the name
+- If there are reads from multiple lanes first concatenate with `cat *R1*.fastq.gz > sample._R1.fastq.gz`
