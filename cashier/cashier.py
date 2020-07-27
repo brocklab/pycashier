@@ -39,7 +39,9 @@ def main():
                 print('Failed to obtain sample name from {}'.format(f))
                 exit()
 
-        print(samples)
+        print('Found the following samples:')
+        for s in set(samples): print(s)
+        print()
 
         if len(samples)/len(set(samples))!=2:
             print("There should be an R1 and R2 fastq file for each sample.")
@@ -51,14 +53,14 @@ def main():
             
             merge(sample,fastqs,fastqdir)
 
-        print("Cleaning up single read fastq files.")
+        print("\nCleaning up single read fastq files.")
 
         clean_fastqs = os.listdir('.')
         for f in clean_fastqs:
             if "R1" in f or "R2" in f:
                 os.remove(f)
 
-        print("All samples have been merged and can be found in mergedfastqs")
+        print("All samples have been merged and can be found in mergedfastqs\n")
         exit()
     
 

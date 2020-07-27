@@ -8,12 +8,14 @@ import re
 def merge(sample,fastqs,fastqdir):
 
 	#perform usearch check..
+	if not os.path.isfile(os.path.join(os.getenv('HOME'),'bin/usearch')):
+		print("Error! Could not find usearch in ~/bin")
+		print("Please download usearch from: https://www.drive5.com/usearch/download.html")
+		exit()
 	###########################check ~/bin for usearch
-	#change this to make a sample dict that is {'sample':{'R1':R1_file},'sample2':{'R1':R1_file}} make as a standalone function that checks files then returns the dict of them and put in the utils. 
-	print(sample)
-    #get the read with R1 in in the name. using regex
-    #barcode_fastq = '{}.barcode.merged.fastq'.format(sample)
-	print(fastqs)
+	#update the file name collection to sample wide dict with seperate function called in main script and passed to merge.
+	print("Beginning work with sample: {}".format(sample))
+	
 	for f in fastqs:
 
 		R1_regex = r""+ re.escape(sample) + "\..*R1.*\.fastq\.gz"
@@ -28,9 +30,8 @@ def merge(sample,fastqs,fastqdir):
 			R2_file = m.group(0)
 
 	if R1_file == None or R2_file == None:
-		print("oops I didnt find a file")
+		print("oops I didnt find an R1 or R2 file")
 		exit()
-
 	
 	merged_barcode_fastq = '{}.merged.raw.fastq'.format(sample)
 
@@ -52,12 +53,9 @@ def merge(sample,fastqs,fastqdir):
 		p.wait()
 
 		files = [os.path.splitext(f)[0] for f in files] # replace with sample dict of files
-		print(fastqdir)
-		print(os.path.realpath(os.getcwd()))
-		print(os.path.realpath('../fastqs'))
+
 		for f in files: 
 
-			#f = os.path.splitext(f)[0]
 			old_path = os.path.realpath(os.path.join("../",fastqdir,f))
 			new_path = os.path.join(os.path.realpath(os.getcwd()),f)
 			os.rename(old_path,new_path)
