@@ -1,0 +1,31 @@
+cashier requires the following files
+
+[cutadapt](https://cutadapt.readthedocs.io/en/stable/installation.html) which can install with
+
+python3 -m pip install --user --upgrade cutadapt
+
+This will download the software from PyPI (the Python packaging index), and install the cutadapt binary into $HOME/.local/bin. 
+If an old version of Cutadapt exists on your system, the --upgrade parameter is required in order to install a newer version. 
+
+You can then run the program like this:
+~/.local/bin/cutadapt --help
+
+
+
+[starcode](https://github.com/gui11aume/starcode)
+which can be installed with 
+
+git clone https://github.com/gui11aume/starcode
+make -C starcode
+
+a binary file 'starcode' will be created. You can optionally make a symbolic link to run starcode from any directory:
+sudo ln -s ./starcode/starcode $HOME/.local/bin/starcode
+
+
+[fastx-toolkit](http://hannonlab.cshl.edu/fastx_toolkit/)  download the precompiled binaries from the website.
+
+[usearch](https://www.drive5.com/usearch/) download the precompiled 32-bit binaries from the website. The faster 64-bit version required a licence even for academic, non-profits
+
+
+For all of the above, to avoid typing the full path, add softlink to $HOME/.local/bin and the directory $HOME/.local/bin to your $PATH environment variable.
+
