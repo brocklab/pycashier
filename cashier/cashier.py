@@ -17,16 +17,13 @@ def main():
 
     fastqdir = cli_args['main']['fastqdir']
 
-
     #fastq file check 
     fastqs = os.listdir(fastqdir)
-
 
     if cli_args['main']['merge']:
 
         if not os.path.exists('mergedfastqs'):
             os.makedirs('mergedfastqs')
-
 
         samples=[]
         
@@ -62,8 +59,6 @@ def main():
 
         print("All samples have been merged and can be found in mergedfastqs\n")
         exit()
-    
-
 
     for f in fastqs:
         ext = os.path.splitext(f)[-1].lower()
@@ -90,9 +85,6 @@ def main():
         extract(sample,fastq,**cli_args['main'],**cli_args['extract'])
     
         cluster(sample,**cli_args['main'],**cli_args['cluster'])
-
-        #add a seperate filtering method here based on percent of count filter
-
 
 if __name__ == '__main__':
     main()

@@ -6,8 +6,6 @@ from .utils import fastq_to_csv
 
 def extract(sample,fastq,fastqdir,error_rate,threads,barcode_length,upstream_adapter,downstream_adapter,unlinked_adapters,quality,**kwargs):
 
-    print(sample)
-
     barcode_fastq = '{}.barcode.fastq'.format(sample)
     input_file = os.path.join('../',fastqdir,fastq)
     filtered_barcode_fastq = '{}.barcode.q{}.fastq'.format(sample,quality)
@@ -53,6 +51,7 @@ def extract(sample,fastq,fastqdir,error_rate,threads,barcode_length,upstream_ada
         print('Found extracted and quality filtered barcode fastq for sample:{}'.format(sample))
         
     barcodes_out = '{}.barcodes.q{}.tsv'.format(sample,quality)
+
     if not os.path.isfile(barcodes_out):
         fastq_to_csv(filtered_barcode_fastq, barcodes_out)
     else:

@@ -1,26 +1,25 @@
 import csv
 import os
 
-
-
 def convert_to_csv(in_file, out_file):
-    for line in in_file:
-        if not line.startswith('@'):
+
+    for i,line in enumerate(in_file):
+
+        if not line.startswith('@') or in_file[i-1].strip()=='+':
             continue
         seq_id = line.strip()
-        sequence = next(in_file).strip()
-        next(in_file)
+        sequence = in_file[i+1].strip()
         out_file.write(u'{}\t{}\n'.format(seq_id,sequence))
-
 
 def fastq_to_csv(in_file, out_file):
 
     print('transforming barcode fastq into tsv')
     with open(in_file) as f_in:
         with open(out_file, 'w') as f_out:
-            convert_to_csv(f_in,f_out)
+            convert_to_csv(f_in.readlines(),f_out)
 
 def extract_csv_column(csv_file,column):
+
     filename, file_extension = os.path.splitext(csv_file)
     tmp_out = '{}.c{}{}'.format(filename,column,file_extension)
     

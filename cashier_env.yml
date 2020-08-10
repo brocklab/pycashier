@@ -1,0 +1,5 @@
+name: cashier_env
+dependencies:
+  - cutadapt
+  - starcode
+  - fastx_toolkit
