@@ -1,6 +1,6 @@
 import os
-import subprocess
 import shlex
+import subprocess
 
 from .utils import extract_csv_column, post_clustering_min
 
@@ -30,10 +30,8 @@ def cluster(sample,ratio,distance,quality,threads,filter_count,**kwargs):
     
         print('clustering complete\n\n')
     else:
-        print('Found clustered reads form sample: {}\n'.format(sample))
+        print('Found clustered reads from sample: {}\n'.format(sample))
 
     post_clustering_min(output_file,filter_count)
 
     print('Processing for {} complete!'.format(sample))
-
-    

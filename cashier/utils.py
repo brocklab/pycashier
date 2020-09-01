@@ -1,5 +1,6 @@
-import csv
 import os
+import csv
+
 
 def convert_to_csv(in_file, out_file):
 

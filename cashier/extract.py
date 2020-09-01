@@ -1,8 +1,9 @@
 import os
-import subprocess
 import shlex
+import subprocess
 
 from .utils import fastq_to_csv
+
 
 def extract(sample,fastq,fastqdir,error_rate,threads,barcode_length,upstream_adapter,downstream_adapter,unlinked_adapters,quality,**kwargs):
 
@@ -56,11 +57,5 @@ def extract(sample,fastq,fastqdir,error_rate,threads,barcode_length,upstream_ada
         fastq_to_csv(filtered_barcode_fastq, barcodes_out)
     else:
         print('Found extracted and quality filtered barcode tsv for sample: {}'.format(sample))
-    print('extraction complete!')
-    
-
-
         
-
-
-    
+    print('extraction complete!')
