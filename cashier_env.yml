@@ -3,3 +3,4 @@ dependencies:
   - cutadapt
   - starcode
   - fastx_toolkit
+  - pear
