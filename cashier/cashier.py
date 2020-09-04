@@ -10,7 +10,7 @@ from .merge import merge
 
 def main():
     """
-    doc string goes here 
+    doc string 
     """
     
     cli_args=get_args()
@@ -20,45 +20,9 @@ def main():
     #fastq file check 
     fastqs = os.listdir(fastqdir)
 
-    if cli_args['main']['merge']:
-
-        if not os.path.exists('mergedfastqs'):
-            os.makedirs('mergedfastqs')
-
-        samples=[]
+    if cli_args['merge']['merge']:
         
-        for f in fastqs:
-
-            m=re.search(r'(.+?)\..*R.*\.fastq\.gz',f)
-            if m:
-                samples.append(m.group(1))
-            else:
-                print('Failed to obtain sample name from {}'.format(f))
-                exit()
-
-        print('Found the following samples:')
-        for s in set(samples): print(s)
-        print()
-
-        if len(samples)/len(set(samples))!=2:
-            print("There should be an R1 and R2 fastq file for each sample.")
-            exit()
-
-        os.chdir('mergedfastqs')
-
-        for sample in set(samples):
-            
-            merge(sample,fastqs,fastqdir)
-
-        print("\nCleaning up single read fastq files.")
-
-        clean_fastqs = os.listdir('.')
-        for f in clean_fastqs:
-            if "R1" in f or "R2" in f:
-                os.remove(f)
-
-        print("All samples have been merged and can be found in mergedfastqs\n")
-        exit()
+        merge(fastqs, fastqdir, cli_args)
 
     for f in fastqs:
         ext = os.path.splitext(f)[-1].lower()

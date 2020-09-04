@@ -9,7 +9,6 @@ def get_args():
 
     parser.add_argument("fastqdir",help='directory containing fastqs to process')
     parser.add_argument("-t","--threads", help='number of cpu cores to use (default: %(default)s)',metavar='',default=1)
-    parser.add_argument("-m","--merge", help='merge R1 and R2 fastq files using usearch',action='store_true')
     
     #extract specific parameters
     extract_parser = parser.add_argument_group(title='extract options')
@@ -29,15 +28,18 @@ def get_args():
     cluster_parser.add_argument("-fc","--filter_count", help='minimum number of reads for post-cluster filtering',metavar='',default=10,type=int)
     #cluster_parser.add_argument("-co","--cluster_only", help='perform only message passage clustering on a list of sequences',action = 'store_true')    
 
+    merge_parser = parser.add_argument_group(title ='merge options')
+    merge_parser.add_argument("-m","--merge", help='merge R1 and R2 fastq files using usearch',action='store_true')
+    merge_parser.add_argument("-ko","--keep_output", help='keep auxiliary files output by pear in mergefastqs directory',action='store_true')
+    merge_parser.add_argument("-pa","--pear_args", help='additional arguements to pass to pear', type=str, default='')
     args=parser.parse_args()
     
     
     return {'main':
-            {
+            { 
                 'fastqdir':args.fastqdir,
                 'threads':args.threads,
-                'quality':args.quality,
-                'merge':args.merge
+                'quality':args.quality
             },
             'extract':
             {
@@ -54,5 +56,10 @@ def get_args():
                 'distance':args.distance,
                 'filter_count':args.filter_count
             #    'cluster_only':args.cluster_only
+            },
+            'merge':{
+                'merge':args.merge,
+                'keep_output':args.keep_output,
+                'pear_args':args.pear_args
             }
             }
