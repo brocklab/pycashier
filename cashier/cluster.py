@@ -2,17 +2,17 @@ import os
 import shlex
 import subprocess
 
-from .utils import extract_csv_column, post_clustering_min
+from .utils import extract_csv_column
 
 
-def cluster(sample,ratio,distance,quality,threads,filter_count,**kwargs):
-    filter
+def cluster(sample,ratio,distance,quality,threads,**kwargs):
     
     extracted_csv = '{}.barcodes.q{}.tsv'.format(sample,quality)
 
     input_file = extract_csv_column(extracted_csv,2)
     #input_file = 'tmp100.c2.tsv'
-    output_file = '{}.barcodes.r{}d{}.tsv'.format(sample,ratio,distance)
+    output_file = '{}.barcodes.q{}.r{}d{}.tsv'.format(sample,quality,ratio,distance)
+    
     if not os.path.isfile(output_file):
     
         command = 'starcode -d {distance} -r {ratio} -t {threads} -i {input_file} -o {output_file}'.format(
@@ -30,8 +30,6 @@ def cluster(sample,ratio,distance,quality,threads,filter_count,**kwargs):
     
         print('clustering complete\n\n')
     else:
-        print('Found clustered reads from sample: {}\n'.format(sample))
+        print('Found clustered reads for sample: {}\n'.format(sample))
 
-    post_clustering_min(output_file,filter_count)
-
-    print('Processing for {} complete!'.format(sample))
+    print('Clustering for {} complete!'.format(sample))
