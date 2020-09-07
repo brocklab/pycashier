@@ -49,7 +49,7 @@ def extract(sample,fastq,fastqdir,error_rate,threads,barcode_length,upstream_ada
         os.remove(barcode_fastq)
 
     else:
-        print('Found extracted and quality filtered barcode fastq for sample:{}'.format(sample))
+        print('Found extracted and quality filtered barcode fastq for sample: {}'.format(sample))
         
     barcodes_out = '{}.barcodes.q{}.tsv'.format(sample,quality)
 

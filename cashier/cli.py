@@ -25,16 +25,20 @@ def get_args():
     cluster_parser = parser.add_argument_group(title='cluster options') 
     cluster_parser.add_argument("-r","--ratio", help='ratio to use for message passing clustering (default: %(default)s)',metavar='',default = 3,type = int)
     cluster_parser.add_argument("-d","--distance", help='levenshtein distance for clustering (default: %(default)s)',metavar='',default = 1, type = int)
-    cluster_parser.add_argument("-fc","--filter_count", help='minimum number of reads for post-cluster filtering',metavar='',default=10,type=int)
     #cluster_parser.add_argument("-co","--cluster_only", help='perform only message passage clustering on a list of sequences',action = 'store_true')    
+   
+    filter_parser = parser.add_argument_group('filter_options')
+    filter_parser.add_argument("-fc","--filter_count", help='nominal number of reads for sequence to pass fitler',metavar='',default=None,type=int)
+    filter_parser.add_argument("-fp","--filter_percent", help='minimum percentage of total reads for sequence to pass filter',metavar='',default = 0.005,type=float)
+
 
     merge_parser = parser.add_argument_group(title ='merge options')
     merge_parser.add_argument("-m","--merge", help='merge R1 and R2 fastq files using usearch',action='store_true')
     merge_parser.add_argument("-ko","--keep_output", help='keep auxiliary files output by pear in mergefastqs directory',action='store_true')
-    merge_parser.add_argument("-pa","--pear_args", help='additional arguements to pass to pear', type=str, default='')
+    merge_parser.add_argument("-pa","--pear_args", help='additional arguments to pass to pear', metavar='', type=str, default='')
+    
     args=parser.parse_args()
-    
-    
+
     return {'main':
             { 
                 'fastqdir':args.fastqdir,
@@ -54,12 +58,15 @@ def get_args():
             {
                 'ratio':args.ratio,
                 'distance':args.distance,
-                'filter_count':args.filter_count
             #    'cluster_only':args.cluster_only
             },
             'merge':{
                 'merge':args.merge,
                 'keep_output':args.keep_output,
                 'pear_args':args.pear_args
+            },
+            'filter':{
+                'filter_percent':args.filter_percent,
+                'filter_count':args.filter_count
             }
             }

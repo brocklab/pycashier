@@ -6,6 +6,7 @@ from .cli import get_args
 from .extract import extract
 from .cluster import cluster
 from .merge import merge
+from .read_filter import read_filter
 
 
 def main():
@@ -49,6 +50,10 @@ def main():
         extract(sample,fastq,**cli_args['main'],**cli_args['extract'])
     
         cluster(sample,**cli_args['main'],**cli_args['cluster'])
+
+        read_filter(sample,**cli_args['main'],**cli_args['filter'],**cli_args['cluster'])
+
+        print('Completed processsing for sample: {}'.format(sample))
 
 if __name__ == '__main__':
     main()

@@ -6,13 +6,7 @@ import subprocess
 def merge_single(sample,fastqs,fastqdir,threads,**kwargs):
 	keep_output = kwargs['keep_output']
 	pear_args = kwargs['pear_args']
-	#perform usearch check..
-	# if not os.path.isfile(os.path.join(os.getenv('HOME'),'bin/usearch')):
-	# 	print("Error! Could not find usearch in ~/bin")
-	# 	print("Please download usearch from: https://www.drive5.com/usearch/download.html")
-	# 	exit()
-	###########################check ~/bin for usearch
-	#update the file name collection to sample wide dict with seperate function called in main script and passed to merge.
+
 	print("Beginning work with sample: {}".format(sample))
 	
 	for f in fastqs:
