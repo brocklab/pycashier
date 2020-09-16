@@ -32,4 +32,4 @@ def cluster(sample,ratio,distance,quality,threads,**kwargs):
     else:
         print('Found clustered reads for sample: {}\n'.format(sample))
 
-    print('Clustering for {} complete!'.format(sample))
+    print('clustering for {} complete'.format(sample))

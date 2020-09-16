@@ -7,23 +7,29 @@ from .extract import extract
 from .cluster import cluster
 from .merge import merge
 from .read_filter import read_filter
-
+from .single_cell import single_cell
 
 def main():
-    """
-    doc string 
-    """
-    
+
     cli_args=get_args()
 
-    fastqdir = cli_args['main']['fastqdir']
+    sourcedir = cli_args['main']['sourcedir']
 
     #fastq file check 
-    fastqs = os.listdir(fastqdir)
+    fastqs = os.listdir(sourcedir)
+
+    if not os.path.exists('pipeline'):
+        os.makedirs('pipeline')
+    if not os.path.exists('outs'):
+        os.makedirs('outs')
+
+    if cli_args['single_cell']:
+
+        single_cell(sourcedir,cli_args)
 
     if cli_args['merge']['merge']:
-        
-        merge(fastqs, fastqdir, cli_args)
+    
+        merge(fastqs, sourcedir, cli_args)
 
     for f in fastqs:
         ext = os.path.splitext(f)[-1].lower()
@@ -32,20 +38,15 @@ def main():
             print('Exiting.')
             exit()
 
-    if not os.path.exists('pipeline'):
-        os.makedirs('pipeline')
-    if not os.path.exists('outs'):
-        os.makedirs('outs')
-
     os.chdir('pipeline')
 
-    print('Performing extraction and clustering for {} samples'.format(len(fastqs)))
+    print('performing barcode extraction and clustering for {} samples\n'.format(len(fastqs)))
 
     for fastq in fastqs: 
 
         #fastq should be file name of the fastqs.
 
-        sample = os.path.basename(os.path.join(fastqdir,fastq)).split('.')[0]
+        sample = os.path.basename(os.path.join(sourcedir,fastq)).split('.')[0]
 
         extract(sample,fastq,**cli_args['main'],**cli_args['extract'])
     
@@ -53,7 +54,7 @@ def main():
 
         read_filter(sample,**cli_args['main'],**cli_args['filter'],**cli_args['cluster'])
 
-        print('Completed processsing for sample: {}'.format(sample))
+        print('completed processsing for sample: {}\n\n'.format(sample))
 
 if __name__ == '__main__':
     main()

@@ -3,12 +3,13 @@ import argparse
 def get_args():
     parser = argparse.ArgumentParser(
         prog='cashier',
-        usage='%(prog)s [-h] fastqdir'
+        usage='%(prog)s [-h] sourcedir'
  #       formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
-    parser.add_argument("fastqdir",help='directory containing fastqs to process')
+    parser.add_argument("sourcedir",help='directory containing sam/fastq files to process')
     parser.add_argument("-t","--threads", help='number of cpu cores to use (default: %(default)s)',metavar='',default=1)
+    parser.add_argument("-sc","--single_cell",help='turn unampped sam files into cell barcode & umi labeled tsv',action='store_true')
     
     #extract specific parameters
     extract_parser = parser.add_argument_group(title='extract options')
@@ -41,7 +42,7 @@ def get_args():
 
     return {'main':
             { 
-                'fastqdir':args.fastqdir,
+                'sourcedir':args.sourcedir,
                 'threads':args.threads,
                 'quality':args.quality
             },
@@ -60,13 +61,16 @@ def get_args():
                 'distance':args.distance,
             #    'cluster_only':args.cluster_only
             },
-            'merge':{
+            'merge':
+            {
                 'merge':args.merge,
                 'keep_output':args.keep_output,
                 'pear_args':args.pear_args
             },
-            'filter':{
+            'filter':
+            {
                 'filter_percent':args.filter_percent,
                 'filter_count':args.filter_count
-            }
+            },
+            'single_cell':args.single_cell
             }
