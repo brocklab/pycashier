@@ -13,6 +13,7 @@ Like it's predecessor it is a wrapper for the tools cutadapt, fastx-toolkit, and
 - starcode
 - fastx-toolkit
 - pear
+- pysam
 
 ## Recommended Installation Procedure
 
@@ -28,7 +29,7 @@ Note: Conda is not required and all packages may be installed individually so lo
 
 ## Usage
 
-Pycashier has one required argument which is the directory containing the fastq's you wish to process.
+Pycashier has one required argument which is the directory containing the fastq or sam files you wish to process.
 
 ```bash
 cashier ./fastqs
@@ -47,7 +48,31 @@ Pycashier can now take paired end reads and perform a merging of the reads to pr
 ```bash
 cashier ./fastqs -m
 ``` 
+
+## Processing Barcodes from 10X bam files
+
+Pycashier can also extract gRNA barcodes along with 10X cell and umi barcodes. 
+
+Firstly we are only interested in the unmapped reads. From the cellranger bam output you would obtain these reads using samtools.
+
+```
+samtools view -f 4 possorted_genome_bam.bam > unmapped.sam
+```
+Then similar to normal barcode extraction you can pass a directory of these unmapped sam files to pycashier and extract barcodes. You can also still specify extraction parameters that will be passed to cutadapt as usual. 
+
+*Note*: The default parameters passed to cutadapt are unlinked adapters and minimum barcode length of 10 bp. 
+
+```
+cashier ./unmapped_sams -sc 
+```
+When finished the `outs` directory will have a `.tsv` containing the following columns: Illumina Read Info, UMI Barcode, Cell Barcode, gRNA Barcode
+
+
 ## Usage notes
  Pycashier will **NOT** overwrite intermediary files. If there is an issue in the process please delete either the pipeline directory or the requisite intermediary files for the sample you wish to reprocess. This will allow the user to place new fastqs within the raw directory or a project folder without reprocessing all samples each time.
 - Currently, cashiers expects to find `.fastq.gz` files when merging and `.fastq` files when extracting barcodes. This behavior may change in the future.
 - If there are reads from multiple lanes they should first be concatenated with `cat sample*R1*.fastq.gz > sample.R1.fastq.gz`
+- Naming conventions:
+    - Samples names are extracted from files using the first string delimited with a period. Please take this into account when names sam or fastq files. 
+    - Each processing step will append information to the input file name to indicate changes again delimited with periods. 
+

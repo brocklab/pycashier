@@ -4,3 +4,4 @@ dependencies:
   - starcode
   - fastx_toolkit
   - pear
+  - pysam

@@ -3,7 +3,7 @@ import re
 import shlex
 import subprocess
 
-def merge_single(sample,fastqs,fastqdir,threads,**kwargs):
+def merge_single(sample,fastqs,sourcedir,threads,**kwargs):
 	keep_output = kwargs['keep_output']
 	pear_args = kwargs['pear_args']
 
@@ -39,31 +39,25 @@ def merge_single(sample,fastqs,fastqdir,threads,**kwargs):
 		print('Extracting and moving fastqs')
 
 		command = "gunzip -k {} {}".format(
-			os.path.join('../',fastqdir,R1_file),
-			os.path.join('../',fastqdir,R2_file)
+			os.path.join('../',sourcedir,R1_file),
+			os.path.join('../',sourcedir,R2_file)
 			)
 		args = shlex.split(command)
-		p = subprocess.Popen(args)
-		p.wait()
+		p = subprocess.run(args)
 
 		files = [os.path.splitext(f)[0] for f in files] # replace with sample dict of files
 
 		for f in files: 
 
-			old_path = os.path.realpath(os.path.join("../",fastqdir,f))
+			old_path = os.path.realpath(os.path.join("../",sourcedir,f))
 			new_path = os.path.join(os.path.realpath(os.getcwd()),f)
 			os.rename(old_path,new_path)
 
 		print('Merging fastqs')
 
-
-		#here I would need to switch to using pear as the merging software 
-		#command = 'usearch -fastq_mergepairs {} -fastqout {}'.format(files[0], merged_barcode_fastq)
-		#also include a thread argument in this call
 		command = 'pear -f {} -r {} -o {} -j {} {}'.format(files[0], files[1], merged_barcode_file, threads, pear_args)
 		args = shlex.split(command)
-		p = subprocess.Popen(args)
-		p.wait()
+		p = subprocess.run(args)
 
 		#remove the extra files made from pear
 		if kwargs['keep_output']!=True:
@@ -76,7 +70,7 @@ def merge_single(sample,fastqs,fastqdir,threads,**kwargs):
 		print('Found merged barcode fastq for sample:{}'.format(sample))
 
 
-def merge(fastqs, fastqdir, cli_args):
+def merge(fastqs, sourcedir, cli_args):
         
 	if not os.path.exists('mergedfastqs'):
 		os.makedirs('mergedfastqs')
@@ -104,7 +98,7 @@ def merge(fastqs, fastqdir, cli_args):
 
 	for sample in set(samples):
 		
-		merge_single(sample,fastqs,fastqdir,cli_args['main']['threads'],**cli_args['merge'])
+		merge_single(sample,fastqs,sourcedir,cli_args['main']['threads'],**cli_args['merge'])
 
 	print("\nCleaning up single read fastq files.")
 

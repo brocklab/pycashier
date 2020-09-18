@@ -10,7 +10,7 @@ def cluster(sample,ratio,distance,quality,threads,**kwargs):
     extracted_csv = '{}.barcodes.q{}.tsv'.format(sample,quality)
 
     input_file = extract_csv_column(extracted_csv,2)
-    #input_file = 'tmp100.c2.tsv'
+
     output_file = '{}.barcodes.q{}.r{}d{}.tsv'.format(sample,quality,ratio,distance)
     
     if not os.path.isfile(output_file):
@@ -32,4 +32,4 @@ def cluster(sample,ratio,distance,quality,threads,**kwargs):
     else:
         print('Found clustered reads for sample: {}\n'.format(sample))
 
-    print('Clustering for {} complete!'.format(sample))
+    print('clustering for {} complete'.format(sample))
