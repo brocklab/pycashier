@@ -15,7 +15,6 @@ def main():
 
     sourcedir = cli_args['main']['sourcedir']
 
-    #fastq file check 
     fastqs = os.listdir(sourcedir)
 
     if not os.path.exists('pipeline'):

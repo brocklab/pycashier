@@ -1,7 +1,9 @@
 import os
 import csv
+import shlex
 import pysam
 import tempfile
+import subprocess
 
 
 def convert_to_csv(in_file, out_file):
@@ -45,14 +47,16 @@ def sam_to_name_labeled_fastq(in_file, out_file):
             new_sam = True
             
     if new_sam == True:
+        print('this sam file has no header so we will add a fake one\n')
         sam_file = fake_header_add(in_file)
     else:
         sam_file = in_file
 
     print('sam file is {}'.format(sam_file))
+    
 
     sam = pysam.AlignmentFile(sam_file, 'r', check_sq=False)
-    
+    print('converting sam to fastq')
     with open(out_file, 'w') as f_out:
 
         for record in sam:
@@ -85,7 +89,7 @@ def sam_to_name_labeled_fastq(in_file, out_file):
                 f_out.write("{}\n+\n{}\n".format(
                     record.query_sequence,
                     ascii_qualities
-                    ))
+                    ))  
 
     if new_sam == True:
         print('cleaning up temporary sam file')
@@ -203,8 +207,15 @@ def fake_header_add(in_file):
     f = tempfile.NamedTemporaryFile(delete=False,dir=os.getcwd())
     print('copying new to sam to {}'.format(f.name))
     f.write((bytes(fake_header,encoding='utf-8')))
-    with open(in_file, 'r') as sam_file:
-        for line in sam_file:
-            f.write(bytes(line, encoding='utf-8'))
+    f.flush()
+    
+    p = subprocess.run(['cat',in_file], stdout=f)
+    
+    # #python implementation
+    # with open(in_file, 'r') as sam_file:
+    #     for line in sam_file:
+    #         f.write(bytes(line, encoding='utf-8'))
+    #    #f.write(bytes(sam_file.read()), encoding='utf-8')
+    
     f.close()
     return f.name 

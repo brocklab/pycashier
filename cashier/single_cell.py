@@ -6,6 +6,8 @@ import subprocess
 from .utils import sam_to_name_labeled_fastq, labeled_fastq_to_tsv
 
 def single_cell_process(sample,f,sourcedir,cli_args):
+    print('performing barcode extraction on sample: {}'.format(sample))
+
 
     error_rate = cli_args['extract']['error_rate']
     threads = cli_args['main']['threads']
@@ -51,7 +53,6 @@ def single_cell_process(sample,f,sourcedir,cli_args):
     
 
 def single_cell(sourcedir, cli_args):
-    #sourcedir should be updated to be input file agnostic i.e. input_dir
 
     sam_files = []
 
