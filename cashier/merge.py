@@ -43,8 +43,7 @@ def merge_single(sample,fastqs,sourcedir,threads,**kwargs):
 			os.path.join('../',sourcedir,R2_file)
 			)
 		args = shlex.split(command)
-		p = subprocess.Popen(args)
-		p.wait()
+		p = subprocess.run(args)
 
 		files = [os.path.splitext(f)[0] for f in files] # replace with sample dict of files
 
@@ -56,14 +55,9 @@ def merge_single(sample,fastqs,sourcedir,threads,**kwargs):
 
 		print('Merging fastqs')
 
-
-		#here I would need to switch to using pear as the merging software 
-		#command = 'usearch -fastq_mergepairs {} -fastqout {}'.format(files[0], merged_barcode_fastq)
-		#also include a thread argument in this call
 		command = 'pear -f {} -r {} -o {} -j {} {}'.format(files[0], files[1], merged_barcode_file, threads, pear_args)
 		args = shlex.split(command)
-		p = subprocess.Popen(args)
-		p.wait()
+		p = subprocess.run(args)
 
 		#remove the extra files made from pear
 		if kwargs['keep_output']!=True:

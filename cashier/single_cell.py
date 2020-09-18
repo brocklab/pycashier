@@ -41,8 +41,8 @@ def single_cell_process(sample,f,sourcedir,cli_args):
         )
         args = shlex.split(command)
 
-        p = subprocess.Popen(args)
-        p.wait()
+        p = subprocess.run(args)
+
     
     if not os.path.isfile(tsv_out):
         labeled_fastq_to_tsv(output_file,tsv_out)
