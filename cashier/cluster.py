@@ -25,8 +25,7 @@ def cluster(sample,ratio,distance,quality,threads,**kwargs):
 
         args = shlex.split(command)
 
-        p = subprocess.Popen(args)
-        p.wait()
+        p = subprocess.run(args)
     
         print('clustering complete\n\n')
     else:

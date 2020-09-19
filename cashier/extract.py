@@ -30,8 +30,7 @@ def extract(sample,fastq,sourcedir,error_rate,threads,barcode_length,upstream_ad
         )
         args = shlex.split(command)
 
-        p = subprocess.Popen(args)
-        p.wait()
+        p = subprocess.run(args)
 
         filtered_barcode_fastq = '{}.barcode.q{}.fastq'.format(sample,quality)
 
@@ -43,8 +42,7 @@ def extract(sample,fastq,sourcedir,error_rate,threads,barcode_length,upstream_ad
 
         args = shlex.split(command)
 
-        p = subprocess.Popen(args)
-        p.wait()
+        p = subprocess.run(args)
 
         os.remove(barcode_fastq)
 

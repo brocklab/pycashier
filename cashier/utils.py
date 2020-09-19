@@ -1,6 +1,5 @@
 import os
 import csv
-import shlex
 import pysam
 import tempfile
 import subprocess
@@ -57,6 +56,7 @@ def sam_to_name_labeled_fastq(in_file, out_file):
 
     sam = pysam.AlignmentFile(sam_file, 'r', check_sq=False)
     print('converting sam to fastq')
+    
     with open(out_file, 'w') as f_out:
 
         for record in sam:
