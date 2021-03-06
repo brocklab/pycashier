@@ -8,9 +8,10 @@ from .merge import merge
 from .read_filter import read_filter
 from .single_cell import single_cell
 
+
 def main():
 
-    cli_args=get_args()
+    cli_args = get_args()
 
     sourcedir = cli_args['main']['sourcedir']
 
@@ -23,36 +24,42 @@ def main():
 
     if cli_args['single_cell']:
 
-        single_cell(sourcedir,cli_args)
+        single_cell(sourcedir, cli_args)
 
     if cli_args['merge']['merge']:
-    
+
         merge(fastqs, sourcedir, cli_args)
 
     for f in fastqs:
         ext = os.path.splitext(f)[-1].lower()
         if ext != '.fastq':
-            print('ERROR! There is a non fastq file in the provided fastq directory: {}'.format(f))
+            print(
+                'ERROR! There is a non fastq file in the provided fastq directory: {}'
+                .format(f))
             print('Exiting.')
             exit()
 
     os.chdir('pipeline')
 
-    print('performing barcode extraction and clustering for {} samples\n'.format(len(fastqs)))
+    print(
+        'performing barcode extraction and clustering for {} samples\n'.format(
+            len(fastqs)))
 
-    for fastq in fastqs: 
+    for fastq in fastqs:
 
         #fastq should be file name of the fastqs.
 
-        sample = os.path.basename(os.path.join(sourcedir,fastq)).split('.')[0]
+        sample = os.path.basename(os.path.join(sourcedir, fastq)).split('.')[0]
 
-        extract(sample,fastq,**cli_args['main'],**cli_args['extract'])
-    
-        cluster(sample,**cli_args['main'],**cli_args['cluster'])
+        extract(sample, fastq, **cli_args['main'], **cli_args['extract'])
 
-        read_filter(sample,**cli_args['main'],**cli_args['filter'],**cli_args['cluster'])
+        cluster(sample, **cli_args['main'], **cli_args['cluster'])
+
+        read_filter(sample, **cli_args['main'], **cli_args['filter'],
+                    **cli_args['cluster'])
 
         print('completed processsing for sample: {}\n\n'.format(sample))
+
 
 if __name__ == '__main__':
     main()

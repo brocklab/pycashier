@@ -7,44 +7,47 @@ import subprocess
 
 def convert_to_csv(in_file, out_file):
 
-    for i,line in enumerate(in_file):
+    for i, line in enumerate(in_file):
 
-        if not line.startswith('@') or in_file[i-1].strip()=='+':
+        if not line.startswith('@') or in_file[i - 1].strip() == '+':
             continue
         seq_id = line.strip()
-        sequence = in_file[i+1].strip()
-        out_file.write(u'{}\t{}\n'.format(seq_id,sequence))
+        sequence = in_file[i + 1].strip()
+        out_file.write(u'{}\t{}\n'.format(seq_id, sequence))
+
 
 def fastq_to_csv(in_file, out_file):
 
     print('\ntransforming barcode fastq into tsv')
     with open(in_file) as f_in:
         with open(out_file, 'w') as f_out:
-            convert_to_csv(f_in.readlines(),f_out)
+            convert_to_csv(f_in.readlines(), f_out)
 
-def extract_csv_column(csv_file,column):
+
+def extract_csv_column(csv_file, column):
 
     filename, file_extension = os.path.splitext(csv_file)
-    tmp_out = '{}.c{}{}'.format(filename,column,file_extension)
-    
-    with open(csv_file,'r') as csv_in:
-        with open(tmp_out,'w') as csv_out:
+    tmp_out = '{}.c{}{}'.format(filename, column, file_extension)
+
+    with open(csv_file, 'r') as csv_in:
+        with open(tmp_out, 'w') as csv_out:
             for line in csv_in:
                 linesplit = line.split('\t')
-                csv_out.write(u'{}'.format(linesplit[column-1]))
-                              
+                csv_out.write(u'{}'.format(linesplit[column - 1]))
+
     return tmp_out
 
+
 def sam_to_name_labeled_fastq(in_file, out_file):
-    
+
     print('transforming sam to fastq for use with cashier')
 
     new_sam = False
 
     with open(in_file, 'r') as f_in:
-        if f_in.readline()[0:3]!='@HD':
+        if f_in.readline()[0:3] != '@HD':
             new_sam = True
-            
+
     if new_sam == True:
         print('this sam file has no header so we will add a fake one\n')
         sam_file = fake_header_add(in_file)
@@ -52,11 +55,10 @@ def sam_to_name_labeled_fastq(in_file, out_file):
         sam_file = in_file
 
     print('sam file is {}'.format(sam_file))
-    
 
     sam = pysam.AlignmentFile(sam_file, 'r', check_sq=False)
     print('converting sam to fastq')
-    
+
     with open(out_file, 'w') as f_out:
 
         for record in sam:
@@ -75,32 +77,27 @@ def sam_to_name_labeled_fastq(in_file, out_file):
                 umi = tagdict['UR']
 
             # write in fastq format output if cell and umi is assigned
-            
+
             if cell_barcode and umi:
 
                 qualities = record.query_qualities
-                ascii_qualities = ''.join([chr(q+33) for q in qualities])
+                ascii_qualities = ''.join([chr(q + 33) for q in qualities])
 
-                f_out.write("@{}_{}_{}\n".format(
-                    record.query_name,
-                    umi,
-                    cell_barcode
-                    ))
-                f_out.write("{}\n+\n{}\n".format(
-                    record.query_sequence,
-                    ascii_qualities
-                    ))  
+                f_out.write("@{}_{}_{}\n".format(record.query_name, umi,
+                                                 cell_barcode))
+                f_out.write("{}\n+\n{}\n".format(record.query_sequence,
+                                                 ascii_qualities))
 
     if new_sam == True:
         print('cleaning up temporary sam file')
         os.remove(sam_file)
 
 
-def labeled_fastq_to_tsv(in_file,out_file):
-    
+def labeled_fastq_to_tsv(in_file, out_file):
+
     print('transforming labeled barcode fastq into tsv')
-    
-    out_file_path = os.path.join('..','outs',out_file)
+
+    out_file_path = os.path.join('..', 'outs', out_file)
 
     with open(in_file) as f_in:
         with open(out_file_path, 'w') as f_out:
@@ -109,11 +106,14 @@ def labeled_fastq_to_tsv(in_file,out_file):
                 read_lines.append(line)
                 if len(read_lines) == 4:
 
-                    read_name, umi, cell_barcode = read_lines[0].rstrip('\n').split('_')
+                    read_name, umi, cell_barcode = read_lines[0].rstrip(
+                        '\n').split('_')
                     lineage_barcode = read_lines[1].rstrip('\n')
 
-                    f_out.write(u"{}\t{}\t{}\t{}\n".format(read_name, umi, cell_barcode, lineage_barcode))
+                    f_out.write(u"{}\t{}\t{}\t{}\n".format(
+                        read_name, umi, cell_barcode, lineage_barcode))
                     read_lines = []
+
 
 def fake_header_add(in_file):
 
@@ -203,19 +203,19 @@ def fake_header_add(in_file):
 @SQ\tSN:GL000229.1\tLN:1000
 @SQ\tSN:GL000226.1\tLN:1000
 '''
-
-    f = tempfile.NamedTemporaryFile(delete=False,dir=os.getcwd())
+    # TODO: change wo with statement
+    f = tempfile.NamedTemporaryFile(delete=False, dir=os.getcwd())
     print('copying new to sam to {}'.format(f.name))
-    f.write((bytes(fake_header,encoding='utf-8')))
+    f.write((bytes(fake_header, encoding='utf-8')))
     f.flush()
-    
-    p = subprocess.run(['cat',in_file], stdout=f)
-    
+
+    p = subprocess.run(['cat', in_file], stdout=f)
+
     # #python implementation
     # with open(in_file, 'r') as sam_file:
     #     for line in sam_file:
     #         f.write(bytes(line, encoding='utf-8'))
     #    #f.write(bytes(sam_file.read()), encoding='utf-8')
-    
+
     f.close()
-    return f.name 
+    return f.name

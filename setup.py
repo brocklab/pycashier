@@ -20,7 +20,10 @@ def read(path, encoding="utf-8"):
 
 def get_install_requirements(path):
     content = read(path)
-    return [req for req in content.split("\n") if req != "" and not req.startswith("#")]
+    return [
+        req for req in content.split("\n")
+        if req != "" and not req.startswith("#")
+    ]
 
 
 def version(path):
@@ -29,9 +32,8 @@ def version(path):
     See <https://packaging.python.org/en/latest/single_source_version.html>.
     """
     version_file = read(path)
-    version_match = re.search(
-        r"""^__version__ = ['"]([^'"]*)['"]""", version_file, re.M
-    )
+    version_match = re.search(r"""^__version__ = ['"]([^'"]*)['"]""",
+                              version_file, re.M)
     if version_match:
         return version_match.group(1)
     raise RuntimeError("Unable to find version string.")
@@ -51,9 +53,7 @@ setup(
     license="BSD 3-clause",
     #packages=find_packages(),
     packages=['cashier'],
-    entry_points = {
-        "console_scripts":['cashier = cashier.cashier:main']
-    },
+    entry_points={"console_scripts": ['cashier = cashier.cashier:main']},
     include_package_data=True,
     install_requires=get_install_requirements("requirements.txt"),
     python_requires=">=3.6",
