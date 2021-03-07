@@ -1,12 +1,10 @@
 import os
 import csv
+from pathlib import Path
 
 
 def filter_by_percent(file_in, filter_percent):
 
-    filename, file_extension = os.path.splitext(file_in)
-    csv_file = '{}.min{}{}'.format(filename, filter_percent, file_extension)
-    csv_out = os.path.join('../outs', csv_file)
     total_reads = 0
 
     with open(file_in, newline='') as csvfile:
@@ -21,9 +19,10 @@ def filter_by_percent(file_in, filter_percent):
 
 def filter_by_count(file_in, filter_count):
 
-    filename, file_extension = os.path.splitext(file_in)
-    csv_file = '{}.min{}{}'.format(filename, filter_count, file_extension)
-    csv_out = os.path.join('../outs', csv_file)
+    name = file_in.stem
+    ext = file_in.suffix
+    csv_out = Path('outs') / f'{name}.min{filter_count}{ext}'
+    total_reads = 0
 
     with open(file_in, 'r') as csv_in:
         with open(csv_out, 'w') as csv_out:
@@ -36,8 +35,7 @@ def filter_by_count(file_in, filter_count):
 def read_filter(sample, filter_count, filter_percent, quality, ratio, distance,
                 **kwargs):
 
-    file_in = '{}.barcodes.q{}.r{}d{}.tsv'.format(sample, quality, ratio,
-                                                  distance)
+    file_in = Path('pipeline') / f'{sample}.barcodes.q{quality}.r{ratio}d{distance}.tsv'
 
     if filter_count:
         print('\nremoving sequences with less than {} total occurences'.format(

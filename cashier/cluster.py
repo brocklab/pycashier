@@ -1,20 +1,22 @@
 import os
 import shlex
 import subprocess
+from pathlib import Path
 
 from .utils import extract_csv_column
 
 
 def cluster(sample, ratio, distance, quality, threads, **kwargs):
+    pipeline = Path('pipeline')
 
-    extracted_csv = '{}.barcodes.q{}.tsv'.format(sample, quality)
-
+    extracted_csv = pipeline / f'{sample}.barcodes.q{quality}.tsv'
+    
     input_file = extract_csv_column(extracted_csv, 2)
 
-    output_file = '{}.barcodes.q{}.r{}d{}.tsv'.format(sample, quality, ratio,
+    output_file = pipeline / '{}.barcodes.q{}.r{}d{}.tsv'.format(sample, quality, ratio,
                                                       distance)
 
-    if not os.path.isfile(output_file):
+    if not output_file.is_file():
 
         command = 'starcode -d {distance} -r {ratio} -t {threads} -i {input_file} -o {output_file}'.format(
             distance=distance,

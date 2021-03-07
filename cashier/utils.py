@@ -3,7 +3,7 @@ import csv
 import pysam
 import tempfile
 import subprocess
-
+from pathlib import Path
 
 def convert_to_csv(in_file, out_file):
 
@@ -26,9 +26,8 @@ def fastq_to_csv(in_file, out_file):
 
 def extract_csv_column(csv_file, column):
 
-    filename, file_extension = os.path.splitext(csv_file)
-    tmp_out = '{}.c{}{}'.format(filename, column, file_extension)
-
+    ext = csv_file.suffix
+    tmp_out = csv_file.with_suffix(f'.c{column}{ext}')
     with open(csv_file, 'r') as csv_in:
         with open(tmp_out, 'w') as csv_out:
             for line in csv_in:

@@ -1,6 +1,7 @@
 import os
 import shlex
 import subprocess
+from pathlib import Path
 
 from .utils import fastq_to_csv
 
@@ -9,9 +10,10 @@ def extract(sample, fastq, sourcedir, error_rate, threads, barcode_length,
             upstream_adapter, downstream_adapter, unlinked_adapters, quality,
             **kwargs):
 
-    barcode_fastq = '{}.barcode.fastq'.format(sample)
-    input_file = os.path.join('../', sourcedir, fastq)
-    filtered_barcode_fastq = '{}.barcode.q{}.fastq'.format(sample, quality)
+    pipeline = Path('pipeline')
+    barcode_fastq = pipeline / f'{sample}.barcode.fastq'
+    input_file = fastq
+    filtered_barcode_fastq = pipeline / f'{sample}.barcode.q{quality}.fastq' 
 
     if unlinked_adapters:
         adapter_string = '-g {} -a {}'.format(upstream_adapter,
@@ -20,7 +22,7 @@ def extract(sample, fastq, sourcedir, error_rate, threads, barcode_length,
         adapter_string = '-g {}...{}'.format(upstream_adapter,
                                              downstream_adapter)
 
-    if not os.path.isfile(filtered_barcode_fastq):
+    if not filtered_barcode_fastq.is_file():
 
         print('performing extraction on sample: {}'.format(sample))
 
@@ -35,8 +37,6 @@ def extract(sample, fastq, sourcedir, error_rate, threads, barcode_length,
 
         p = subprocess.run(args)
 
-        filtered_barcode_fastq = '{}.barcode.q{}.fastq'.format(sample, quality)
-
         command = 'fastq_quality_filter -q {quality} -p 100 -i {barcode_fastq} -o {filtered_barcode_fastq} -Q 33'.format(
             quality=quality,
             barcode_fastq=barcode_fastq,
@@ -45,16 +45,17 @@ def extract(sample, fastq, sourcedir, error_rate, threads, barcode_length,
         args = shlex.split(command)
 
         p = subprocess.run(args)
-
-        os.remove(barcode_fastq)
+        
+        barcode_fastq.unlink()
 
     else:
         print('using extracted barcode fastq from pipeline for sample: {}'.
               format(sample))
 
-    barcodes_out = '{}.barcodes.q{}.tsv'.format(sample, quality)
 
-    if not os.path.isfile(barcodes_out):
+    barcodes_out = pipeline / f'{sample}.barcodes.q{quality}.tsv'
+
+    if not barcodes_out.is_file():
         fastq_to_csv(filtered_barcode_fastq, barcodes_out)
     else:
         print(
