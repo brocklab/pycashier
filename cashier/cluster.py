@@ -10,11 +10,11 @@ def cluster(sample, ratio, distance, quality, threads, **kwargs):
     pipeline = Path('pipeline')
 
     extracted_csv = pipeline / f'{sample}.barcodes.q{quality}.tsv'
-    
+
     input_file = extract_csv_column(extracted_csv, 2)
 
-    output_file = pipeline / '{}.barcodes.q{}.r{}d{}.tsv'.format(sample, quality, ratio,
-                                                      distance)
+    output_file = pipeline / '{}.barcodes.q{}.r{}d{}.tsv'.format(
+        sample, quality, ratio, distance)
 
     if not output_file.is_file():
 

@@ -13,7 +13,7 @@ def extract(sample, fastq, sourcedir, error_rate, threads, barcode_length,
     pipeline = Path('pipeline')
     barcode_fastq = pipeline / f'{sample}.barcode.fastq'
     input_file = fastq
-    filtered_barcode_fastq = pipeline / f'{sample}.barcode.q{quality}.fastq' 
+    filtered_barcode_fastq = pipeline / f'{sample}.barcode.q{quality}.fastq'
 
     if unlinked_adapters:
         adapter_string = '-g {} -a {}'.format(upstream_adapter,
@@ -45,13 +45,12 @@ def extract(sample, fastq, sourcedir, error_rate, threads, barcode_length,
         args = shlex.split(command)
 
         p = subprocess.run(args)
-        
+
         barcode_fastq.unlink()
 
     else:
         print('using extracted barcode fastq from pipeline for sample: {}'.
               format(sample))
-
 
     barcodes_out = pipeline / f'{sample}.barcodes.q{quality}.tsv'
 

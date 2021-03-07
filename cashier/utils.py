@@ -5,6 +5,7 @@ import tempfile
 import subprocess
 from pathlib import Path
 
+
 def convert_to_csv(in_file, out_file):
 
     for i, line in enumerate(in_file):

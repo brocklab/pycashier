@@ -32,7 +32,7 @@ def main():
     for f in fastqs:
 
         ext = f.suffix
-        
+
         if ext != '.fastq':
             print(
                 'ERROR! There is a non fastq file in the provided fastq directory: {}'

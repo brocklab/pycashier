@@ -35,7 +35,8 @@ def filter_by_count(file_in, filter_count):
 def read_filter(sample, filter_count, filter_percent, quality, ratio, distance,
                 **kwargs):
 
-    file_in = Path('pipeline') / f'{sample}.barcodes.q{quality}.r{ratio}d{distance}.tsv'
+    file_in = Path(
+        'pipeline') / f'{sample}.barcodes.q{quality}.r{ratio}d{distance}.tsv'
 
     if filter_count:
         print('\nremoving sequences with less than {} total occurences'.format(
