@@ -1,4 +1,3 @@
-import os
 import csv
 import pysam
 import tempfile
@@ -90,18 +89,18 @@ def sam_to_name_labeled_fastq(in_file, out_file):
 
     if new_sam == True:
         print('cleaning up temporary sam file')
-        os.remove(sam_file)
+        Path(sam_file).unlink()
 
 
 def labeled_fastq_to_tsv(in_file, out_file):
 
     print('transforming labeled barcode fastq into tsv')
 
-    out_file_path = os.path.join('..', 'outs', out_file)
-
     with open(in_file) as f_in:
-        with open(out_file_path, 'w') as f_out:
+
+        with open(out_file, 'w') as f_out:
             read_lines = []
+            # TODO: add progress bar
             for line in f_in.readlines():
                 read_lines.append(line)
                 if len(read_lines) == 4:
@@ -203,9 +202,9 @@ def fake_header_add(in_file):
 @SQ\tSN:GL000229.1\tLN:1000
 @SQ\tSN:GL000226.1\tLN:1000
 '''
-    # TODO: change wo with statement
-    f = tempfile.NamedTemporaryFile(delete=False, dir=os.getcwd())
-    print('copying new to sam to {}'.format(f.name))
+    # TODO: change to with statement
+    f = tempfile.NamedTemporaryFile(delete=False, dir=Path.cwd())
+    print('copying new tmp sam to {}'.format(f.name))
     f.write((bytes(fake_header, encoding='utf-8')))
     f.flush()
 

@@ -1,7 +1,7 @@
 import sys
-import os
 import shlex
 import subprocess
+from pathlib import Path
 
 from .utils import sam_to_name_labeled_fastq, labeled_fastq_to_tsv
 
@@ -16,17 +16,20 @@ def single_cell_process(sample, f, sourcedir, cli_args):
     downstream_adapter = cli_args['extract']['downstream_adapter']
     adapter_string = '-g {} -a {}'.format(upstream_adapter, downstream_adapter)
 
-    input_file = os.path.join('../', sourcedir, f)
-    fastq_out = "{}.cell_record_labeled.fastq".format(sample)
-    output_file = "{}.cell_record_labeled.barcode.fastq".format(sample)
-    tsv_out = '{}.cell_record_labeled.barcode.tsv'.format(sample)
+    input_file = f
+    pipeline_dir = Path('pipeline')
+    fastq_out = pipeline_dir / "{}.cell_record_labeled.fastq".format(sample)
+    output_file = pipeline_dir / "{}.cell_record_labeled.barcode.fastq".format(
+        sample)
+    tsv_out = Path('outs') / '{}.cell_record_labeled.barcode.tsv'.format(
+        sample)
 
-    if not os.path.isfile(fastq_out):
+    if not fastq_out.is_file():
         sam_to_name_labeled_fastq(input_file, fastq_out)
     else:
         print("using the fastq found in pipeline directory")
 
-    if not os.path.isfile(output_file):
+    if not output_file.is_file():
 
         print('Performing extraction on sample: {}'.format(sample))
 
@@ -42,7 +45,7 @@ def single_cell_process(sample, f, sourcedir, cli_args):
 
         p = subprocess.run(args)
 
-    if not os.path.isfile(tsv_out):
+    if not tsv_out.is_file():
         labeled_fastq_to_tsv(output_file, tsv_out)
     else:
         print(
@@ -54,11 +57,11 @@ def single_cell_process(sample, f, sourcedir, cli_args):
 
 def single_cell(sourcedir, cli_args):
 
-    sam_files = []
+    sam_files = [f for f in sourcedir.iterdir()]
 
-    for f in os.listdir(sourcedir):
+    for f in sam_files:
 
-        ext = os.path.splitext(f)[-1].lower()
+        ext = f.suffix
 
         if ext != '.sam':
             print(
@@ -68,13 +71,9 @@ def single_cell(sourcedir, cli_args):
             print('Exiting.')
             exit()
 
-        sam_files.append(f)
-
-    os.chdir('pipeline')
-
     for f in sam_files:
 
-        sample = os.path.basename(os.path.join(sourcedir, f)).split('.')[0]
+        sample = f.name.split('.')[0]
 
         single_cell_process(sample, f, sourcedir, cli_args)
 

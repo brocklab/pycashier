@@ -1,4 +1,3 @@
-import os
 import shlex
 import subprocess
 from pathlib import Path

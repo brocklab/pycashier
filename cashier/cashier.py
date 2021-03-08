@@ -1,4 +1,3 @@
-import os
 import re
 from pathlib import Path
 
@@ -40,7 +39,6 @@ def main():
             print('Exiting.')
             exit()
 
-    #for child in sourcedir.iterdir(): print(child)
     print(
         'performing barcode extraction and clustering for {} samples\n'.format(
             len(fastqs)))
