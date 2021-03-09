@@ -13,7 +13,7 @@ def convert_to_csv(in_file, out_file):
             continue
         seq_id = line.strip()
         sequence = in_file[i + 1].strip()
-        out_file.write(u'{}\t{}\n'.format(seq_id, sequence))
+        out_file.write(f'{seq_id}\t{sequence}\n')
 
 
 def fastq_to_csv(in_file, out_file):
@@ -32,7 +32,7 @@ def extract_csv_column(csv_file, column):
         with open(tmp_out, 'w') as csv_out:
             for line in csv_in:
                 linesplit = line.split('\t')
-                csv_out.write(u'{}'.format(linesplit[column - 1]))
+                csv_out.write(f'{linesplit[column-1]}')
 
     return tmp_out
 
@@ -53,7 +53,7 @@ def sam_to_name_labeled_fastq(in_file, out_file):
     else:
         sam_file = in_file
 
-    print('sam file is {}'.format(sam_file))
+    print(f'sam file is {sam_file}')
 
     sam = pysam.AlignmentFile(sam_file, 'r', check_sq=False)
     print('converting sam to fastq')
@@ -82,10 +82,8 @@ def sam_to_name_labeled_fastq(in_file, out_file):
                 qualities = record.query_qualities
                 ascii_qualities = ''.join([chr(q + 33) for q in qualities])
 
-                f_out.write("@{}_{}_{}\n".format(record.query_name, umi,
-                                                 cell_barcode))
-                f_out.write("{}\n+\n{}\n".format(record.query_sequence,
-                                                 ascii_qualities))
+                f_out.write(f"@{record.query_name}_{umi}_{cell_barcode}\n")
+                f_out.write("{record.query_sequence}\n+\n{ascii_qualities}\n")
 
     if new_sam == True:
         print('cleaning up temporary sam file')
@@ -109,8 +107,9 @@ def labeled_fastq_to_tsv(in_file, out_file):
                         '\n').split('_')
                     lineage_barcode = read_lines[1].rstrip('\n')
 
-                    f_out.write(u"{}\t{}\t{}\t{}\n".format(
-                        read_name, umi, cell_barcode, lineage_barcode))
+                    f_out.write(
+                        f"{read_name}\t{umi}\t{cell_barcode}\t{lineage_barcode}\n"
+                    )
                     read_lines = []
 
 
@@ -204,7 +203,7 @@ def fake_header_add(in_file):
 '''
     # TODO: change to with statement
     f = tempfile.NamedTemporaryFile(delete=False, dir=Path.cwd())
-    print('copying new tmp sam to {}'.format(f.name))
+    print(f'copying new tmp sam to {f.name}')
     f.write((bytes(fake_header, encoding='utf-8')))
     f.flush()
 

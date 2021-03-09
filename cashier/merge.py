@@ -8,7 +8,7 @@ def merge_single(sample, fastqs, sourcedir, threads, **kwargs):
     keep_output = kwargs['keep_output']
     pear_args = kwargs['pear_args']
 
-    print("Beginning work with sample: {}".format(sample))
+    print(f"Beginning work with sample: {sample}")
 
     for f in fastqs:
 
@@ -26,16 +26,16 @@ def merge_single(sample, fastqs, sourcedir, threads, **kwargs):
         print("oops I didnt find an R1 or R2 file")
         exit()
     mergedfastq = Path('mergedfastqs')
-    merged_barcode_fastq = mergedfastq / '{}.merged.raw.fastq'.format(sample)
+    merged_barcode_fastq = mergedfastq / f'{sample}.merged.raw.fastq'
     merged_barcode_file_prefix = Path('pipeline') / Path(
-        '{}.merged.raw'.format(sample))
+        f'{sample}.merged.raw')
     #! what happens if i specify the prefix with a path?
 
     files = [R1_file, R2_file]
 
     if not merged_barcode_fastq.is_file():
 
-        print('Performing fastq merge on sample: {}\n'.format(sample))
+        print(f'Performing fastq merge on sample: {sample}\n')
         #future implementations may use a python based extraction (using gzip)
 
         print('Extracting and moving fastqs')
@@ -43,7 +43,7 @@ def merge_single(sample, fastqs, sourcedir, threads, **kwargs):
         path_to_r1 = sourcedir / R1_file
         path_to_r2 = sourcedir / R2_file
 
-        command = "gunzip -k {} {}".format(path_to_r1, path_to_r2)
+        command = f"gunzip -k {path_to_r1} {path_to_r2}"
         args = shlex.split(command)
         p = subprocess.run(args)
 
@@ -57,9 +57,7 @@ def merge_single(sample, fastqs, sourcedir, threads, **kwargs):
 
         print('Merging fastqs')
 
-        command = 'pear -f {} -r {} -o {} -j {} {}'.format(
-            path_to_r1, path_to_r2, merged_barcode_file_prefix, threads,
-            pear_args)
+        command = f'pear -f {path_to_r1} -r {path_to_r2} -o {merged_barcode_file_prefix} -j {threads} {pear_args}'
         args = shlex.split(command)
         p = subprocess.run(args)
 
@@ -69,7 +67,7 @@ def merge_single(sample, fastqs, sourcedir, threads, **kwargs):
                     'discarded.fastq', 'unassembled.forward.fastq',
                     'unassembled.reverse.fastq'
             ]:
-                file = Path('{}.{}'.format(merged_barcode_file_prefix, suffix))
+                file = Path(f'{merged_barcode_file_prefix}.{suffix}')
                 file.unlink(file)
 
         merged_barcode_file_prefix.with_suffix(
@@ -77,7 +75,7 @@ def merge_single(sample, fastqs, sourcedir, threads, **kwargs):
             '.assembled.fastq').rename(merged_barcode_fastq)
 
     else:
-        print('Found merged barcode fastq for sample:{}'.format(sample))
+        print(f'Found merged barcode fastq for sample:{sampl}')
 
 
 def merge(fastqs, sourcedir, cli_args):
@@ -93,7 +91,7 @@ def merge(fastqs, sourcedir, cli_args):
             samples.append(m.group(1))
         else:
             #TODO: make value error?
-            print('Failed to obtain sample name from {}'.format(f))
+            print(f'Failed to obtain sample name from {f}')
             exit()
 
     print('Found the following samples:')

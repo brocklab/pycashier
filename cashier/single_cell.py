@@ -7,22 +7,20 @@ from .utils import sam_to_name_labeled_fastq, labeled_fastq_to_tsv
 
 
 def single_cell_process(sample, f, sourcedir, cli_args):
-    print('performing barcode extraction on sample: {}'.format(sample))
+    print(f'performing barcode extraction on sample: {sample}')
 
     error_rate = cli_args['extract']['error_rate']
     threads = cli_args['main']['threads']
     barcode_length = cli_args['extract']['barcode_length']
     upstream_adapter = cli_args['extract']['upstream_adapter']
     downstream_adapter = cli_args['extract']['downstream_adapter']
-    adapter_string = '-g {} -a {}'.format(upstream_adapter, downstream_adapter)
+    adapter_string = f'-g {upstream_adapter} -a {downstream_adapter}'
 
     input_file = f
     pipeline_dir = Path('pipeline')
-    fastq_out = pipeline_dir / "{}.cell_record_labeled.fastq".format(sample)
-    output_file = pipeline_dir / "{}.cell_record_labeled.barcode.fastq".format(
-        sample)
-    tsv_out = Path('outs') / '{}.cell_record_labeled.barcode.tsv'.format(
-        sample)
+    fastq_out = pipeline_dir / f"{sample}.cell_record_labeled.fastq"
+    output_file = pipeline_dir / f"{sample}.cell_record_labeled.barcode.fastq"
+    tsv_out = Path('outs') / f'{sample}.cell_record_labeled.barcode.tsv'
 
     if not fastq_out.is_file():
         sam_to_name_labeled_fastq(input_file, fastq_out)
@@ -31,16 +29,9 @@ def single_cell_process(sample, f, sourcedir, cli_args):
 
     if not output_file.is_file():
 
-        print('Performing extraction on sample: {}'.format(sample))
+        print(f'Performing extraction on sample: {sample}')
 
-        command = 'cutadapt -e {error_rate} -j {threads} --minimum-length={barcode_length_min} --maximum-length={barcode_length} --max-n=0 --trimmed-only {adapter_string} -n 2 -o {output_file} {input_file}'.format(
-            error_rate=error_rate,
-            threads=threads,
-            barcode_length_min=10,
-            barcode_length=barcode_length,
-            adapter_string=adapter_string,
-            output_file=output_file,
-            input_file=fastq_out)
+        command = f'cutadapt -e {error_rate} -j {threads} --minimum-length={barcode_length_min} --maximum-length={barcode_length} --max-n=0 --trimmed-only {adapter_string} -n 2 -o {output_file} {input_file}'
         args = shlex.split(command)
 
         p = subprocess.run(args)
@@ -49,10 +40,10 @@ def single_cell_process(sample, f, sourcedir, cli_args):
         labeled_fastq_to_tsv(output_file, tsv_out)
     else:
         print(
-            'Found an extracted and record labeled barcode tsv for sample: {}'.
-            format(sample))
+            f'Found an extracted and record labeled barcode tsv for sample: {sample}'
+        )
 
-    print('Completed barcode extraction for sample: {}'.format(sample))
+    print(f'Completed barcode extraction for sample: {sample}')
 
 
 def single_cell(sourcedir, cli_args):
@@ -65,8 +56,8 @@ def single_cell(sourcedir, cli_args):
 
         if ext != '.sam':
             print(
-                'ERROR! There is a non sam file in the provided input directory: {}'
-                .format(f))
+                f'ERROR! There is a non sam file in the provided input directory: {f}'
+            )
             print('Please convert all bam files using samtools view first')
             print('Exiting.')
             exit()

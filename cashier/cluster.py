@@ -12,17 +12,11 @@ def cluster(sample, ratio, distance, quality, threads, **kwargs):
 
     input_file = extract_csv_column(extracted_csv, 2)
 
-    output_file = pipeline / '{}.barcodes.q{}.r{}d{}.tsv'.format(
-        sample, quality, ratio, distance)
+    output_file = pipeline / f'{sample}.barcodes.q{quality}.r{ratio}d{distance}.tsv'
 
     if not output_file.is_file():
 
-        command = 'starcode -d {distance} -r {ratio} -t {threads} -i {input_file} -o {output_file}'.format(
-            distance=distance,
-            ratio=ratio,
-            threads=threads,
-            input_file=input_file,
-            output_file=output_file)
+        command = f'starcode -d {distance} -r {ratio} -t {threads} -i {input_file} -o {output_file}'
 
         args = shlex.split(command)
 
@@ -30,6 +24,6 @@ def cluster(sample, ratio, distance, quality, threads, **kwargs):
 
         print('clustering complete\n\n')
     else:
-        print('Found clustered reads for sample: {}\n'.format(sample))
+        print(f'Found clustered reads for sample: {sample}\n')
 
-    print('clustering for {} complete'.format(sample))
+    print(f'clustering for {sample} complete')

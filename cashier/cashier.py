@@ -34,14 +34,14 @@ def main():
 
         if ext != '.fastq':
             print(
-                'ERROR! There is a non fastq file in the provided fastq directory: {}'
-                .format(f))
+                f'ERROR! There is a non fastq file in the provided fastq directory: {f}'
+            )
             print('Exiting.')
             exit()
 
     print(
-        'performing barcode extraction and clustering for {} samples\n'.format(
-            len(fastqs)))
+        f'performing barcode extraction and clustering for {len(fastqs)} samples\n'
+    )
 
     for fastq in fastqs:
 
@@ -56,7 +56,7 @@ def main():
         read_filter(sample, **cli_args['main'], **cli_args['filter'],
                     **cli_args['cluster'])
 
-        print('completed processsing for sample: {}\n\n'.format(sample))
+        print(f'completed processsing for sample: {sample}\n\n')
 
 
 if __name__ == '__main__':
