@@ -15,23 +15,29 @@ Like it's predecessor it is a wrapper for the tools cutadapt, fastx-toolkit, and
 - pear
 - pysam
 
-## Recommended Installation Procedure
+## Recommended Installation Procedure 
+It's recommended to use [conda](https://docs.conda.io/en/latest/) to install and manage the dependencies for this package 
+
+```bash
+wget https://raw.githubusercontent.com/DaylinMorgan/pycashier/main/enviroment.yml
+conda env create -f environment.yml
+```
+
+Additionally you may clone the repo and install with pip. Though it will be up to you to ensure all the non-python dependencies are on the path and installed correctly. 
 
 ```bash
 git clone https://github.com/DaylinMorgan/pycashier.git
 cd pycashier
-conda env create -f cashier_env.yml
-conda activate cashier_env
+pip install -r requirements.txt 
 pip install .
 ```
-
-Note: Conda is not required and all packages may be installed individually so long as they are on the path.
 
 ## Usage
 
 Pycashier has one required argument which is the directory containing the fastq or sam files you wish to process.
 
 ```bash
+conda activate cashier_env
 cashier ./fastqs
 ```
 For additional parameters see `cashier -h`.
