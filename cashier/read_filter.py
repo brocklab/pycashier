@@ -2,8 +2,7 @@ import csv
 from pathlib import Path
 
 
-def filter_by_percent(file_in, filter_percent):
-
+def get_filter_count(file_in, filter_percent):
     total_reads = 0
 
     with open(file_in, newline='') as csvfile:
@@ -13,7 +12,11 @@ def filter_by_percent(file_in, filter_percent):
 
     filter_count = int(round(total_reads * filter_percent / 100, 0))
 
-    filter_by_count(file_in, filter_count)
+    return filter_count
+
+def filter_by_percent(file_in, filter_percent):
+
+    filter_by_count(file_in, get_filter_count(file_in,filter_percent))
 
 
 def filter_by_count(file_in, filter_count):
