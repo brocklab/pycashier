@@ -1,5 +1,16 @@
 import argparse
+import csv
+import re
+import sys
+from pathlib import Path
 
+from rich import box
+from rich.console import Console
+from rich.table import Table
+
+from .read_filter import get_filter_count
+
+console = Console(width = 80)
 
 def get_args():
     parser = argparse.ArgumentParser(
@@ -148,3 +159,160 @@ def get_args():
         },
         'single_cell': args.single_cell
     }
+
+def make_pre_run_table(samples, args):
+    console = Console()
+    table = Table(title="[yellow]Samples Queued For Processing",
+                  box=box.HORIZONTALS,
+                  header_style="bold bright_blue",
+                      min_width=80)
+    table.add_column("Sample", justify="center", style="green", no_wrap=True,)
+    table.add_column(f"Read Quality\n(Phred Score)\n {args['quality']} ",
+                     justify="center")
+    table.add_column(
+        f"Clustering\n(ratio, distance)\n {args['ratio']}, {args['distance']}",
+        justify='center')
+    if 'filter_percent' in args.keys():
+        table.add_column(f"Filter Cutoff\n(min %)\n {args['filter_percent']} %",justify='center')
+    else:
+        table.add_column(f"Filter Cutoff\n(min reads)\n {args['filter_count']}", justify='center')
+    table.add_column('Processed?', justify='center')
+
+    files = sorted([f.name for f in Path('outs').iterdir()])
+    for sample in samples:
+        table.add_row(*check_pipeline_outs(sample, args))
+    console.print(table)
+
+    
+def check_pipeline_outs(sample, args):
+    row_list = [sample]
+    matches = {'quality': set(), 'ratio': set(), 'distance': set()}
+    p1 = re.compile(
+        fr'{sample}\.barcodes\.q{args["quality"]}.r{args["ratio"]}d{args["distance"]}\.tsv'
+    )
+    p2 = re.compile(fr'{sample}\.barcodes\.q{args["quality"]}\.tsv')
+    p3 = re.compile(
+       fr'{sample}\.barcodes\.q{args["quality"]}.r{args["ratio"]}d{args["distance"]}\.min(?P<filter_count>\d+)\.tsv'
+    )
+    # try:
+    filters = []
+    for file in Path('pipeline').iterdir():
+        m = p1.search(file.name)
+        
+        if m:
+            row_list += ["[bold green]\u2713"] * 2
+
+            filters = []
+            for file2 in sorted([f.name for f in Path('outs').iterdir()]):
+                
+                m = p3.search(file2)
+                if m:
+                    if 'filter_percent' in args.keys():
+                        filter_count_check = get_filter_count(file,args['filter_percent'])
+                    else:
+                        filter_count_check = args['filter_count']
+
+                    if str(filter_count_check) == m.group('filter_count'):
+                        filters.append(f"[green]{m.group('filter_count')}[/green]")
+                    else:
+                        filters.append(m.group('filter_count'))
+            
+            if filters: row_list.append(', '.join(filters))
+
+            break
+    if row_list == [sample]:
+        for file in Path('pipeline').iterdir():
+            m = p2.search(file.name)
+            if m:
+                row_list += [':heavy_check_mark:']
+                
+
+    while len(row_list) < 4:
+        row_list += ['[yellow]Queued']
+    
+    if r'[green]' in ''.join(filters):
+        row_list.append("[bold green]\u2713")
+    else:
+        row_list.append('[bold red] Incomplete')
+    return row_list
+
+
+def get_params(f):
+    p = re.compile(
+        r'(?P<sample>\w+)\.barcodes\.q(?P<quality>\d\d).r(?P<ratio>\d+)d(?P<distance>\d+)\.min(?P<filter_count>\d+)\.tsv'
+    )
+    m = p.search(f)
+    if m:
+        return m.groupdict()
+    else:
+
+        raise ValueError(f"Unexpected file in outs directory:{f}")
+
+
+def check_outs(samples, files):
+    table_rows = []
+
+    for f in files:
+        params = get_params(f)
+        if params['sample'] not in samples:
+            table_rows.append([
+                params['sample'], params['quality'],
+                f"{params['ratio']}, {params['distance']}",
+                params['filter_count']
+            ])
+    if table_rows:
+        console = Console()
+        table = Table(title="Additional Samples Found in Outs Directory",
+                      box=box.HORIZONTALS,
+                      header_style="bold bright_blue",
+                      min_width=70)
+        table.add_column("Sample",
+                         justify="center",
+                         style="green",
+                         no_wrap=True)
+        table.add_column("Read Quality\n(Phred Score)", justify="center")
+        table.add_column('Clustering\n(ratio,distance)', justify='center')
+        table.add_column('Filter Cutoff\n(min reads)', justify='center')
+        for row in table_rows:
+            table.add_row(*row)
+        console.print(table)
+
+
+def sample_check(sourcedir, fastqs, cli_args):
+
+    args = {
+        'quality': cli_args['main']['quality'],
+        'ratio': cli_args['cluster']['ratio'],
+        'distance': cli_args['cluster']['distance'],
+        'filter_percent': cli_args['filter']['filter_percent'],
+        'filter_count':cli_args['filter']['filter_count'],
+    }
+
+    samples = [f.name.split('.')[0] for f in fastqs]
+    outs_files = sorted([f.name for f in Path('outs').iterdir()])
+
+    # check_outs(samples, outs_files)
+    console.rule()
+    console.rule('Barcode Extraction with CASHIER')
+    console.rule()
+    
+    make_pre_run_table(samples, args)
+
+    if not ask_user('Do you want to continue?'):
+        print('goodbye')
+        sys.exit()
+
+def ask_user(question):
+    check = str(input(f"{question} (Y/n): ")).lower().strip()
+    try:
+        if check[:1] == 'y':
+            return True
+        elif check[:1] == 'n':
+            return False
+        else:
+            print('Invalid Input')
+            return ask_user(question)
+    except Exception as error:
+        print("Please enter valid inputs")
+        print(error)
+        return ask_user(question)

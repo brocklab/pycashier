@@ -1,7 +1,7 @@
 import re
 from pathlib import Path
 
-from .cli import get_args
+from .cli import ask_user, get_args, sample_check
 from .cluster import cluster
 from .extract import extract
 from .merge import merge
@@ -17,8 +17,7 @@ def main():
 
     fastqs = [f for f in sourcedir.iterdir()]
 
-    Path('pipeline').mkdir(exist_ok=True)
-    Path('outs').mkdir(exist_ok=True)
+ 
 
     if cli_args['single_cell']:
 
@@ -39,9 +38,11 @@ def main():
             print('Exiting.')
             exit()
 
-    print(
-        f'performing barcode extraction and clustering for {len(fastqs)} samples\n'
-    )
+    Path('pipeline').mkdir(exist_ok=True)
+    Path('outs').mkdir(exist_ok=True)
+    
+    sample_check(sourcedir,fastqs,cli_args)
+
 
     for fastq in fastqs:
 
