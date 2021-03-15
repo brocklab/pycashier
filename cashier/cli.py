@@ -7,6 +7,7 @@ from pathlib import Path
 from rich import box
 from rich.console import Console
 from rich.table import Table
+from rich.prompt import Confirm
 
 from .read_filter import get_filter_count
 
@@ -314,22 +315,6 @@ def sample_check(sourcedir, fastqs, cli_args):
 
     make_pre_run_table(samples, args)
 
-    if not ask_user('Do you want to continue?'):
-        print('goodbye')
+
+    if not Confirm.ask('Continue with these samples?'):
         sys.exit()
-
-
-def ask_user(question):
-    check = str(input(f"{question} (Y/n): ")).lower().strip()
-    try:
-        if check[:1] == 'y':
-            return True
-        elif check[:1] == 'n':
-            return False
-        else:
-            print('Invalid Input')
-            return ask_user(question)
-    except Exception as error:
-        print("Please enter valid inputs")
-        print(error)
-        return ask_user(question)

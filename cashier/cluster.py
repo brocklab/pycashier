@@ -17,7 +17,7 @@ def cluster(sample, ratio, distance, quality, threads, **kwargs):
     if not output_file.is_file():
 
         command = f'starcode -d {distance} -r {ratio} -t {threads} -i {input_file} -o {output_file}'
-        print(sample)
+
         args = shlex.split(command)
 
         if not kwargs['verbose']:

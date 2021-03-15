@@ -1,7 +1,7 @@
 import re
 from pathlib import Path
 
-from .cli import ask_user, get_args, sample_check
+from .cli import get_args, sample_check
 from .cluster import cluster
 from .extract import extract
 from .merge import merge
