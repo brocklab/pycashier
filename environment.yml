@@ -5,6 +5,7 @@ dependencies:
   - fastx_toolkit
   - pear
   - pysam
+  - rich
   - pip
   - pip:
     - git+https://github.com/DaylinMorgan/pycashier/
