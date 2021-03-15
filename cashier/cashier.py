@@ -1,7 +1,7 @@
 import re
 from pathlib import Path
 
-from .cli import get_args, sample_check
+from .cli import console, get_args, sample_check
 from .cluster import cluster
 from .extract import extract
 from .merge import merge
@@ -43,19 +43,21 @@ def main():
 
     for fastq in fastqs:
 
-        #fastq should be file name of the fastqs.
-
         sample = fastq.name.split('.')[0]
 
-        extract(sample, fastq, **cli_args['main'], **cli_args['extract'])
+        with console.status(f"Processing sample: {sample}",spinner='bouncingBall'):
 
-        cluster(sample, **cli_args['main'], **cli_args['cluster'])
+            extract(sample, fastq, **cli_args['main'], **cli_args['extract'])
 
-        read_filter(sample, **cli_args['main'], **cli_args['filter'],
-                    **cli_args['cluster'])
+            cluster(sample, **cli_args['main'], **cli_args['cluster'])
 
-        print(f'completed processsing for sample: {sample}\n\n')
+            read_filter(sample, **cli_args['main'], **cli_args['filter'],
+                        **cli_args['cluster'])
 
+        # print(f'completed processsing for sample: {sample}\n\n')
+        console.log(f'Procressing for {sample} has completed')
+    
+    print('\nfinished')
 
 if __name__ == '__main__':
     main()

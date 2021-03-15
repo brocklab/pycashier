@@ -20,14 +20,9 @@ def cluster(sample, ratio, distance, quality, threads, **kwargs):
 
         args = shlex.split(command)
 
-        if not kwargs['verbose']:
-            stdout = subprocess.PIPE
-            stderr = subprocess.PIPE
-        else:
-            stdout = None
-            stderr = None
-
-        p = subprocess.run(args, stdout=stdout, stderr=stderr)
+        p = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+        if kwargs['verbose']:
+            print(p.stdout)
 
         print('clustering complete\n\n')
     else:
