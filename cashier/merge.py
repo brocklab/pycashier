@@ -37,7 +37,7 @@ def merge_single(sample, fastqs, sourcedir, threads, **kwargs):
 
         print(f'Performing fastq merge on sample: {sample}\n')
         #future implementations may use a python based extraction (using gzip)
-
+        # TODO: Make fastq extraction conditional
         print('Extracting and moving fastqs')
 
         path_to_r1 = sourcedir / R1_file
