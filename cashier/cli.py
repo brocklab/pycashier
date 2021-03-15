@@ -10,7 +10,8 @@ from rich.table import Table
 
 from .read_filter import get_filter_count
 
-console = Console(width = 80)
+console = Console(width=80)
+
 
 def get_args():
     parser = argparse.ArgumentParser(
@@ -32,12 +33,10 @@ def get_args():
         "--single_cell",
         help='turn unampped sam files into cell barcode & umi labeled tsv',
         action='store_true')
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        help='show output of command line calls',
-        action='store_true'
-    )
+    parser.add_argument("-v",
+                        "--verbose",
+                        help='show output of command line calls',
+                        action='store_true')
 
     #extract specific parameters
     extract_parser = parser.add_argument_group(title='extract options')
@@ -140,7 +139,7 @@ def get_args():
             'sourcedir': args.sourcedir,
             'threads': args.threads,
             'quality': args.quality,
-            'verbose':args.verbose
+            'verbose': args.verbose
         },
         'extract': {
             'error_rate': args.error,
@@ -167,22 +166,32 @@ def get_args():
         'single_cell': args.single_cell
     }
 
+
 def make_pre_run_table(samples, args):
     console = Console()
     table = Table(title="[yellow]Samples Queued For Processing",
                   box=box.HORIZONTALS,
                   header_style="bold bright_blue",
-                      min_width=80)
-    table.add_column("Sample", justify="center", style="green", no_wrap=True,)
+                  min_width=80)
+    table.add_column(
+        "Sample",
+        justify="center",
+        style="green",
+        no_wrap=True,
+    )
     table.add_column(f"Read Quality\n(Phred Score)\n {args['quality']} ",
                      justify="center")
     table.add_column(
         f"Clustering\n(ratio, distance)\n {args['ratio']}, {args['distance']}",
         justify='center')
     if 'filter_percent' in args.keys():
-        table.add_column(f"Filter Cutoff\n(min %)\n {args['filter_percent']} %",justify='center')
+        table.add_column(
+            f"Filter Cutoff\n(min %)\n {args['filter_percent']} %",
+            justify='center')
     else:
-        table.add_column(f"Filter Cutoff\n(min reads)\n {args['filter_count']}", justify='center')
+        table.add_column(
+            f"Filter Cutoff\n(min reads)\n {args['filter_count']}",
+            justify='center')
     table.add_column('Processed?', justify='center')
 
     files = sorted([f.name for f in Path('outs').iterdir()])
@@ -190,7 +199,7 @@ def make_pre_run_table(samples, args):
         table.add_row(*check_pipeline_outs(sample, args))
     console.print(table)
 
-    
+
 def check_pipeline_outs(sample, args):
     row_list = [sample]
     matches = {'quality': set(), 'ratio': set(), 'distance': set()}
@@ -199,31 +208,33 @@ def check_pipeline_outs(sample, args):
     )
     p2 = re.compile(fr'{sample}\.barcodes\.q{args["quality"]}\.tsv')
     p3 = re.compile(
-       fr'{sample}\.barcodes\.q{args["quality"]}.r{args["ratio"]}d{args["distance"]}\.min(?P<filter_count>\d+)\.tsv'
+        fr'{sample}\.barcodes\.q{args["quality"]}.r{args["ratio"]}d{args["distance"]}\.min(?P<filter_count>\d+)\.tsv'
     )
-    # try:
+
     filters = []
     for file in Path('pipeline').iterdir():
         m = p1.search(file.name)
-        
+
         if m:
             row_list += ["[bold green]\u2713"] * 2
 
             filters = []
             for file2 in sorted([f.name for f in Path('outs').iterdir()]):
-                
+
                 m = p3.search(file2)
                 if m:
                     if 'filter_percent' in args.keys():
-                        filter_count_check = get_filter_count(file,args['filter_percent'])
+                        filter_count_check = get_filter_count(
+                            file, args['filter_percent'])
                     else:
                         filter_count_check = args['filter_count']
 
                     if str(filter_count_check) == m.group('filter_count'):
-                        filters.append(f"[green]{m.group('filter_count')}[/green]")
+                        filters.append(
+                            f"[green]{m.group('filter_count')}[/green]")
                     else:
                         filters.append(m.group('filter_count'))
-            
+
             if filters: row_list.append(', '.join(filters))
 
             break
@@ -232,11 +243,10 @@ def check_pipeline_outs(sample, args):
             m = p2.search(file.name)
             if m:
                 row_list += [':heavy_check_mark:']
-                
 
     while len(row_list) < 4:
         row_list += ['[yellow]Queued']
-    
+
     if r'[green]' in ''.join(filters):
         row_list.append("[bold green]\u2713")
     else:
@@ -252,7 +262,6 @@ def get_params(f):
     if m:
         return m.groupdict()
     else:
-
         raise ValueError(f"Unexpected file in outs directory:{f}")
 
 
@@ -292,7 +301,7 @@ def sample_check(sourcedir, fastqs, cli_args):
         'ratio': cli_args['cluster']['ratio'],
         'distance': cli_args['cluster']['distance'],
         'filter_percent': cli_args['filter']['filter_percent'],
-        'filter_count':cli_args['filter']['filter_count'],
+        'filter_count': cli_args['filter']['filter_count'],
     }
 
     samples = [f.name.split('.')[0] for f in fastqs]
@@ -302,12 +311,13 @@ def sample_check(sourcedir, fastqs, cli_args):
     console.rule()
     console.rule('Barcode Extraction with CASHIER')
     console.rule()
-    
+
     make_pre_run_table(samples, args)
 
     if not ask_user('Do you want to continue?'):
         print('goodbye')
         sys.exit()
+
 
 def ask_user(question):
     check = str(input(f"{question} (Y/n): ")).lower().strip()

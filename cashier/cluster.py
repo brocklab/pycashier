@@ -27,7 +27,7 @@ def cluster(sample, ratio, distance, quality, threads, **kwargs):
             stdout = None
             stderr = None
 
-        p = subprocess.run(args,stdout=stdout,stderr=stderr)
+        p = subprocess.run(args, stdout=stdout, stderr=stderr)
 
         print('clustering complete\n\n')
     else:

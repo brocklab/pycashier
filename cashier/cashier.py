@@ -17,8 +17,6 @@ def main():
 
     fastqs = [f for f in sourcedir.iterdir()]
 
- 
-
     if cli_args['single_cell']:
 
         single_cell(sourcedir, cli_args)
@@ -40,9 +38,8 @@ def main():
 
     Path('pipeline').mkdir(exist_ok=True)
     Path('outs').mkdir(exist_ok=True)
-    
-    sample_check(sourcedir,fastqs,cli_args)
 
+    sample_check(sourcedir, fastqs, cli_args)
 
     for fastq in fastqs:
 

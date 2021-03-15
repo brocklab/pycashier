@@ -14,9 +14,10 @@ def get_filter_count(file_in, filter_percent):
 
     return filter_count
 
+
 def filter_by_percent(file_in, filter_percent):
 
-    filter_by_count(file_in, get_filter_count(file_in,filter_percent))
+    filter_by_count(file_in, get_filter_count(file_in, filter_percent))
 
 
 def filter_by_count(file_in, filter_count):
