@@ -49,7 +49,7 @@ setup(
     long_description_content_type="text/markdown",
     author="Daylin Morgan",
     author_email="daylinmorgan@gmail.com",
-    download_url="http://github.com/DaylinMorgan/cashierpy/",
+    download_url="http://github.com/DaylinMorgan/pycashier/",
     license="BSD 3-clause",
     #packages=find_packages(),
     packages=['cashier'],
