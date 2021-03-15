@@ -17,10 +17,17 @@ def cluster(sample, ratio, distance, quality, threads, **kwargs):
     if not output_file.is_file():
 
         command = f'starcode -d {distance} -r {ratio} -t {threads} -i {input_file} -o {output_file}'
-
+        print(sample)
         args = shlex.split(command)
 
-        p = subprocess.run(args)
+        if not kwargs['verbose']:
+            stdout = subprocess.PIPE
+            stderr = subprocess.PIPE
+        else:
+            stdout = None
+            stderr = None
+
+        p = subprocess.run(args,stdout=stdout,stderr=stderr)
 
         print('clustering complete\n\n')
     else:

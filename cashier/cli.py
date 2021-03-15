@@ -32,6 +32,12 @@ def get_args():
         "--single_cell",
         help='turn unampped sam files into cell barcode & umi labeled tsv',
         action='store_true')
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        help='show output of command line calls',
+        action='store_true'
+    )
 
     #extract specific parameters
     extract_parser = parser.add_argument_group(title='extract options')
@@ -133,7 +139,8 @@ def get_args():
         'main': {
             'sourcedir': args.sourcedir,
             'threads': args.threads,
-            'quality': args.quality
+            'quality': args.quality,
+            'verbose':args.verbose
         },
         'extract': {
             'error_rate': args.error,
