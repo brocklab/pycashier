@@ -26,11 +26,14 @@ def extract(sample, fastq, sourcedir, error_rate, threads, barcode_length,
         command = f'cutadapt -e {error_rate} -j {threads} --minimum-length={barcode_length} --maximum-length={barcode_length} --max-n=0 --trimmed-only {adapter_string} -n 2 -o {barcode_fastq} {input_file}'
         args = shlex.split(command)
 
-        p = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+        p = subprocess.run(args,
+                           stdout=subprocess.PIPE,
+                           stderr=subprocess.STDOUT,
+                           universal_newlines=True)
 
         if kwargs['verbose']:
             print(p.stdout)
-        
+
         command = f'fastq_quality_filter -q {quality} -p 100 -i {barcode_fastq} -o {filtered_barcode_fastq} -Q 33'
 
         args = shlex.split(command)

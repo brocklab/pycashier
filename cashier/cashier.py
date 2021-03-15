@@ -39,13 +39,19 @@ def main():
     Path('pipeline').mkdir(exist_ok=True)
     Path('outs').mkdir(exist_ok=True)
 
-    sample_check(sourcedir, fastqs, cli_args)
+    processed_samples = sample_check(sourcedir, fastqs, cli_args)
 
     for fastq in fastqs:
 
         sample = fastq.name.split('.')[0]
 
-        with console.status(f"Processing sample: {sample}",spinner='bouncingBall'):
+        if sample in processed_samples:
+            console.log(f'Skipping Processing for [green]{sample}[/green]')
+            console.rule()
+            continue
+
+        with console.status(f"Processing sample: {sample}",
+                            spinner='bouncingBall'):
 
             extract(sample, fastq, **cli_args['main'], **cli_args['extract'])
 
@@ -57,7 +63,9 @@ def main():
         # print(f'completed processsing for sample: {sample}\n\n')
         console.log(f'Processing for [green]{sample}[/green] has completed')
         console.rule()
-    
-    console.print('[green]FINISHED!')
+
+    console.print('\n[green]FINISHED!')
+
+
 if __name__ == '__main__':
     main()

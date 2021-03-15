@@ -20,10 +20,13 @@ def cluster(sample, ratio, distance, quality, threads, **kwargs):
 
         args = shlex.split(command)
 
-        p = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+        p = subprocess.run(args,
+                           stdout=subprocess.PIPE,
+                           stderr=subprocess.STDOUT,
+                           universal_newlines=True)
         if kwargs['verbose']:
             print(p.stdout)
-            
+
     else:
         print(f'Found clustered reads for sample: {sample}\n')
 

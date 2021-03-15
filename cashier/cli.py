@@ -169,7 +169,7 @@ def get_args():
 
 
 def make_sample_check_table(samples, args):
-    console = Console()
+    processed_samples = []
     table = Table(title="[yellow]Samples Queued For Processing",
                   box=box.HORIZONTALS,
                   header_style="bold bright_blue",
@@ -196,9 +196,17 @@ def make_sample_check_table(samples, args):
     table.add_column('Processed?', justify='center')
 
     files = sorted([f.name for f in Path('outs').iterdir()])
+
     for sample in samples:
-        table.add_row(*check_pipeline_outs(sample, args))
+        row, processed = check_pipeline_outs(sample, args)
+
+        if processed:
+            processed_samples.append(sample)
+
+        table.add_row(*row)
+
     console.print(table)
+    return processed_samples
 
 
 def check_pipeline_outs(sample, args):
@@ -239,20 +247,57 @@ def check_pipeline_outs(sample, args):
             if filters: row_list.append(', '.join(filters))
 
             break
+
     if row_list == [sample]:
         for file in Path('pipeline').iterdir():
             m = p2.search(file.name)
             if m:
                 row_list += [':heavy_check_mark:']
 
-    while len(row_list) < 4:
-        row_list += ['[yellow]Queued']
+    row_list.extend(['[yellow]Queued'] * (4 - len(row_list)))
+
+    # while len(row_list) < 4:
+    #     row_list += ['[yellow]Queued']
 
     if r'[green]' in ''.join(filters):
         row_list.append("[bold green]\u2713")
+        processed = True
     else:
         row_list.append('[bold red] Incomplete')
-    return row_list
+        processed = False
+
+    return row_list, processed
+
+
+def sample_check(sourcedir, fastqs, cli_args):
+
+    args = {
+        'quality': cli_args['main']['quality'],
+        'ratio': cli_args['cluster']['ratio'],
+        'distance': cli_args['cluster']['distance'],
+        'filter_percent': cli_args['filter']['filter_percent'],
+        'filter_count': cli_args['filter']['filter_count'],
+    }
+
+    samples = [f.name.split('.')[0] for f in fastqs]
+    outs_files = sorted([f.name for f in Path('outs').iterdir()])
+
+    # check_outs(samples, outs_files)
+    console.rule()
+    console.rule('Barcode Extraction with CASHIER')
+    console.rule()
+
+    processed_samples = make_sample_check_table(samples, args)
+
+    if not Confirm.ask('Continue with these samples?'):
+        sys.exit()
+
+    return processed_samples
+
+
+####################################################
+#  functions to get additional samples found in outs
+####################################################
 
 
 def get_params(f):
@@ -293,28 +338,3 @@ def check_outs(samples, files):
         for row in table_rows:
             table.add_row(*row)
         console.print(table)
-
-
-def sample_check(sourcedir, fastqs, cli_args):
-
-    args = {
-        'quality': cli_args['main']['quality'],
-        'ratio': cli_args['cluster']['ratio'],
-        'distance': cli_args['cluster']['distance'],
-        'filter_percent': cli_args['filter']['filter_percent'],
-        'filter_count': cli_args['filter']['filter_count'],
-    }
-
-    samples = [f.name.split('.')[0] for f in fastqs]
-    outs_files = sorted([f.name for f in Path('outs').iterdir()])
-
-    # check_outs(samples, outs_files)
-    console.rule()
-    console.rule('Barcode Extraction with CASHIER')
-    console.rule()
-
-    make_sample_check_table(samples, args)
-
-
-    if not Confirm.ask('Continue with these samples?'):
-        sys.exit()
