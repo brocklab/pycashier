@@ -1,6 +1,8 @@
 import csv
 from pathlib import Path
 
+from .console import console
+
 
 def get_filter_count(file_in, filter_percent):
     total_reads = 0
@@ -42,13 +44,15 @@ def read_filter(sample, filter_count, filter_percent, quality, ratio, distance,
         'pipeline') / f'{sample}.barcodes.q{quality}.r{ratio}d{distance}.tsv'
 
     if filter_count:
-        print(
-            f'\nremoving sequences with less than {filter_count} total occurences'
+        console.log(
+            f'[green]{sample}[/green]: removing sequence with less than {filter_count} reads'
         )
+
         filter_by_count(file_in, filter_count)
 
     else:
-        print(
-            f'\nremoving sequences with less than {filter_percent}% of the total reads per sample'
+        console.log(
+            f'[green]{sample}[/green]: removing sequence with less than {filter_percent}% of total reads'
         )
+
         filter_by_percent(file_in, filter_percent)

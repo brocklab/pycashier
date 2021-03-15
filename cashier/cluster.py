@@ -2,6 +2,7 @@ import shlex
 import subprocess
 from pathlib import Path
 
+from .console import console
 from .utils import extract_csv_column
 
 
@@ -15,7 +16,7 @@ def cluster(sample, ratio, distance, quality, threads, **kwargs):
     output_file = pipeline / f'{sample}.barcodes.q{quality}.r{ratio}d{distance}.tsv'
 
     if not output_file.is_file():
-
+        console.log(f'[green]{sample}[/green]: clustering barcodes')
         command = f'starcode -d {distance} -r {ratio} -t {threads} -i {input_file} -o {output_file}'
 
         args = shlex.split(command)
@@ -27,7 +28,7 @@ def cluster(sample, ratio, distance, quality, threads, **kwargs):
         if kwargs['verbose']:
             print(p.stdout)
 
-    else:
-        print(f'Found clustered reads for sample: {sample}\n')
+        console.log(f'[green]{sample}[/green]: clustering complete')
 
-    print(f'clustering for {sample} complete')
+    else:
+        console.log(f'[green]{sample}[/green]: skipping clustering')

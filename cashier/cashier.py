@@ -1,8 +1,9 @@
 import re
 from pathlib import Path
 
-from .cli import console, get_args, sample_check
+from .cli import get_args, sample_check
 from .cluster import cluster
+from .console import console
 from .extract import extract
 from .merge import merge
 from .read_filter import read_filter
@@ -50,8 +51,8 @@ def main():
             console.rule()
             continue
 
-        with console.status(f"Processing sample: {sample}",
-                            spinner='bouncingBall'):
+        with console.status(f"Processing sample: [green]{sample}[/green]",
+                            spinner='dots12'):
 
             extract(sample, fastq, **cli_args['main'], **cli_args['extract'])
 
@@ -61,7 +62,7 @@ def main():
                         **cli_args['cluster'])
 
         # print(f'completed processsing for sample: {sample}\n\n')
-        console.log(f'Processing for [green]{sample}[/green] has completed')
+        console.log(f'[green]{sample}[/green]: processing completed')
         console.rule()
 
     console.print('\n[green]FINISHED!')

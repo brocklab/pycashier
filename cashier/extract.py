@@ -2,6 +2,7 @@ import shlex
 import subprocess
 from pathlib import Path
 
+from .console import console
 from .utils import fastq_to_csv
 
 
@@ -21,7 +22,8 @@ def extract(sample, fastq, sourcedir, error_rate, threads, barcode_length,
 
     if not filtered_barcode_fastq.is_file():
 
-        print(f'performing extraction on sample: {sample}')
+        console.log(
+            f'[green]{sample}[/green]: extracting and filtering barcodes')
 
         command = f'cutadapt -e {error_rate} -j {threads} --minimum-length={barcode_length} --maximum-length={barcode_length} --max-n=0 --trimmed-only {adapter_string} -n 2 -o {barcode_fastq} {input_file}'
         args = shlex.split(command)
@@ -42,16 +44,17 @@ def extract(sample, fastq, sourcedir, error_rate, threads, barcode_length,
 
         barcode_fastq.unlink()
 
+        console.log(
+            f'[green]{sample}[/green]: extraction and filtering complete')
+
     else:
-        print('using extracted barcode fastq from pipeline for sample: {}'.
-              format(sample))
+        console.log(f'[green]{sample}[/green]: skipping extraction')
 
     barcodes_out = pipeline / f'{sample}.barcodes.q{quality}.tsv'
 
     if not barcodes_out.is_file():
+        console.log(f'[green]{sample}[/green]: converting fastq to tsv')
         fastq_to_csv(filtered_barcode_fastq, barcodes_out)
     else:
-        print(
-            f'using extracted  barcode tsv from pipeline for sample: {sample}')
-
-    print('extraction complete!')
+        console.log(
+            f'[green]{sample}[/green]: skipping fastq to tsv conversion')

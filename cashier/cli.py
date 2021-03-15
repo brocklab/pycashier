@@ -5,13 +5,11 @@ import sys
 from pathlib import Path
 
 from rich import box
-from rich.console import Console
-from rich.table import Table
 from rich.prompt import Confirm
+from rich.table import Table
 
+from .console import console
 from .read_filter import get_filter_count
-
-console = Console(width=80)
 
 
 def get_args():
@@ -205,7 +203,8 @@ def make_sample_check_table(samples, args):
 
         table.add_row(*row)
 
-    console.print(table)
+    console.print(table, justify="center")
+    print()
     return processed_samples
 
 

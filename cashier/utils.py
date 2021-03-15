@@ -18,7 +18,6 @@ def convert_to_csv(in_file, out_file):
 
 def fastq_to_csv(in_file, out_file):
 
-    print('\ntransforming barcode fastq into tsv')
     with open(in_file) as f_in:
         with open(out_file, 'w') as f_out:
             convert_to_csv(f_in.readlines(), f_out)
@@ -91,8 +90,6 @@ def sam_to_name_labeled_fastq(in_file, out_file):
 
 
 def labeled_fastq_to_tsv(in_file, out_file):
-
-    print('transforming labeled barcode fastq into tsv')
 
     with open(in_file) as f_in:
 
