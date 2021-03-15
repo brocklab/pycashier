@@ -168,7 +168,7 @@ def get_args():
     }
 
 
-def make_pre_run_table(samples, args):
+def make_sample_check_table(samples, args):
     console = Console()
     table = Table(title="[yellow]Samples Queued For Processing",
                   box=box.HORIZONTALS,
@@ -313,7 +313,7 @@ def sample_check(sourcedir, fastqs, cli_args):
     console.rule('Barcode Extraction with CASHIER')
     console.rule()
 
-    make_pre_run_table(samples, args)
+    make_sample_check_table(samples, args)
 
 
     if not Confirm.ask('Continue with these samples?'):

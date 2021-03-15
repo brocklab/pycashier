@@ -55,9 +55,9 @@ def main():
                         **cli_args['cluster'])
 
         # print(f'completed processsing for sample: {sample}\n\n')
-        console.log(f'Procressing for {sample} has completed')
+        console.log(f'Processing for [green]{sample}[/green] has completed')
+        console.rule()
     
-    print('\nfinished')
-
+    console.print('[green]FINISHED!')
 if __name__ == '__main__':
     main()

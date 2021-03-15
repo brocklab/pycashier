@@ -23,8 +23,7 @@ def cluster(sample, ratio, distance, quality, threads, **kwargs):
         p = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
         if kwargs['verbose']:
             print(p.stdout)
-
-        print('clustering complete\n\n')
+            
     else:
         print(f'Found clustered reads for sample: {sample}\n')
 
