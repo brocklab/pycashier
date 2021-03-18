@@ -19,7 +19,7 @@ Like it's predecessor it is a wrapper for the tools cutadapt, fastx-toolkit, and
 It's recommended to use [conda](https://docs.conda.io/en/latest/) to install and manage the dependencies for this package 
 
 ```bash
-wget https://raw.githubusercontent.com/DaylinMorgan/pycashier/main/enviroment.yml
+wget https://raw.githubusercontent.com/DaylinMorgan/pycashier/main/environment.yml
 conda env create -f environment.yml
 ```
 
