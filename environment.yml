@@ -1,4 +1,8 @@
 name: cashier_env
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
 dependencies:
   - cutadapt
   - starcode
