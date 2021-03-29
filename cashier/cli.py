@@ -281,11 +281,7 @@ def sample_check(sourcedir, fastqs, cli_args):
     samples = [f.name.split('.')[0] for f in fastqs]
     outs_files = sorted([f.name for f in Path('outs').iterdir()])
 
-    # check_outs(samples, outs_files)
-    console.rule()
-    console.rule('Barcode Extraction with CASHIER')
-    console.rule()
-
+    # check_outs(samples, outs_files)\
     processed_samples = make_sample_check_table(samples, args)
 
     if not Confirm.ask('Continue with these samples?'):

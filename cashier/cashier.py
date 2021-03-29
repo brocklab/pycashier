@@ -13,10 +13,17 @@ from .single_cell import single_cell
 def main():
 
     cli_args = get_args()
+    
+    console.rule()
+    console.rule('Barcode Extraction with CASHIER')
+    console.rule()
 
     sourcedir = Path(cli_args['main']['sourcedir'])
 
     fastqs = [f for f in sourcedir.iterdir()]
+
+    Path('pipeline').mkdir(exist_ok=True)
+    Path('outs').mkdir(exist_ok=True)
 
     if cli_args['single_cell']:
 
@@ -36,9 +43,6 @@ def main():
             )
             print('Exiting.')
             exit()
-
-    Path('pipeline').mkdir(exist_ok=True)
-    Path('outs').mkdir(exist_ok=True)
 
     processed_samples = sample_check(sourcedir, fastqs, cli_args)
 
@@ -61,7 +65,6 @@ def main():
             read_filter(sample, **cli_args['main'], **cli_args['filter'],
                         **cli_args['cluster'])
 
-        # print(f'completed processsing for sample: {sample}\n\n')
         console.log(f'[green]{sample}[/green]: processing completed')
         console.rule()
 
