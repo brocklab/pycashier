@@ -26,7 +26,8 @@ def cluster(sample, ratio, distance, quality, threads, **kwargs):
                            stderr=subprocess.STDOUT,
                            universal_newlines=True)
         if kwargs['verbose']:
-            print(p.stdout)
+            console.print('[yellow]STARCODE OUTPUT:')
+            console.print(p.stdout)
 
         console.log(f'[green]{sample}[/green]: clustering complete')
 

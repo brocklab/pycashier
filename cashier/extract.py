@@ -34,7 +34,8 @@ def extract(sample, fastq, sourcedir, error_rate, threads, barcode_length,
                            universal_newlines=True)
 
         if kwargs['verbose']:
-            print(p.stdout)
+            console.print('[yellow]CUTADAPT OUTPUT:')
+            console.print(p.stdout)
 
         command = f'fastq_quality_filter -q {quality} -p 100 -i {barcode_fastq} -o {filtered_barcode_fastq} -Q 33'
 
