@@ -41,8 +41,6 @@ def extract_csv_column(csv_file, column):
 
 def sam_to_name_labeled_fastq(sample, in_file, out_file):
 
-    # print('transforming sam to fastq for use with cashier')
-
     new_sam = False
 
     with open(in_file, 'r') as f_in:
@@ -55,12 +53,9 @@ def sam_to_name_labeled_fastq(sample, in_file, out_file):
         sam_file = fake_header_add(in_file)
     else:
         sam_file = in_file
-
-    # print(f'sam file is {sam_file}')
     
     sam_length = pysam.AlignmentFile(sam_file, 'r', check_sq=False).count()
     sam = pysam.AlignmentFile(sam_file, 'r', check_sq=False)
-    # print('converting sam to fastq')
 
     with open(out_file, 'w') as f_out:
 
@@ -82,20 +77,18 @@ def sam_to_name_labeled_fastq(sample, in_file, out_file):
                 elif 'UR' in tagdict.keys():
                     umi = tagdict['UR']
 
-                # write in fastq format output if cell and umi is assigned
-                # print(record.query_name)
                 if cell_barcode and umi:
 
                     qualities = record.query_qualities
                     ascii_qualities = ''.join([chr(q + 33) for q in qualities])
-                    # print(record.query_name)
+
                     f_out.write(f"@{record.query_name}_{umi}_{cell_barcode}\n")
                     f_out.write(f"{record.query_sequence}\n+\n{ascii_qualities}\n")
                 
                 progress.advance(task)
     
     if new_sam == True:
-        # print('cleaning up temporary sam file')
+
         Path(sam_file).unlink()
 
 

@@ -7,12 +7,8 @@ from .utils import sam_to_name_labeled_fastq, labeled_fastq_to_tsv
 from .console import console
 
 
-####
-from time import sleep
-
-####
 def single_cell_process(sample, f, sourcedir, cli_args,status):
-    # print(f'performing barcode extraction on sample: {sample}')
+
     console.log(
             f'[green]{sample}[/green]: extracting barcodes')
 
@@ -40,7 +36,6 @@ def single_cell_process(sample, f, sourcedir, cli_args,status):
 
     if not output_file.is_file():
 
-        # print(f'Performing extraction on sample: {sample}')
         console.log(
             f'[green]{sample}[/green]: extracting barcodes')
 
@@ -63,11 +58,6 @@ def single_cell_process(sample, f, sourcedir, cli_args,status):
     else:
         console.log(
             f'[green]{sample}[/green]: skipping labeled fastq to tsv conversion')
-
-
-
-
-    # print(f'Completed barcode extraction for sample: {sample}')
 
 
 def single_cell(sourcedir, cli_args):
@@ -96,7 +86,5 @@ def single_cell(sourcedir, cli_args):
         console.log(f'[green]{sample}[/green]: processing completed')
         console.rule()
         
-    # print('\nfinished extracting barcodes from sam files')
-    # print('exiting.')
     console.print('\n[green]FINISHED!')
     exit()
