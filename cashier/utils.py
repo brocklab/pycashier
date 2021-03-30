@@ -4,6 +4,9 @@ import tempfile
 import subprocess
 from pathlib import Path
 
+from rich.progress import Progress
+from .console import console
+
 
 def convert_to_csv(in_file, out_file):
 
@@ -18,7 +21,6 @@ def convert_to_csv(in_file, out_file):
 
 def fastq_to_csv(in_file, out_file):
 
-    print('\ntransforming barcode fastq into tsv')
     with open(in_file) as f_in:
         with open(out_file, 'w') as f_out:
             convert_to_csv(f_in.readlines(), f_out)
@@ -37,9 +39,7 @@ def extract_csv_column(csv_file, column):
     return tmp_out
 
 
-def sam_to_name_labeled_fastq(in_file, out_file):
-
-    print('transforming sam to fastq for use with cashier')
+def sam_to_name_labeled_fastq(sample, in_file, out_file):
 
     new_sam = False
 
@@ -48,51 +48,53 @@ def sam_to_name_labeled_fastq(in_file, out_file):
             new_sam = True
 
     if new_sam == True:
-        print('this sam file has no header so we will add a fake one\n')
+        console.log(
+            f'[green]{sample}[/green]: sam is headerless adding fake one')
         sam_file = fake_header_add(in_file)
     else:
         sam_file = in_file
 
-    print(f'sam file is {sam_file}')
-
+    sam_length = pysam.AlignmentFile(sam_file, 'r', check_sq=False).count()
     sam = pysam.AlignmentFile(sam_file, 'r', check_sq=False)
-    print('converting sam to fastq')
 
     with open(out_file, 'w') as f_out:
 
-        for record in sam:
+        with Progress() as progress:
+            task = progress.add_task("[red] Converting sam to fastq",
+                                     total=sam_length)
 
-            tagdict = dict(record.tags)
-            cell_barcode = None
-            if 'CB' in tagdict.keys():
-                cell_barcode = tagdict['CB'].split("-")[0]
-            elif 'CR' in tagdict.keys():
-                cell_barcode = tagdict['CR']
+            for record in sam:
 
-            umi = None
-            if 'UB' in tagdict.keys():
-                umi = tagdict['UB']
-            elif 'UR' in tagdict.keys():
-                umi = tagdict['UR']
+                tagdict = dict(record.tags)
+                cell_barcode = None
+                if 'CB' in tagdict.keys():
+                    cell_barcode = tagdict['CB'].split("-")[0]
+                elif 'CR' in tagdict.keys():
+                    cell_barcode = tagdict['CR']
 
-            # write in fastq format output if cell and umi is assigned
+                umi = None
+                if 'UB' in tagdict.keys():
+                    umi = tagdict['UB']
+                elif 'UR' in tagdict.keys():
+                    umi = tagdict['UR']
 
-            if cell_barcode and umi:
+                if cell_barcode and umi:
 
-                qualities = record.query_qualities
-                ascii_qualities = ''.join([chr(q + 33) for q in qualities])
+                    qualities = record.query_qualities
+                    ascii_qualities = ''.join([chr(q + 33) for q in qualities])
 
-                f_out.write(f"@{record.query_name}_{umi}_{cell_barcode}\n")
-                f_out.write("{record.query_sequence}\n+\n{ascii_qualities}\n")
+                    f_out.write(f"@{record.query_name}_{umi}_{cell_barcode}\n")
+                    f_out.write(
+                        f"{record.query_sequence}\n+\n{ascii_qualities}\n")
+
+                progress.advance(task)
 
     if new_sam == True:
-        print('cleaning up temporary sam file')
+
         Path(sam_file).unlink()
 
 
 def labeled_fastq_to_tsv(in_file, out_file):
-
-    print('transforming labeled barcode fastq into tsv')
 
     with open(in_file) as f_in:
 
@@ -203,7 +205,7 @@ def fake_header_add(in_file):
 '''
     # TODO: change to with statement
     f = tempfile.NamedTemporaryFile(delete=False, dir=Path.cwd())
-    print(f'copying new tmp sam to {f.name}')
+    # print(f'copying new tmp sam to {f.name}')
     f.write((bytes(fake_header, encoding='utf-8')))
     f.flush()
 

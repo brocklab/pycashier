@@ -1,8 +1,9 @@
 import re
 from pathlib import Path
 
-from .cli import get_args
+from .cli import get_args, sample_check
 from .cluster import cluster
+from .console import console
 from .extract import extract
 from .merge import merge
 from .read_filter import read_filter
@@ -12,6 +13,10 @@ from .single_cell import single_cell
 def main():
 
     cli_args = get_args()
+
+    console.rule()
+    console.rule('Barcode Extraction with CASHIER')
+    console.rule()
 
     sourcedir = Path(cli_args['main']['sourcedir'])
 
@@ -39,24 +44,31 @@ def main():
             print('Exiting.')
             exit()
 
-    print(
-        f'performing barcode extraction and clustering for {len(fastqs)} samples\n'
-    )
+    processed_samples = sample_check(sourcedir, fastqs, cli_args)
 
     for fastq in fastqs:
 
-        #fastq should be file name of the fastqs.
-
         sample = fastq.name.split('.')[0]
 
-        extract(sample, fastq, **cli_args['main'], **cli_args['extract'])
+        if sample in processed_samples:
+            console.log(f'Skipping Processing for [green]{sample}[/green]')
+            console.rule()
+            continue
 
-        cluster(sample, **cli_args['main'], **cli_args['cluster'])
+        with console.status(f"Processing sample: [green]{sample}[/green]",
+                            spinner='dots12'):
 
-        read_filter(sample, **cli_args['main'], **cli_args['filter'],
-                    **cli_args['cluster'])
+            extract(sample, fastq, **cli_args['main'], **cli_args['extract'])
 
-        print(f'completed processsing for sample: {sample}\n\n')
+            cluster(sample, **cli_args['main'], **cli_args['cluster'])
+
+            read_filter(sample, **cli_args['main'], **cli_args['filter'],
+                        **cli_args['cluster'])
+
+        console.log(f'[green]{sample}[/green]: processing completed')
+        console.rule()
+
+    console.print('\n[green]FINISHED!')
 
 
 if __name__ == '__main__':
