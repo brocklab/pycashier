@@ -49,7 +49,7 @@ def sam_to_name_labeled_fastq(sample, in_file, out_file):
 
     if new_sam == True:
         console.log(
-            f'[green]{sample}[/green]: sam is headerless adding fake one')
+            f'[green]{sample}[/green]: sam is headerless, adding a fake one')
         sam_file = fake_header_add(in_file)
     else:
         sam_file = in_file

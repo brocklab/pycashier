@@ -84,7 +84,6 @@ def single_cell(sourcedir, cli_args):
 
         with console.status(f"Processing sample: [green]{sample}[/green]",
                             spinner='dots12') as status:
-            sleep(5)
             single_cell_process(sample, f, sourcedir, cli_args, status)
 
         console.log(f'[green]{sample}[/green]: processing completed')
