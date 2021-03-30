@@ -1,5 +1,3 @@
-
-
 # Cash in on Expressed Barcode Tags (EBTs) from NGS Sequencing Data *with Python*
 
 [Cashier](https://github.com/russelldurrett/cashier) is a tool developed by Russell Durrett for the analysis and extraction of expressed barcode tags.
@@ -75,10 +73,10 @@ When finished the `outs` directory will have a `.tsv` containing the following c
 
 
 ## Usage notes
- Pycashier will **NOT** overwrite intermediary files. If there is an issue in the process please delete either the pipeline directory or the requisite intermediary files for the sample you wish to reprocess. This will allow the user to place new fastqs within the raw directory or a project folder without reprocessing all samples each time.
+Pycashier will **NOT** overwrite intermediary files. If there is an issue in the process, please delete either the pipeline directory or the requisite intermediary files for the sample you wish to reprocess. This will allow the user to place new fastqs within the source directory or a project folder without reprocessing all samples each time.
 - Currently, cashiers expects to find `.fastq.gz` files when merging and `.fastq` files when extracting barcodes. This behavior may change in the future.
 - If there are reads from multiple lanes they should first be concatenated with `cat sample*R1*.fastq.gz > sample.R1.fastq.gz`
 - Naming conventions:
-    - Samples names are extracted from files using the first string delimited with a period. Please take this into account when names sam or fastq files. 
-    - Each processing step will append information to the input file name to indicate changes again delimited with periods. 
+    - Samples names are extracted from files using the first string delimited with a period. Please take this into account when naming sam or fastq files. 
+    - Each processing step will append information to the input file name to indicate changes, again delimited with periods. 
 
