@@ -3,13 +3,14 @@ import shlex
 import subprocess
 from pathlib import Path
 
+from .console import console
+
 
 def merge_single(sample, fastqs, sourcedir, threads, **kwargs):
     keep_output = kwargs['keep_output']
     pear_args = kwargs['pear_args']
 
-    print(f"Beginning work with sample: {sample}")
-
+    # TODO: refactor for clarity and memory usage
     for f in fastqs:
 
         R1_regex = r"" + re.escape(sample) + "\..*R1.*\.fastq\.gz"
@@ -25,20 +26,19 @@ def merge_single(sample, fastqs, sourcedir, threads, **kwargs):
     if R1_file == None or R2_file == None:
         print("oops I didnt find an R1 or R2 file")
         exit()
+
     mergedfastq = Path('mergedfastqs')
     merged_barcode_fastq = mergedfastq / f'{sample}.merged.raw.fastq'
     merged_barcode_file_prefix = Path('pipeline') / Path(
         f'{sample}.merged.raw')
-    #! what happens if i specify the prefix with a path?
 
     files = [R1_file, R2_file]
 
     if not merged_barcode_fastq.is_file():
 
-        print(f'Performing fastq merge on sample: {sample}\n')
+        console.log(f'[green]{sample}[/green]: extracting and moving fastqs')
         #future implementations may use a python based extraction (using gzip)
         # TODO: Make fastq extraction conditional
-        print('Extracting and moving fastqs')
 
         path_to_r1 = sourcedir / R1_file
         path_to_r2 = sourcedir / R2_file
@@ -55,11 +55,18 @@ def merge_single(sample, fastqs, sourcedir, threads, **kwargs):
             new_path = Path('pipeline') / f.stem
             old_path.rename(new_path)
 
-        print('Merging fastqs')
-
+        console.log(f'[green]{sample}[/green]: starting fastq merge')
         command = f'pear -f {path_to_r1} -r {path_to_r2} -o {merged_barcode_file_prefix} -j {threads} {pear_args}'
         args = shlex.split(command)
-        p = subprocess.run(args)
+
+        p = subprocess.run(args,
+                           stdout=subprocess.PIPE,
+                           stderr=subprocess.STDOUT,
+                           universal_newlines=True)
+
+        if kwargs['verbose']:
+            console.print('[yellow]PEAR OUTPUT:')
+            console.print(p.stdout)
 
         #remove the extra files made from pear
         if not kwargs['keep_output']:
@@ -67,19 +74,21 @@ def merge_single(sample, fastqs, sourcedir, threads, **kwargs):
                     'discarded.fastq', 'unassembled.forward.fastq',
                     'unassembled.reverse.fastq'
             ]:
-                file = Path(f'{merged_barcode_file_prefix}.{suffix}')
-                file.unlink(file)
+                f = Path(f'{merged_barcode_file_prefix}.{suffix}')
+                f.unlink()
 
         merged_barcode_file_prefix.with_suffix(
             merged_barcode_file_prefix.suffix +
             '.assembled.fastq').rename(merged_barcode_fastq)
 
     else:
-        print(f'Found merged barcode fastq for sample:{sampl}')
+        print(f'Found merged barcode fastq for sample:{sample}')
+        console.log(f'[green]{sample}[/green]: skipping fastq merge')
 
 
 def merge(fastqs, sourcedir, cli_args):
-
+    console.rule('MERGE MODE', align='center', style='red')
+    print()
     Path('mergedfastqs').mkdir(exist_ok=True)
 
     samples = []
@@ -96,7 +105,7 @@ def merge(fastqs, sourcedir, cli_args):
 
     print('Found the following samples:')
     for s in set(samples):
-        print(s)
+        console.print(f'[green]{s}')
     print()
 
     if len(samples) / len(set(samples)) != 2:
@@ -105,10 +114,18 @@ def merge(fastqs, sourcedir, cli_args):
 
     for sample in set(samples):
 
-        merge_single(sample, fastqs, sourcedir, cli_args['main']['threads'],
-                     **cli_args['merge'])
+        with console.status(f"Processing sample: [green]{sample}[/green]",
+                            spinner='dots12'):
 
-    print("\nCleaning up single read fastq files.")
+            merge_single(sample,
+                         fastqs,
+                         sourcedir,
+                         cli_args['main']['threads'],
+                         verbose=cli_args['main']['verbose'],
+                         **cli_args['merge'])
 
-    print("All samples have been merged and can be found in mergedfastqs\n")
+        console.log(f'[green]{sample}[/green]: processing completed')
+        console.rule()
+
+    console.print('\n[green]FINISHED!')
     exit()

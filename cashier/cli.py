@@ -295,41 +295,41 @@ def sample_check(sourcedir, fastqs, cli_args):
 ####################################################
 
 
-def get_params(f):
-    p = re.compile(
-        r'(?P<sample>\w+)\.barcodes\.q(?P<quality>\d\d).r(?P<ratio>\d+)d(?P<distance>\d+)\.min(?P<filter_count>\d+)\.tsv'
-    )
-    m = p.search(f)
-    if m:
-        return m.groupdict()
-    else:
-        raise ValueError(f"Unexpected file in outs directory:{f}")
+# def get_params(f):
+#     p = re.compile(
+#         r'(?P<sample>\w+)\.barcodes\.q(?P<quality>\d\d).r(?P<ratio>\d+)d(?P<distance>\d+)\.min(?P<filter_count>\d+)\.tsv'
+#     )
+#     m = p.search(f)
+#     if m:
+#         return m.groupdict()
+#     else:
+#         raise ValueError(f"Unexpected file in outs directory:{f}")
 
 
-def check_outs(samples, files):
-    table_rows = []
+# def check_outs(samples, files):
+#     table_rows = []
 
-    for f in files:
-        params = get_params(f)
-        if params['sample'] not in samples:
-            table_rows.append([
-                params['sample'], params['quality'],
-                f"{params['ratio']}, {params['distance']}",
-                params['filter_count']
-            ])
-    if table_rows:
-        console = Console()
-        table = Table(title="Additional Samples Found in Outs Directory",
-                      box=box.HORIZONTALS,
-                      header_style="bold bright_blue",
-                      min_width=70)
-        table.add_column("Sample",
-                         justify="center",
-                         style="green",
-                         no_wrap=True)
-        table.add_column("Read Quality\n(Phred Score)", justify="center")
-        table.add_column('Clustering\n(ratio,distance)', justify='center')
-        table.add_column('Filter Cutoff\n(min reads)', justify='center')
-        for row in table_rows:
-            table.add_row(*row)
-        console.print(table)
+#     for f in files:
+#         params = get_params(f)
+#         if params['sample'] not in samples:
+#             table_rows.append([
+#                 params['sample'], params['quality'],
+#                 f"{params['ratio']}, {params['distance']}",
+#                 params['filter_count']
+#             ])
+#     if table_rows:
+#         console = Console()
+#         table = Table(title="Additional Samples Found in Outs Directory",
+#                       box=box.HORIZONTALS,
+#                       header_style="bold bright_blue",
+#                       min_width=70)
+#         table.add_column("Sample",
+#                          justify="center",
+#                          style="green",
+#                          no_wrap=True)
+#         table.add_column("Read Quality\n(Phred Score)", justify="center")
+#         table.add_column('Clustering\n(ratio,distance)', justify='center')
+#         table.add_column('Filter Cutoff\n(min reads)', justify='center')
+#         for row in table_rows:
+#             table.add_row(*row)
+#         console.print(table)
