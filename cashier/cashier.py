@@ -13,7 +13,7 @@ from .single_cell import single_cell
 def main():
 
     cli_args = get_args()
-    
+
     console.rule()
     console.rule('Barcode Extraction with CASHIER')
     console.rule()

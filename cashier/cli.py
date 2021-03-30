@@ -294,7 +294,6 @@ def sample_check(sourcedir, fastqs, cli_args):
 #  functions to get additional samples found in outs
 ####################################################
 
-
 # def get_params(f):
 #     p = re.compile(
 #         r'(?P<sample>\w+)\.barcodes\.q(?P<quality>\d\d).r(?P<ratio>\d+)d(?P<distance>\d+)\.min(?P<filter_count>\d+)\.tsv'
@@ -304,7 +303,6 @@ def sample_check(sourcedir, fastqs, cli_args):
 #         return m.groupdict()
 #     else:
 #         raise ValueError(f"Unexpected file in outs directory:{f}")
-
 
 # def check_outs(samples, files):
 #     table_rows = []
