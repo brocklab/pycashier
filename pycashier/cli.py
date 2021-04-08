@@ -14,7 +14,7 @@ from .read_filter import get_filter_count
 
 def get_args():
     parser = argparse.ArgumentParser(
-        prog='cashier',
+        prog='pycashier',
         usage='%(prog)s [-h] sourcedir'
         #       formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )

@@ -36,9 +36,9 @@ Pycashier has one required argument which is the directory containing the fastq 
 
 ```bash
 conda activate cashier_env
-cashier ./fastqs
+pycashier ./fastqs
 ```
-For additional parameters see `cashier -h`.
+For additional parameters see `pycashier -h`.
 
 As the files are processed two additional directories will be created `pipeline` and `outs`.
 
@@ -50,7 +50,7 @@ While the final processed files will be found within the `outs` directory.
 
 Pycashier can now take paired end reads and perform a merging of the reads to produce a fastq which can then be used with cashier's default feature.
 ```bash
-cashier ./fastqs -m
+pycashier ./fastqs -m
 ``` 
 
 ## Processing Barcodes from 10X bam files
@@ -67,7 +67,7 @@ Then similar to normal barcode extraction you can pass a directory of these unma
 *Note*: The default parameters passed to cutadapt are unlinked adapters and minimum barcode length of 10 bp. 
 
 ```
-cashier ./unmapped_sams -sc 
+pycashier ./unmapped_sams -sc 
 ```
 When finished the `outs` directory will have a `.tsv` containing the following columns: Illumina Read Info, UMI Barcode, Cell Barcode, gRNA Barcode
 

@@ -43,8 +43,8 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 
 setup(
     name="pycashier",
-    version=version("cashier/__init__.py"),
-    description="cashier: cash in on expressed barcode tags",
+    version=version("pycashier/__init__.py"),
+    description="pycashier: cash in on expressed barcode tags",
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
     author="Daylin Morgan",
@@ -52,8 +52,8 @@ setup(
     download_url="http://github.com/DaylinMorgan/pycashier/",
     license="BSD 3-clause",
     #packages=find_packages(),
-    packages=['cashier'],
-    entry_points={"console_scripts": ['cashier = cashier.cashier:main']},
+    packages=['pycashier'],
+    entry_points={"console_scripts": ['pycashier = pycashier.pycashier:main']},
     include_package_data=True,
     install_requires=get_install_requirements("requirements.txt"),
     python_requires=">=3.6",
