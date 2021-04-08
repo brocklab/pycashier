@@ -7,11 +7,11 @@ This python implementation offers the same flexibility and simple command line o
 Like it's predecessor it is a wrapper for the tools cutadapt, fastx-toolkit, and starcode.
 
 ### Dependencies
-- cutadapt
-- starcode
-- fastx-toolkit
-- pear
-- pysam
+- cutadapt (sequence extraction)
+- starcode (sequence clustering)
+- fastx-toolkit (PHred score filtering)
+- pear (paired end read merging)
+- pysam (sam file convertion to fastq)
 
 ## Recommended Installation Procedure 
 It's recommended to use [conda](https://docs.conda.io/en/latest/) to install and manage the dependencies for this package 
@@ -74,9 +74,9 @@ When finished the `outs` directory will have a `.tsv` containing the following c
 
 ## Usage notes
 Pycashier will **NOT** overwrite intermediary files. If there is an issue in the process, please delete either the pipeline directory or the requisite intermediary files for the sample you wish to reprocess. This will allow the user to place new fastqs within the source directory or a project folder without reprocessing all samples each time.
-- Currently, cashiers expects to find `.fastq.gz` files when merging and `.fastq` files when extracting barcodes. This behavior may change in the future.
+- Currently, pycashier expects to find `.fastq.gz` files when merging and `.fastq` files when extracting barcodes. This behavior may change in the future.
 - If there are reads from multiple lanes they should first be concatenated with `cat sample*R1*.fastq.gz > sample.R1.fastq.gz`
 - Naming conventions:
-    - Samples names are extracted from files using the first string delimited with a period. Please take this into account when naming sam or fastq files. 
+    - Sample names are extracted from files using the first string delimited with a period. Please take this into account when naming sam or fastq files. 
     - Each processing step will append information to the input file name to indicate changes, again delimited with periods. 
 
