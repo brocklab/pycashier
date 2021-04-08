@@ -33,7 +33,7 @@ def extract(sample, fastq, sourcedir, error_rate, threads, barcode_length,
                            stderr=subprocess.STDOUT,
                            universal_newlines=True)
 
-        if not barcode_fastq.is_file():
+        if barcode_fastq.stat().st_size == 0:
             console.print('[yellow]CUTADAPT OUTPUT:')
             console.print(p.stdout)
             console.print(
