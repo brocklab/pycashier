@@ -33,7 +33,15 @@ def extract(sample, fastq, sourcedir, error_rate, threads, barcode_length,
                            stderr=subprocess.STDOUT,
                            universal_newlines=True)
 
-        if kwargs['verbose']:
+        if not filtered_barcode_fastq.is_file():
+            console.print('[yellow]CUTADAPT OUTPUT:')
+            console.print(p.stdout)
+            console.print(
+                f'[green]{sample}[/green]: Failed to extract reads for sample')
+            console.print('see above for cutadapt output')
+            exit()
+
+        elif kwargs['verbose']:
             console.print('[yellow]CUTADAPT OUTPUT:')
             console.print(p.stdout)
 
