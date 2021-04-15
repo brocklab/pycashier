@@ -43,7 +43,7 @@ def read_filter(sample, filter_count, filter_percent, quality, ratio, distance,
     file_in = Path(
         'pipeline') / f'{sample}.barcodes.q{quality}.r{ratio}d{distance}.tsv'
 
-    if filter_count:
+    if filter_count!=None:
         console.log(
             f'[green]{sample}[/green]: removing sequence with less than {filter_count} reads'
         )

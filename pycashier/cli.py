@@ -183,13 +183,13 @@ def make_sample_check_table(samples, args):
     table.add_column(
         f"Clustering\n(ratio, distance)\n {args['ratio']}, {args['distance']}",
         justify='center')
-    if 'filter_percent' in args.keys():
+    if args['filter_count']!=None:
         table.add_column(
-            f"Filter Cutoff\n(min %)\n {args['filter_percent']} %",
+            f"Filter Cutoff\n(min reads)\n {args['filter_count']}",
             justify='center')
     else:
         table.add_column(
-            f"Filter Cutoff\n(min reads)\n {args['filter_count']}",
+            f"Filter Cutoff\n(min %)\n {args['filter_percent']} %",
             justify='center')
     table.add_column('Processed?', justify='center')
 
@@ -220,22 +220,22 @@ def check_pipeline_outs(sample, args):
     )
 
     filters = []
-    for file in Path('pipeline').iterdir():
-        m = p1.search(file.name)
+    for f in Path('pipeline').iterdir():
+        m = p1.search(f.name)
 
         if m:
             row_list += ["[bold green]\u2713"] * 2
 
             filters = []
-            for file2 in sorted([f.name for f in Path('outs').iterdir()]):
+            for f2 in sorted([f.name for f in Path('outs').iterdir()]):
 
-                m = p3.search(file2)
+                m = p3.search(f2)
                 if m:
-                    if 'filter_percent' in args.keys():
-                        filter_count_check = get_filter_count(
-                            file, args['filter_percent'])
-                    else:
+                    if args['filter_count']!=None:
                         filter_count_check = args['filter_count']
+                    else:
+                        filter_count_check = get_filter_count(
+                            f, args['filter_percent'])
 
                     if str(filter_count_check) == m.group('filter_count'):
                         filters.append(
@@ -248,8 +248,8 @@ def check_pipeline_outs(sample, args):
             break
 
     if row_list == [sample]:
-        for file in Path('pipeline').iterdir():
-            m = p2.search(file.name)
+        for f in Path('pipeline').iterdir():
+            m = p2.search(f.name)
             if m:
                 row_list += [':heavy_check_mark:']
 
