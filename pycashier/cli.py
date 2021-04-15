@@ -102,7 +102,7 @@ def get_args():
     filter_parser.add_argument(
         "-fc",
         "--filter_count",
-        help='nominal number of reads for sequence to pass fitler',
+        help='nominal number of reads for sequence to pass filter',
         metavar='',
         default=None,
         type=int)

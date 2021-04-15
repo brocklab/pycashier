@@ -45,7 +45,7 @@ def read_filter(sample, filter_count, filter_percent, quality, ratio, distance,
 
     if filter_count!=None:
         console.log(
-            f'[green]{sample}[/green]: removing sequence with less than {filter_count} reads'
+            f'[green]{sample}[/green]: removing sequences with less than {filter_count} reads'
         )
 
         filter_by_count(file_in, filter_count)
