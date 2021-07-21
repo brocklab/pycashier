@@ -7,24 +7,23 @@ from .console import console
 
 
 def merge_single(sample, fastqs, sourcedir, threads, **kwargs):
-    keep_output = kwargs["keep_output"]
     pear_args = kwargs["pear_args"]
-    pipeline = cli_args["main"]["pipeline_dir"]
+    pipeline = Path(kwargs["pipelinedir"])
 
     # TODO: refactor for clarity and memory usage
     for f in fastqs:
 
-        R1_regex = r"" + re.escape(sample) + "\..*R1.*\.fastq\.gz"
+        R1_regex = r"" + re.escape(sample) + r"\..*R1.*\.fastq\.gz"
         m = re.search(R1_regex, f.name)
         if m:
             R1_file = m.group(0)
 
-        R2_regex = r"" + re.escape(sample) + "\..*R2.*\.fastq\.gz"
+        R2_regex = r"" + re.escape(sample) + r"\..*R2.*\.fastq\.gz"
         m = re.search(R2_regex, f.name)
         if m:
             R2_file = m.group(0)
 
-    if R1_file == None or R2_file == None:
+    if R1_file is None or R2_file is None:
         print("oops I didnt find an R1 or R2 file")
         exit()
 
@@ -56,7 +55,8 @@ def merge_single(sample, fastqs, sourcedir, threads, **kwargs):
             old_path.rename(new_path)
 
         console.log(f"[green]{sample}[/green]: starting fastq merge")
-        command = f"pear -f {path_to_r1} -r {path_to_r2} -o {merged_barcode_file_prefix} -j {threads} {pear_args}"
+        command = f"pear -f {path_to_r1} -r {path_to_r2} \
+            -o {merged_barcode_file_prefix} -j {threads} {pear_args}"
         args = shlex.split(command)
 
         p = subprocess.run(
@@ -127,6 +127,7 @@ def merge(fastqs, sourcedir, cli_args):
                 sourcedir,
                 cli_args["main"]["threads"],
                 verbose=cli_args["main"]["verbose"],
+                pipelinedir=cli_args["main"]["pipelinedir"],
                 **cli_args["merge"],
             )
 

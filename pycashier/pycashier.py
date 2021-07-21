@@ -1,4 +1,3 @@
-import re
 from pathlib import Path
 
 from .cli import get_args, sample_check
@@ -22,7 +21,7 @@ def main():
 
     fastqs = [f for f in sourcedir.iterdir()]
 
-    Path(cli_ags["main"]["pipelinedir"]).mkdir(exist_ok=True)
+    Path(cli_args["main"]["pipelinedir"]).mkdir(exist_ok=True)
     Path(cli_args["main"]["outdir"]).mkdir(exist_ok=True)
 
     if cli_args["single_cell"]:
@@ -39,7 +38,8 @@ def main():
 
         if ext != ".fastq":
             print(
-                f"ERROR! There is a non fastq file in the provided fastq directory: {f}"
+                f"ERROR! There is a non fastq file \
+                    in the provided fastq directory: {f}"
             )
             print("Exiting.")
             exit()

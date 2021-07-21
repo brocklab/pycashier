@@ -1,5 +1,4 @@
 import argparse
-import csv
 import re
 import sys
 from pathlib import Path
@@ -49,9 +48,10 @@ def get_args():
         default="outs",
     )
     parser.add_argument(
-        "-p",
+        "-pd",
         "--pipelinedir",
-        help="directory containing pipeline output files (default: %(default)s)",
+        help="directory containing pipeline \
+            output files (default: %(default)s)",
         metavar="",
         default="pipeline",
     )
@@ -100,18 +100,19 @@ def get_args():
     extract_parser.add_argument(
         "-q",
         "--quality",
-        help="minimum PHRED quality to use to filter reads (default: %(default)s)",
+        help="minimum PHRED quality to use to \
+            filter reads (default: %(default)s)",
         metavar="",
         default=30,
         type=int,
     )
-    # extract_parser.add_argument('-eo',"--extract_only",help='run only barcode extraction on raw fastq files',action='store_true')
 
     cluster_parser = parser.add_argument_group(title="cluster options")
     cluster_parser.add_argument(
         "-r",
         "--ratio",
-        help="ratio to use for message passing clustering (default: %(default)s)",
+        help="ratio to use for message passing \
+             clustering (default: %(default)s)",
         metavar="",
         default=3,
         type=int,
@@ -124,7 +125,6 @@ def get_args():
         default=1,
         type=int,
     )
-    # cluster_parser.add_argument("-co","--cluster_only", help='perform only message passage clustering on a list of sequences',action = 'store_true')
 
     filter_parser = parser.add_argument_group("filter_options")
     filter_parser.add_argument(
@@ -174,6 +174,8 @@ def get_args():
             "threads": args.threads,
             "quality": args.quality,
             "verbose": args.verbose,
+            "outdir": args.outdir,
+            "pipelinedir": args.pipelinedir,
         },
         "extract": {
             "error_rate": args.error,
@@ -222,7 +224,7 @@ def make_sample_check_table(samples, args):
         f"Clustering\n(ratio, distance)\n {args['ratio']}, {args['distance']}",
         justify="center",
     )
-    if args["filter_count"] != None:
+    if args["filter_count"] is not None:
         table.add_column(
             f"Filter Cutoff\n(min reads)\n {args['filter_count']}",
             justify="center",
@@ -234,7 +236,7 @@ def make_sample_check_table(samples, args):
         )
     table.add_column("Processed?", justify="center")
 
-    files = sorted([f.name for f in Path(args['outdir']).iterdir()])
+    # files = sorted([f.name for f in Path(args["outdir"]).iterdir()])
 
     for sample in samples:
         row, processed = check_pipeline_outs(sample, args)
@@ -245,20 +247,24 @@ def make_sample_check_table(samples, args):
         table.add_row(*row)
 
     console.print(table, justify="center")
+
     print()
+
     return processed_samples
 
 
 def check_pipeline_outs(sample, args):
-    pipeline= Path(args['pipelinedir'])
+    pipeline = Path(args["pipelinedir"])
     row_list = [sample]
-    matches = {"quality": set(), "ratio": set(), "distance": set()}
+    # matches = {"quality": set(), "ratio": set(), "distance": set()}
     p1 = re.compile(
-        fr'{sample}\.barcodes\.q{args["quality"]}.r{args["ratio"]}d{args["distance"]}\.tsv'
+        fr'{sample}\.barcodes\.q{args["quality"]}.\
+            r{args["ratio"]}d{args["distance"]}\.tsv'
     )
     p2 = re.compile(fr'{sample}\.barcodes\.q{args["quality"]}\.tsv')
     p3 = re.compile(
-        fr'{sample}\.barcodes\.q{args["quality"]}.r{args["ratio"]}d{args["distance"]}\.min(?P<filter_count>\d+)\.tsv'
+        fr'{sample}\.barcodes\.q{args["quality"]}.\
+            r{args["ratio"]}d{args["distance"]}\.min(?P<filter_count>\d+)\.tsv'
     )
 
     filters = []
@@ -269,11 +275,11 @@ def check_pipeline_outs(sample, args):
             row_list += ["[bold green]\u2713"] * 2
 
             filters = []
-            for f2 in sorted([f.name for f in Path(args['outdir']).iterdir()]):
+            for f2 in sorted([f.name for f in Path(args["outdir"]).iterdir()]):
 
                 m = p3.search(f2)
                 if m:
-                    if args["filter_count"] != None:
+                    if args["filter_count"] is not None:
                         filter_count_check = args["filter_count"]
                     else:
                         filter_count_check = get_filter_count(
@@ -321,12 +327,12 @@ def sample_check(sourcedir, fastqs, cli_args):
         "distance": cli_args["cluster"]["distance"],
         "filter_percent": cli_args["filter"]["filter_percent"],
         "filter_count": cli_args["filter"]["filter_count"],
-        "pipelinedir": cli_args["main"]["pipelinedir"]
-        "outdir":cli_args['main']["outdir"]
+        "pipelinedir": cli_args["main"]["pipelinedir"],
+        "outdir": cli_args["main"]["outdir"],
     }
 
     samples = [f.name.split(".")[0] for f in fastqs]
-    outs_files = sorted([f.name for f in Path(args['outdir']).iterdir()])
+    # outs_files = sorted([f.name for f in Path(args['outdir']).iterdir()])
 
     # check_outs(samples, outs_files)\
     processed_samples = make_sample_check_table(samples, args)

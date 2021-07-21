@@ -1,4 +1,3 @@
-import csv
 import pysam
 import tempfile
 import subprocess
@@ -47,7 +46,7 @@ def sam_to_name_labeled_fastq(sample, in_file, out_file):
         if f_in.readline()[0:3] != "@HD":
             new_sam = True
 
-    if new_sam == True:
+    if new_sam is True:
         console.log(
             f"[green]{sample}[/green]: sam is headerless, adding a fake one"
         )
@@ -92,7 +91,7 @@ def sam_to_name_labeled_fastq(sample, in_file, out_file):
 
                 progress.advance(task)
 
-    if new_sam == True:
+    if new_sam is True:
 
         Path(sam_file).unlink()
 
@@ -114,7 +113,8 @@ def labeled_fastq_to_tsv(in_file, out_file):
                     lineage_barcode = read_lines[1].rstrip("\n")
 
                     f_out.write(
-                        f"{read_name}\t{umi}\t{cell_barcode}\t{lineage_barcode}\n"
+                        f"{read_name}\t{umi}\
+                            \t{cell_barcode}\t{lineage_barcode}\n"
                     )
                     read_lines = []
 
@@ -213,7 +213,7 @@ def fake_header_add(in_file):
     f.write((bytes(fake_header, encoding="utf-8")))
     f.flush()
 
-    p = subprocess.run(["cat", in_file], stdout=f)
+    subprocess.run(["cat", in_file], stdout=f)
 
     # #python implementation
     # with open(in_file, 'r') as sam_file:

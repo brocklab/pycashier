@@ -36,7 +36,16 @@ def extract(
             f"[green]{sample}[/green]: extracting and filtering barcodes"
         )
 
-        command = f"cutadapt -e {error_rate} -j {threads} --minimum-length={barcode_length} --maximum-length={barcode_length} --max-n=0 --trimmed-only {adapter_string} -n 2 -o {barcode_fastq} {input_file}"
+        command = f"cutadapt \
+            -e {error_rate} \
+            -j {threads} \
+            --minimum-length={barcode_length} \
+            --maximum-length={barcode_length} \
+            --max-n=0 \
+            --trimmed-only {adapter_string} \
+            -n 2 \
+            -o {barcode_fastq} {input_file}"
+
         args = shlex.split(command)
 
         p = subprocess.run(
@@ -59,7 +68,12 @@ def extract(
             console.print("[yellow]CUTADAPT OUTPUT:")
             console.print(p.stdout)
 
-        command = f"fastq_quality_filter -q {quality} -p 100 -i {barcode_fastq} -o {filtered_barcode_fastq} -Q 33"
+        command = f"fastq_quality_filter \
+            -q {quality} \
+            -p 100 \
+            -Q 33 \
+            -i {barcode_fastq} \
+            -o {filtered_barcode_fastq}"
 
         args = shlex.split(command)
 

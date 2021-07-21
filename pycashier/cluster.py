@@ -19,7 +19,8 @@ def cluster(sample, ratio, distance, quality, threads, **kwargs):
 
     if not output_file.is_file():
         console.log(f"[green]{sample}[/green]: clustering barcodes")
-        command = f"starcode -d {distance} -r {ratio} -t {threads} -i {input_file} -o {output_file}"
+        command = f"starcode -d {distance} \
+                    -r {ratio} -t {threads} -i {input_file} -o {output_file}"
 
         args = shlex.split(command)
 
