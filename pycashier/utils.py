@@ -12,29 +12,29 @@ def convert_to_csv(in_file, out_file):
 
     for i, line in enumerate(in_file):
 
-        if not line.startswith('@') or in_file[i - 1].strip() == '+':
+        if not line.startswith("@") or in_file[i - 1].strip() == "+":
             continue
         seq_id = line.strip()
         sequence = in_file[i + 1].strip()
-        out_file.write(f'{seq_id}\t{sequence}\n')
+        out_file.write(f"{seq_id}\t{sequence}\n")
 
 
 def fastq_to_csv(in_file, out_file):
 
     with open(in_file) as f_in:
-        with open(out_file, 'w') as f_out:
+        with open(out_file, "w") as f_out:
             convert_to_csv(f_in.readlines(), f_out)
 
 
 def extract_csv_column(csv_file, column):
 
     ext = csv_file.suffix
-    tmp_out = csv_file.with_suffix(f'.c{column}{ext}')
-    with open(csv_file, 'r') as csv_in:
-        with open(tmp_out, 'w') as csv_out:
+    tmp_out = csv_file.with_suffix(f".c{column}{ext}")
+    with open(csv_file, "r") as csv_in:
+        with open(tmp_out, "w") as csv_out:
             for line in csv_in:
-                linesplit = line.split('\t')
-                csv_out.write(f'{linesplit[column-1]}')
+                linesplit = line.split("\t")
+                csv_out.write(f"{linesplit[column-1]}")
 
     return tmp_out
 
@@ -43,49 +43,52 @@ def sam_to_name_labeled_fastq(sample, in_file, out_file):
 
     new_sam = False
 
-    with open(in_file, 'r') as f_in:
-        if f_in.readline()[0:3] != '@HD':
+    with open(in_file, "r") as f_in:
+        if f_in.readline()[0:3] != "@HD":
             new_sam = True
 
     if new_sam == True:
         console.log(
-            f'[green]{sample}[/green]: sam is headerless, adding a fake one')
+            f"[green]{sample}[/green]: sam is headerless, adding a fake one"
+        )
         sam_file = fake_header_add(in_file)
     else:
         sam_file = in_file
 
-    sam_length = pysam.AlignmentFile(sam_file, 'r', check_sq=False).count()
-    sam = pysam.AlignmentFile(sam_file, 'r', check_sq=False)
+    sam_length = pysam.AlignmentFile(sam_file, "r", check_sq=False).count()
+    sam = pysam.AlignmentFile(sam_file, "r", check_sq=False)
 
-    with open(out_file, 'w') as f_out:
+    with open(out_file, "w") as f_out:
 
         with Progress() as progress:
-            task = progress.add_task("[red] Converting sam to fastq",
-                                     total=sam_length)
+            task = progress.add_task(
+                "[red] Converting sam to fastq", total=sam_length
+            )
 
             for record in sam:
 
                 tagdict = dict(record.tags)
                 cell_barcode = None
-                if 'CB' in tagdict.keys():
-                    cell_barcode = tagdict['CB'].split("-")[0]
-                elif 'CR' in tagdict.keys():
-                    cell_barcode = tagdict['CR']
+                if "CB" in tagdict.keys():
+                    cell_barcode = tagdict["CB"].split("-")[0]
+                elif "CR" in tagdict.keys():
+                    cell_barcode = tagdict["CR"]
 
                 umi = None
-                if 'UB' in tagdict.keys():
-                    umi = tagdict['UB']
-                elif 'UR' in tagdict.keys():
-                    umi = tagdict['UR']
+                if "UB" in tagdict.keys():
+                    umi = tagdict["UB"]
+                elif "UR" in tagdict.keys():
+                    umi = tagdict["UR"]
 
                 if cell_barcode and umi:
 
                     qualities = record.query_qualities
-                    ascii_qualities = ''.join([chr(q + 33) for q in qualities])
+                    ascii_qualities = "".join([chr(q + 33) for q in qualities])
 
                     f_out.write(f"@{record.query_name}_{umi}_{cell_barcode}\n")
                     f_out.write(
-                        f"{record.query_sequence}\n+\n{ascii_qualities}\n")
+                        f"{record.query_sequence}\n+\n{ascii_qualities}\n"
+                    )
 
                 progress.advance(task)
 
@@ -98,16 +101,17 @@ def labeled_fastq_to_tsv(in_file, out_file):
 
     with open(in_file) as f_in:
 
-        with open(out_file, 'w') as f_out:
+        with open(out_file, "w") as f_out:
             read_lines = []
             # TODO: add progress bar
             for line in f_in.readlines():
                 read_lines.append(line)
                 if len(read_lines) == 4:
 
-                    read_name, umi, cell_barcode = read_lines[0].rstrip(
-                        '\n').split('_')
-                    lineage_barcode = read_lines[1].rstrip('\n')
+                    read_name, umi, cell_barcode = (
+                        read_lines[0].rstrip("\n").split("_")
+                    )
+                    lineage_barcode = read_lines[1].rstrip("\n")
 
                     f_out.write(
                         f"{read_name}\t{umi}\t{cell_barcode}\t{lineage_barcode}\n"
@@ -117,7 +121,7 @@ def labeled_fastq_to_tsv(in_file, out_file):
 
 def fake_header_add(in_file):
 
-    fake_header = '''@HD\tVN:1.6\tSO:coordinate
+    fake_header = """@HD\tVN:1.6\tSO:coordinate
 @SQ\tSN:1\tLN:1000
 @SQ\tSN:2\tLN:1000
 @SQ\tSN:3\tLN:1000
@@ -202,14 +206,14 @@ def fake_header_add(in_file):
 @SQ\tSN:GL000231.1\tLN:1000
 @SQ\tSN:GL000229.1\tLN:1000
 @SQ\tSN:GL000226.1\tLN:1000
-'''
+"""
     # TODO: change to with statement
     f = tempfile.NamedTemporaryFile(delete=False, dir=Path.cwd())
     # print(f'copying new tmp sam to {f.name}')
-    f.write((bytes(fake_header, encoding='utf-8')))
+    f.write((bytes(fake_header, encoding="utf-8")))
     f.flush()
 
-    p = subprocess.run(['cat', in_file], stdout=f)
+    p = subprocess.run(["cat", in_file], stdout=f)
 
     # #python implementation
     # with open(in_file, 'r') as sam_file:

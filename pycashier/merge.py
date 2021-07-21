@@ -7,8 +7,8 @@ from .console import console
 
 
 def merge_single(sample, fastqs, sourcedir, threads, **kwargs):
-    keep_output = kwargs['keep_output']
-    pear_args = kwargs['pear_args']
+    keep_output = kwargs["keep_output"]
+    pear_args = kwargs["pear_args"]
 
     # TODO: refactor for clarity and memory usage
     for f in fastqs:
@@ -27,17 +27,18 @@ def merge_single(sample, fastqs, sourcedir, threads, **kwargs):
         print("oops I didnt find an R1 or R2 file")
         exit()
 
-    mergedfastq = Path('mergedfastqs')
-    merged_barcode_fastq = mergedfastq / f'{sample}.merged.raw.fastq'
-    merged_barcode_file_prefix = Path('pipeline') / Path(
-        f'{sample}.merged.raw')
+    mergedfastq = Path("mergedfastqs")
+    merged_barcode_fastq = mergedfastq / f"{sample}.merged.raw.fastq"
+    merged_barcode_file_prefix = Path("pipeline") / Path(
+        f"{sample}.merged.raw"
+    )
 
     files = [R1_file, R2_file]
 
     if not merged_barcode_fastq.is_file():
 
-        console.log(f'[green]{sample}[/green]: extracting and moving fastqs')
-        #future implementations may use a python based extraction (using gzip)
+        console.log(f"[green]{sample}[/green]: extracting and moving fastqs")
+        # future implementations may use a python based extraction (using gzip)
         # TODO: Make fastq extraction conditional
 
         path_to_r1 = sourcedir / R1_file
@@ -52,60 +53,63 @@ def merge_single(sample, fastqs, sourcedir, threads, **kwargs):
         for f in files:
 
             old_path = sourcedir / f.stem
-            new_path = Path('pipeline') / f.stem
+            new_path = Path("pipeline") / f.stem
             old_path.rename(new_path)
 
-        console.log(f'[green]{sample}[/green]: starting fastq merge')
-        command = f'pear -f {path_to_r1} -r {path_to_r2} -o {merged_barcode_file_prefix} -j {threads} {pear_args}'
+        console.log(f"[green]{sample}[/green]: starting fastq merge")
+        command = f"pear -f {path_to_r1} -r {path_to_r2} -o {merged_barcode_file_prefix} -j {threads} {pear_args}"
         args = shlex.split(command)
 
-        p = subprocess.run(args,
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.STDOUT,
-                           universal_newlines=True)
+        p = subprocess.run(
+            args,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            universal_newlines=True,
+        )
 
-        if kwargs['verbose']:
-            console.print('[yellow]PEAR OUTPUT:')
+        if kwargs["verbose"]:
+            console.print("[yellow]PEAR OUTPUT:")
             console.print(p.stdout)
 
-        #remove the extra files made from pear
-        if not kwargs['keep_output']:
+        # remove the extra files made from pear
+        if not kwargs["keep_output"]:
             for suffix in [
-                    'discarded.fastq', 'unassembled.forward.fastq',
-                    'unassembled.reverse.fastq'
+                "discarded.fastq",
+                "unassembled.forward.fastq",
+                "unassembled.reverse.fastq",
             ]:
-                f = Path(f'{merged_barcode_file_prefix}.{suffix}')
+                f = Path(f"{merged_barcode_file_prefix}.{suffix}")
                 f.unlink()
 
         merged_barcode_file_prefix.with_suffix(
-            merged_barcode_file_prefix.suffix +
-            '.assembled.fastq').rename(merged_barcode_fastq)
+            merged_barcode_file_prefix.suffix + ".assembled.fastq"
+        ).rename(merged_barcode_fastq)
 
     else:
-        print(f'Found merged barcode fastq for sample:{sample}')
-        console.log(f'[green]{sample}[/green]: skipping fastq merge')
+        print(f"Found merged barcode fastq for sample:{sample}")
+        console.log(f"[green]{sample}[/green]: skipping fastq merge")
 
 
 def merge(fastqs, sourcedir, cli_args):
-    console.rule('MERGE MODE', align='center', style='red')
+    console.rule("MERGE MODE", align="center", style="red")
     print()
-    Path('mergedfastqs').mkdir(exist_ok=True)
+    Path("mergedfastqs").mkdir(exist_ok=True)
 
     samples = []
 
     for f in fastqs:
 
-        m = re.search(r'(.+?)\..*R.*\.fastq\.gz', f.name)
+        m = re.search(r"(.+?)\..*R.*\.fastq\.gz", f.name)
         if m:
             samples.append(m.group(1))
         else:
-            #TODO: make value error?
-            print(f'Failed to obtain sample name from {f}')
+            # TODO: make value error?
+            print(f"Failed to obtain sample name from {f}")
             exit()
 
-    print('Found the following samples:')
+    print("Found the following samples:")
     for s in set(samples):
-        console.print(f'[green]{s}')
+        console.print(f"[green]{s}")
     print()
 
     if len(samples) / len(set(samples)) != 2:
@@ -114,18 +118,21 @@ def merge(fastqs, sourcedir, cli_args):
 
     for sample in set(samples):
 
-        with console.status(f"Processing sample: [green]{sample}[/green]",
-                            spinner='dots12'):
+        with console.status(
+            f"Processing sample: [green]{sample}[/green]", spinner="dots12"
+        ):
 
-            merge_single(sample,
-                         fastqs,
-                         sourcedir,
-                         cli_args['main']['threads'],
-                         verbose=cli_args['main']['verbose'],
-                         **cli_args['merge'])
+            merge_single(
+                sample,
+                fastqs,
+                sourcedir,
+                cli_args["main"]["threads"],
+                verbose=cli_args["main"]["verbose"],
+                **cli_args["merge"],
+            )
 
-        console.log(f'[green]{sample}[/green]: processing completed')
+        console.log(f"[green]{sample}[/green]: processing completed")
         console.rule()
 
-    console.print('\n[green]FINISHED!')
+    console.print("\n[green]FINISHED!")
     exit()
