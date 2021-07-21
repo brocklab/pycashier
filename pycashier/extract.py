@@ -36,7 +36,6 @@ def extract(
         console.log(
             f"[green]{sample}[/green]: extracting and filtering barcodes"
         )
-
         command = f"cutadapt \
             -e {error_rate} \
             -j {threads} \

@@ -34,8 +34,7 @@ def single_cell_process(sample, f, sourcedir, cli_args, status):
         status.start()
     else:
         console.log(
-            f"[green]{sample}[/green]: skipping sam to \
-                labeled fastq conversion"
+            f"[green]{sample}[/green]: skipping sam to labeled fastq conversion"
         )
 
     if not output_file.is_file():
@@ -73,8 +72,7 @@ def single_cell_process(sample, f, sourcedir, cli_args, status):
 
     else:
         console.log(
-            f"[green]{sample}[/green]: skipping \
-                labeled fastq to tsv conversion"
+            f"[green]{sample}[/green]: skipping labeled fastq to tsv conversion"
         )
 
 

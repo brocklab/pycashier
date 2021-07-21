@@ -119,8 +119,7 @@ def get_args():
     cluster_parser.add_argument(
         "-r",
         "--ratio",
-        help="ratio to use for message passing \
-             clustering (default: %(default)s)",
+        help="ratio to use for message passing clustering (default: %(default)s)",
         metavar="",
         default=3,
         type=int,
@@ -192,12 +191,10 @@ def get_args():
             "barcode_length": args.barcode_length,
             "min_barcode_length": args.min_barcode_length,
             "unlinked_adapters": args.unlinked_adapters
-            #    'extract_only':args.extract_only
         },
         "cluster": {
             "ratio": args.ratio,
             "distance": args.distance,
-            #    'cluster_only':args.cluster_only
         },
         "merge": {
             "merge": args.merge,
@@ -245,8 +242,6 @@ def make_sample_check_table(samples, args):
         )
     table.add_column("Processed?", justify="center")
 
-    # files = sorted([f.name for f in Path(args["outdir"]).iterdir()])
-
     for sample in samples:
         row, processed = check_pipeline_outs(sample, args)
 
@@ -265,7 +260,7 @@ def make_sample_check_table(samples, args):
 def check_pipeline_outs(sample, args):
     pipeline = Path(args["pipelinedir"])
     row_list = [sample]
-    # matches = {"quality": set(), "ratio": set(), "distance": set()}
+    
     p1 = re.compile(
         fr'{sample}\.barcodes\.q{args["quality"]}.\
             r{args["ratio"]}d{args["distance"]}\.tsv'
@@ -315,9 +310,6 @@ def check_pipeline_outs(sample, args):
 
     row_list.extend(["[yellow]Queued"] * (4 - len(row_list)))
 
-    # while len(row_list) < 4:
-    #     row_list += ['[yellow]Queued']
-
     if r"[green]" in "".join(filters):
         row_list.append("[bold green]\u2713")
         processed = True
@@ -342,7 +334,6 @@ def sample_check(sourcedir, fastqs, cli_args):
 
     samples = [f.name.split(".")[0] for f in fastqs]
     # outs_files = sorted([f.name for f in Path(args['outdir']).iterdir()])
-
     # check_outs(samples, outs_files)\
     processed_samples = make_sample_check_table(samples, args)
 

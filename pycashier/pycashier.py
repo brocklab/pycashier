@@ -38,8 +38,7 @@ def main():
 
         if ext != ".fastq":
             print(
-                f"ERROR! There is a non fastq file \
-                    in the provided fastq directory: {f}"
+                f"ERROR! There is a non fastq file in the provided fastq directory: {f}"
             )
             print("Exiting.")
             exit()
