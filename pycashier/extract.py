@@ -20,7 +20,7 @@ def extract(
     **kwargs,
 ):
 
-    pipeline = Path("pipeline")
+    pipeline = Path(kwargs["pipelinedir"])
     barcode_fastq = pipeline / f"{sample}.barcode.fastq"
     input_file = fastq
     filtered_barcode_fastq = pipeline / f"{sample}.barcode.q{quality}.fastq"

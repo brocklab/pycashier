@@ -4,7 +4,7 @@ from pathlib import Path
 from .console import console
 
 
-def get_filter_count(file_in, filter_percent):
+def get_filter_count(file_in, filter_percent, outdir):
     total_reads = 0
 
     with open(file_in, newline="") as csvfile:
@@ -17,16 +17,16 @@ def get_filter_count(file_in, filter_percent):
     return filter_count
 
 
-def filter_by_percent(file_in, filter_percent):
+def filter_by_percent(file_in, filter_percent, outdir):
 
     filter_by_count(file_in, get_filter_count(file_in, filter_percent))
 
 
-def filter_by_count(file_in, filter_count):
+def filter_by_count(file_in, filter_count, outdir):
 
     name = file_in.stem
     ext = file_in.suffix
-    csv_out = Path("outs") / f"{name}.min{filter_count}{ext}"
+    csv_out = Path(outdir) / f"{name}.min{filter_count}{ext}"
     total_reads = 0
 
     with open(file_in, "r") as csv_in:
@@ -40,9 +40,9 @@ def filter_by_count(file_in, filter_count):
 def read_filter(
     sample, filter_count, filter_percent, quality, ratio, distance, **kwargs
 ):
-
+    outdir = kwargs["main"]["outdir"]
     file_in = (
-        Path("pipeline")
+        Path(kwargs["pipelinedir"])
         / f"{sample}.barcodes.q{quality}.r{ratio}d{distance}.tsv"
     )
 
@@ -51,11 +51,11 @@ def read_filter(
             f"[green]{sample}[/green]: removing sequences with less than {filter_count} reads"
         )
 
-        filter_by_count(file_in, filter_count)
+        filter_by_count(file_in, filter_count, outdir)
 
     else:
         console.log(
             f"[green]{sample}[/green]: removing sequence with less than {filter_percent}% of total reads"
         )
 
-        filter_by_percent(file_in, filter_percent)
+        filter_by_percent(file_in, filter_percent, outdir)

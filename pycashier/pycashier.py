@@ -22,8 +22,8 @@ def main():
 
     fastqs = [f for f in sourcedir.iterdir()]
 
-    Path("pipeline").mkdir(exist_ok=True)
-    Path("outs").mkdir(exist_ok=True)
+    Path(cli_ags["main"]["pipelinedir"]).mkdir(exist_ok=True)
+    Path(cli_args["main"]["outdir"]).mkdir(exist_ok=True)
 
     if cli_args["single_cell"]:
 

@@ -9,6 +9,7 @@ from .console import console
 def merge_single(sample, fastqs, sourcedir, threads, **kwargs):
     keep_output = kwargs["keep_output"]
     pear_args = kwargs["pear_args"]
+    pipeline = cli_args["main"]["pipeline_dir"]
 
     # TODO: refactor for clarity and memory usage
     for f in fastqs:
@@ -29,9 +30,7 @@ def merge_single(sample, fastqs, sourcedir, threads, **kwargs):
 
     mergedfastq = Path("mergedfastqs")
     merged_barcode_fastq = mergedfastq / f"{sample}.merged.raw.fastq"
-    merged_barcode_file_prefix = Path("pipeline") / Path(
-        f"{sample}.merged.raw"
-    )
+    merged_barcode_file_prefix = pipeline / f"{sample}.merged.raw"
 
     files = [R1_file, R2_file]
 
@@ -53,7 +52,7 @@ def merge_single(sample, fastqs, sourcedir, threads, **kwargs):
         for f in files:
 
             old_path = sourcedir / f.stem
-            new_path = Path("pipeline") / f.stem
+            new_path = pipeline / f.stem
             old_path.rename(new_path)
 
         console.log(f"[green]{sample}[/green]: starting fastq merge")

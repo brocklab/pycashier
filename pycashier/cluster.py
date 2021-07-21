@@ -7,7 +7,7 @@ from .utils import extract_csv_column
 
 
 def cluster(sample, ratio, distance, quality, threads, **kwargs):
-    pipeline = Path("pipeline")
+    pipeline = Path(kwargs["pipelinedir"])
 
     extracted_csv = pipeline / f"{sample}.barcodes.q{quality}.tsv"
 

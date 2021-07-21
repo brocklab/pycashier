@@ -41,6 +41,20 @@ def get_args():
         help="show output of command line calls",
         action="store_true",
     )
+    parser.add_argument(
+        "-o",
+        "--outdir",
+        help="output directory (default: %(default)s)",
+        metavar="",
+        default="outs",
+    )
+    parser.add_argument(
+        "-p",
+        "--pipelinedir",
+        help="directory containing pipeline output files (default: %(default)s)",
+        metavar="",
+        default="pipeline",
+    )
 
     # extract specific parameters
     extract_parser = parser.add_argument_group(title="extract options")
@@ -220,7 +234,7 @@ def make_sample_check_table(samples, args):
         )
     table.add_column("Processed?", justify="center")
 
-    files = sorted([f.name for f in Path("outs").iterdir()])
+    files = sorted([f.name for f in Path(args['outdir']).iterdir()])
 
     for sample in samples:
         row, processed = check_pipeline_outs(sample, args)
@@ -236,6 +250,7 @@ def make_sample_check_table(samples, args):
 
 
 def check_pipeline_outs(sample, args):
+    pipeline= Path(args['pipelinedir'])
     row_list = [sample]
     matches = {"quality": set(), "ratio": set(), "distance": set()}
     p1 = re.compile(
@@ -247,14 +262,14 @@ def check_pipeline_outs(sample, args):
     )
 
     filters = []
-    for f in Path("pipeline").iterdir():
+    for f in pipeline.iterdir():
         m = p1.search(f.name)
 
         if m:
             row_list += ["[bold green]\u2713"] * 2
 
             filters = []
-            for f2 in sorted([f.name for f in Path("outs").iterdir()]):
+            for f2 in sorted([f.name for f in Path(args['outdir']).iterdir()]):
 
                 m = p3.search(f2)
                 if m:
@@ -278,7 +293,7 @@ def check_pipeline_outs(sample, args):
             break
 
     if row_list == [sample]:
-        for f in Path("pipeline").iterdir():
+        for f in pipeline.iterdir():
             m = p2.search(f.name)
             if m:
                 row_list += [":heavy_check_mark:"]
@@ -306,10 +321,12 @@ def sample_check(sourcedir, fastqs, cli_args):
         "distance": cli_args["cluster"]["distance"],
         "filter_percent": cli_args["filter"]["filter_percent"],
         "filter_count": cli_args["filter"]["filter_count"],
+        "pipelinedir": cli_args["main"]["pipelinedir"]
+        "outdir":cli_args['main']["outdir"]
     }
 
     samples = [f.name.split(".")[0] for f in fastqs]
-    outs_files = sorted([f.name for f in Path("outs").iterdir()])
+    outs_files = sorted([f.name for f in Path(args['outdir']).iterdir()])
 
     # check_outs(samples, outs_files)\
     processed_samples = make_sample_check_table(samples, args)

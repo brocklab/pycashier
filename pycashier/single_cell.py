@@ -20,10 +20,13 @@ def single_cell_process(sample, f, sourcedir, cli_args, status):
     adapter_string = f"-g {upstream_adapter} -a {downstream_adapter}"
 
     input_file = f
-    pipeline_dir = Path("pipeline")
+    pipeline_dir = Path(cli_args["main"]["pipeline_dir"])
     fastq_out = pipeline_dir / f"{sample}.cell_record_labeled.fastq"
     output_file = pipeline_dir / f"{sample}.cell_record_labeled.barcode.fastq"
-    tsv_out = Path("outs") / f"{sample}.cell_record_labeled.barcode.tsv"
+    tsv_out = (
+        Path(cli_args["main"]["outdir"])
+        / f"{sample}.cell_record_labeled.barcode.tsv"
+    )
 
     if not fastq_out.is_file():
         console.log(
