@@ -76,6 +76,14 @@ def get_args():
         default=20,
     )
     extract_parser.add_argument(
+        "-mbl",
+        "--min_barcode_length",
+        help="minimum length of expected barcode (default: %(default)s)",
+        metavar="",
+        type=int,
+        default=20,
+    )
+    extract_parser.add_argument(
         "-ua",
         "--upstream_adapter",
         help="5' sequence flanking barcode",
@@ -182,6 +190,7 @@ def get_args():
             "upstream_adapter": args.upstream_adapter,
             "downstream_adapter": args.downstream_adapter,
             "barcode_length": args.barcode_length,
+            "min_barcode_length": args.min_barcode_length,
             "unlinked_adapters": args.unlinked_adapters
             #    'extract_only':args.extract_only
         },

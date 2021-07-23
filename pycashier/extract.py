@@ -13,6 +13,7 @@ def extract(
     error_rate,
     threads,
     barcode_length,
+    min_barcode_length,
     upstream_adapter,
     downstream_adapter,
     unlinked_adapters,
@@ -39,7 +40,7 @@ def extract(
         command = f"cutadapt \
             -e {error_rate} \
             -j {threads} \
-            --minimum-length={barcode_length} \
+            --minimum-length={min_barcode_length} \
             --maximum-length={barcode_length} \
             --max-n=0 \
             --trimmed-only {adapter_string} \
