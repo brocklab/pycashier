@@ -1,5 +1,6 @@
 import shlex
 import subprocess
+import sys
 from pathlib import Path
 
 from .console import console
@@ -61,7 +62,7 @@ def extract(
                 f"[green]{sample}[/green]: Failed to extract reads for sample"
             )
             console.print("see above for cutadapt output")
-            exit()
+            sys.exit()
 
         elif kwargs["verbose"]:
             console.print("[yellow]CUTADAPT OUTPUT:")

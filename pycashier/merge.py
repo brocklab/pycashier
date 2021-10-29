@@ -1,6 +1,7 @@
 import re
 import shlex
 import subprocess
+import sys
 from pathlib import Path
 
 from .console import console
@@ -25,7 +26,7 @@ def merge_single(sample, fastqs, sourcedir, threads, **kwargs):
 
     if R1_file is None or R2_file is None:
         print("oops I didnt find an R1 or R2 file")
-        exit()
+        sys.exit()
 
     mergedfastq = Path("mergedfastqs")
     merged_barcode_fastq = mergedfastq / f"{sample}.merged.raw.fastq"
@@ -102,9 +103,8 @@ def merge(fastqs, sourcedir, cli_args):
         if m:
             samples.append(m.group(1))
         else:
-            # TODO: make value error?
             print(f"Failed to obtain sample name from {f}")
-            exit()
+            sys.exit()
 
     print("Found the following samples:")
     for s in set(samples):
@@ -113,7 +113,7 @@ def merge(fastqs, sourcedir, cli_args):
 
     if len(samples) / len(set(samples)) != 2:
         print("There should be an R1 and R2 fastq file for each sample.")
-        exit()
+        sys.exit()
 
     for sample in set(samples):
 
@@ -134,4 +134,4 @@ def merge(fastqs, sourcedir, cli_args):
         console.rule()
 
     console.print("\n[green]FINISHED!")
-    exit()
+    sys.exit()

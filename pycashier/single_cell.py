@@ -99,4 +99,4 @@ def single_cell(sourcedir, cli_args):
         console.rule()
 
     console.print("\n[green]FINISHED!")
-    exit()
+    sys.exit()
