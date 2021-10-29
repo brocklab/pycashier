@@ -155,7 +155,7 @@ def get_args():
     merge_parser.add_argument(
         "-m",
         "--merge",
-        help="merge R1 and R2 fastq files using usearch",
+        help="merge R1 and R2 fastq files using pear",
         action="store_true",
     )
     merge_parser.add_argument(
