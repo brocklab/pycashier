@@ -1,9 +1,10 @@
 import shlex
 import subprocess
+import sys
 from pathlib import Path
 
-from .utils import sam_to_name_labeled_fastq, labeled_fastq_to_tsv
 from .console import console
+from .utils import labeled_fastq_to_tsv, sam_to_name_labeled_fastq
 
 
 def single_cell_process(sample, f, sourcedir, cli_args, status):
@@ -21,14 +22,11 @@ def single_cell_process(sample, f, sourcedir, cli_args, status):
     fastq_out = pipeline_dir / f"{sample}.cell_record_labeled.fastq"
     output_file = pipeline_dir / f"{sample}.cell_record_labeled.barcode.fastq"
     tsv_out = (
-        Path(cli_args["main"]["outdir"])
-        / f"{sample}.cell_record_labeled.barcode.tsv"
+        Path(cli_args["main"]["outdir"]) / f"{sample}.cell_record_labeled.barcode.tsv"
     )
 
     if not fastq_out.is_file():
-        console.log(
-            f"[green]{sample}[/green]: converting sam to labeled fastq"
-        )
+        console.log(f"[green]{sample}[/green]: converting sam to labeled fastq")
         status.stop()
         sam_to_name_labeled_fastq(sample, input_file, fastq_out)
         status.start()
@@ -65,9 +63,7 @@ def single_cell_process(sample, f, sourcedir, cli_args, status):
             console.print(p.stdout)
 
     if not tsv_out.is_file():
-        console.log(
-            f"[green]{sample}[/green]: converting labeled fastq to tsv"
-        )
+        console.log(f"[green]{sample}[/green]: converting labeled fastq to tsv")
         labeled_fastq_to_tsv(output_file, tsv_out)
 
     else:
@@ -88,9 +84,7 @@ def single_cell(sourcedir, cli_args):
         ext = f.suffix
 
         if ext != ".sam":
-            raise ValueError(
-                "There is a non sam file in the provided input directory:"
-            )
+            raise ValueError("There is a non sam file in the provided input directory:")
 
     for f in sam_files:
 

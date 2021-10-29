@@ -13,9 +13,7 @@ def cluster(sample, ratio, distance, quality, threads, **kwargs):
 
     input_file = extract_csv_column(extracted_csv, 2)
 
-    output_file = (
-        pipeline / f"{sample}.barcodes.q{quality}.r{ratio}d{distance}.tsv"
-    )
+    output_file = pipeline / f"{sample}.barcodes.q{quality}.r{ratio}d{distance}.tsv"
 
     if not output_file.is_file():
         console.log(f"[green]{sample}[/green]: clustering barcodes")

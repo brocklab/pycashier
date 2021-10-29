@@ -33,9 +33,8 @@ def extract(
 
     if not filtered_barcode_fastq.is_file():
 
-        console.log(
-            f"[green]{sample}[/green]: extracting and filtering barcodes"
-        )
+        console.log(f"[green]{sample}[/green]: extracting and filtering barcodes")
+
         command = f"cutadapt \
             -e {error_rate} \
             -j {threads} \
@@ -81,9 +80,7 @@ def extract(
 
         barcode_fastq.unlink()
 
-        console.log(
-            f"[green]{sample}[/green]: extraction and filtering complete"
-        )
+        console.log(f"[green]{sample}[/green]: extraction and filtering complete")
 
     else:
         console.log(f"[green]{sample}[/green]: skipping extraction")
@@ -94,6 +91,4 @@ def extract(
         console.log(f"[green]{sample}[/green]: converting fastq to tsv")
         fastq_to_csv(filtered_barcode_fastq, barcodes_out)
     else:
-        console.log(
-            f"[green]{sample}[/green]: skipping fastq to tsv conversion"
-        )
+        console.log(f"[green]{sample}[/green]: skipping fastq to tsv conversion")

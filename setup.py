@@ -20,10 +20,7 @@ def read(path, encoding="utf-8"):
 
 def get_install_requirements(path):
     content = read(path)
-    return [
-        req for req in content.split("\n")
-        if req != "" and not req.startswith("#")
-    ]
+    return [req for req in content.split("\n") if req != "" and not req.startswith("#")]
 
 
 def version(path):
@@ -32,8 +29,9 @@ def version(path):
     See <https://packaging.python.org/en/latest/single_source_version.html>.
     """
     version_file = read(path)
-    version_match = re.search(r"""^__version__ = ['"]([^'"]*)['"]""",
-                              version_file, re.M)
+    version_match = re.search(
+        r"""^__version__ = ['"]([^'"]*)['"]""", version_file, re.M
+    )
     if version_match:
         return version_match.group(1)
     raise RuntimeError("Unable to find version string.")
@@ -51,13 +49,13 @@ setup(
     author_email="daylinmorgan@gmail.com",
     download_url="http://github.com/DaylinMorgan/pycashier/",
     license="BSD 3-clause",
-    #packages=find_packages(),
-    packages=['pycashier'],
-    entry_points={"console_scripts": ['pycashier = pycashier.pycashier:main']},
+    # packages=find_packages(),
+    packages=["pycashier"],
+    entry_points={"console_scripts": ["pycashier = pycashier.pycashier:main"]},
     include_package_data=True,
     install_requires=get_install_requirements("requirements.txt"),
     python_requires=">=3.6",
-    #extras_require={"dev": get_install_requirements("requirements_dev.txt")},
+    # extras_require={"dev": get_install_requirements("requirements_dev.txt")},
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Environment :: Console",

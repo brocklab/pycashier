@@ -128,7 +128,6 @@ def merge(fastqs, sourcedir, cli_args):
                 cli_args["main"]["threads"],
                 verbose=cli_args["main"]["verbose"],
                 pipelinedir=cli_args["main"]["pipelinedir"],
-                **cli_args["merge"],
             )
 
         console.log(f"[green]{sample}[/green]: processing completed")

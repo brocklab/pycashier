@@ -1,9 +1,11 @@
-import pysam
-import tempfile
+import csv
 import subprocess
+import tempfile
 from pathlib import Path
 
+import pysam
 from rich.progress import Progress
+
 from .console import console
 
 
@@ -46,10 +48,8 @@ def sam_to_name_labeled_fastq(sample, in_file, out_file):
         if f_in.readline()[0:3] != "@HD":
             new_sam = True
 
-    if new_sam is True:
-        console.log(
-            f"[green]{sample}[/green]: sam is headerless, adding a fake one"
-        )
+    if new_sam:
+        console.log(f"[green]{sample}[/green]: sam is headerless, adding a fake one")
         sam_file = fake_header_add(in_file)
     else:
         sam_file = in_file
@@ -60,9 +60,7 @@ def sam_to_name_labeled_fastq(sample, in_file, out_file):
     with open(out_file, "w") as f_out:
 
         with Progress() as progress:
-            task = progress.add_task(
-                "[red] Converting sam to fastq", total=sam_length
-            )
+            task = progress.add_task("[red] Converting sam to fastq", total=sam_length)
 
             for record in sam:
 
@@ -85,13 +83,11 @@ def sam_to_name_labeled_fastq(sample, in_file, out_file):
                     ascii_qualities = "".join([chr(q + 33) for q in qualities])
 
                     f_out.write(f"@{record.query_name}_{umi}_{cell_barcode}\n")
-                    f_out.write(
-                        f"{record.query_sequence}\n+\n{ascii_qualities}\n"
-                    )
+                    f_out.write(f"{record.query_sequence}\n+\n{ascii_qualities}\n")
 
                 progress.advance(task)
 
-    if new_sam is True:
+    if new_sam:
 
         Path(sam_file).unlink()
 
@@ -107,9 +103,7 @@ def labeled_fastq_to_tsv(in_file, out_file):
                 read_lines.append(line)
                 if len(read_lines) == 4:
 
-                    read_name, umi, cell_barcode = (
-                        read_lines[0].rstrip("\n").split("_")
-                    )
+                    read_name, umi, cell_barcode = read_lines[0].rstrip("\n").split("_")
                     lineage_barcode = read_lines[1].rstrip("\n")
 
                     f_out.write(

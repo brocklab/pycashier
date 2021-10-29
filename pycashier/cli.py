@@ -190,7 +190,7 @@ def get_args():
             "downstream_adapter": args.downstream_adapter,
             "barcode_length": args.barcode_length,
             "min_barcode_length": args.min_barcode_length,
-            "unlinked_adapters": args.unlinked_adapters
+            "unlinked_adapters": args.unlinked_adapters,
         },
         "cluster": {
             "ratio": args.ratio,
@@ -232,13 +232,11 @@ def make_sample_check_table(samples, args):
     )
     if args["filter_count"] is not None:
         table.add_column(
-            f"Filter Cutoff\n(min reads)\n {args['filter_count']}",
-            justify="center",
+            f"Filter Cutoff\n(min reads)\n {args['filter_count']}", justify="center"
         )
     else:
         table.add_column(
-            f"Filter Cutoff\n(min %)\n {args['filter_percent']} %",
-            justify="center",
+            f"Filter Cutoff\n(min %)\n {args['filter_percent']} %", justify="center"
         )
     table.add_column("Processed?", justify="center")
 
@@ -280,20 +278,15 @@ def check_pipeline_outs(sample, args):
 
             filters = []
             for f2 in sorted([f.name for f in Path(args["outdir"]).iterdir()]):
-
                 m = p3.search(f2)
                 if m:
                     if args["filter_count"] is not None:
                         filter_count_check = args["filter_count"]
                     else:
-                        filter_count_check = get_filter_count(
-                            f, args["filter_percent"]
-                        )
+                        filter_count_check = get_filter_count(f, args["filter_percent"])
 
                     if str(filter_count_check) == m.group("filter_count"):
-                        filters.append(
-                            f"[green]{m.group('filter_count')}[/green]"
-                        )
+                        filters.append(f"[green]{m.group('filter_count')}[/green]")
                     else:
                         filters.append(m.group("filter_count"))
 
