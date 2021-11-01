@@ -56,7 +56,7 @@ def read_filter(
     else:
         console.log(
             f"[green]{sample}[/green]: removing"
-            f"sequence with less than {filter_percent}% of total reads"
+            f" sequences with less than {filter_percent}% of total reads"
         )
 
         filter_by_percent(file_in, filter_percent, outdir)
