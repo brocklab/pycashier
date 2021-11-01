@@ -8,9 +8,5 @@ dependencies:
   - cutadapt=3.5
   - starcode=1.4
   - fastx_toolkit=0.0.14
-  - pear=0.9.*
-  - pysam=0.17.*
-  - rich=10.12.*
-  - pip=21.3.*
-  - pip:
-    - git+https://github.com/DaylinMorgan/pycashier/
+  - pear=0.9.6
+  - poetry=1.1*
