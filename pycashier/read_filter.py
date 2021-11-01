@@ -35,6 +35,7 @@ def filter_by_count(file_in, filter_count, outdir):
                 if int(linesplit[1]) >= filter_count:
                     csv_out.write(f"{linesplit[0]}\t{linesplit[1]}")
 
+
 def read_filter(
     sample, filter_count, filter_percent, quality, ratio, distance, **kwargs
 ):

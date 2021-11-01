@@ -258,7 +258,7 @@ def make_sample_check_table(samples, args):
 def check_pipeline_outs(sample, args):
     pipeline = Path(args["pipelinedir"])
     row_list = [sample]
-    
+
     p1 = re.compile(
         fr'{sample}\.barcodes\.q{args["quality"]}.\
             r{args["ratio"]}d{args["distance"]}\.tsv'
