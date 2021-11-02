@@ -1,4 +1,4 @@
-name: cashierenv
+name: cashierdev
 channels:
   - conda-forge
   - bioconda
@@ -9,8 +9,4 @@ dependencies:
   - starcode=1.4
   - fastx_toolkit=0.0.14
   - pear=0.9.6
-  - pysam=0.17*
-  - rich=10.12*
-  - pip
-  - pip:
-    - git+https://github.com/DaylinMorgan/pycashier.git
+  - poetry=1.1*

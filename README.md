@@ -18,6 +18,8 @@ It's recommended to use [conda](https://docs.conda.io/en/latest/) to install and
 
 ```bash
 conda env create -f https://raw.githubusercontent.com/DaylinMorgan/pycashier/main/environment.yml # or mamba env create -f ....
+conda activate cashierenv
+pycashier --help
 ```
 
 Additionally you may install with pip. Though it will be up to you to ensure all the non-python dependencies are on the path and installed correctly.
@@ -31,7 +33,7 @@ pip install git+https://github.com/DaylinMorgan/pycashier.git
 Pycashier has one required argument which is the directory containing the fastq or sam files you wish to process.
 
 ```bash
-conda activate cashier_env
+conda activate cashierenv
 pycashier ./fastqs
 ```
 For additional parameters see `pycashier -h`.
