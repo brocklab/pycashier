@@ -26,7 +26,7 @@ def merge_single(sample, fastqs, sourcedir, threads, **kwargs):
 
     if R1_file is None or R2_file is None:
         print("oops I didnt find an R1 or R2 file")
-        sys.exit()
+        sys.exit(1)
 
     mergedfastq = Path("mergedfastqs")
     merged_barcode_fastq = mergedfastq / f"{sample}.merged.raw.fastq"
@@ -104,7 +104,7 @@ def merge(fastqs, sourcedir, cli_args):
             samples.append(m.group(1))
         else:
             print(f"Failed to obtain sample name from {f}")
-            sys.exit()
+            sys.exit(1)
 
     print("Found the following samples:")
     for s in set(samples):
@@ -113,7 +113,7 @@ def merge(fastqs, sourcedir, cli_args):
 
     if len(samples) / len(set(samples)) != 2:
         print("There should be an R1 and R2 fastq file for each sample.")
-        sys.exit()
+        sys.exit(1)
 
     for sample in set(samples):
 

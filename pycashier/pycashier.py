@@ -25,7 +25,7 @@ def main():
     if not fastqs:
         console.log(f"Source dir: {sourcedir}, appears to be empty...")
         console.log("Exiting.")
-        sys.exit()
+        sys.exit(1)
 
     Path(cli_args["main"]["pipelinedir"]).mkdir(exist_ok=True)
     Path(cli_args["main"]["outdir"]).mkdir(exist_ok=True)
@@ -47,7 +47,7 @@ def main():
                 f"ERROR! There is a non fastq file in the provided fastq directory: {f}"
             )
             print("Exiting.")
-            sys.exit()
+            sys.exit(1)
 
     processed_samples = sample_check(sourcedir, fastqs, cli_args)
 
