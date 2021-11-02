@@ -25,7 +25,7 @@ def pre_run_check(tools):
             "It's recommeneded to install pycashier within a conda environment."
         )
         console.print(
-            "See README on github for details: [link]https://github.com/daylinmorgan/pycashier/[/link]"
+            "See README on github for details: [link]https://github.com/brocklab/pycashier[/link]"
         )
         sys.exit(1)
 
