@@ -7,9 +7,10 @@ from pathlib import Path
 from .console import console
 
 
-def merge_single(sample, fastqs, sourcedir, threads, **kwargs):
-    pear_args = kwargs["pear_args"]
-    pipeline = Path(kwargs["pipelinedir"])
+def merge_single(
+    sample, fastqs, sourcedir, threads, verbose, pipelinedir, pear_args, keep_output
+):
+    pipeline = Path(pipelinedir)
 
     # TODO: refactor for clarity and memory usage
     for f in fastqs:
@@ -67,12 +68,12 @@ def merge_single(sample, fastqs, sourcedir, threads, **kwargs):
             universal_newlines=True,
         )
 
-        if kwargs["verbose"]:
+        if verbose:
             console.print("[yellow]PEAR OUTPUT:")
             console.print(p.stdout)
 
         # remove the extra files made from pear
-        if not kwargs["keep_output"]:
+        if not keep_output:
             for suffix in [
                 "discarded.fastq",
                 "unassembled.forward.fastq",
@@ -128,6 +129,8 @@ def merge(fastqs, sourcedir, cli_args):
                 cli_args["main"]["threads"],
                 verbose=cli_args["main"]["verbose"],
                 pipelinedir=cli_args["main"]["pipelinedir"],
+                pear_args=cli_args["merge"]["pear_args"],
+                keep_output=cli_args["merge"]["keep_output"],
             )
 
         console.log(f"[green]{sample}[/green]: processing completed")
