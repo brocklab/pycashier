@@ -13,4 +13,4 @@ dependencies:
   - rich=10.12*
   - pip
   - pip:
-    - git+https://github.com/brocklab/pycashier.git
+    - pycashier

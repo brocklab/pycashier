@@ -25,7 +25,7 @@ pycashier --help
 Additionally you may install with pip. Though it will be up to you to ensure all the non-python dependencies are on the path and installed correctly.
 
 ```bash
-pip install git+https://github.com/brocklab/pycashier.git
+pip install pycashier
 ```
 
 ## Usage
