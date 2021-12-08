@@ -7,6 +7,7 @@ from .console import console
 
 PACKAGES = ["starcode", "cutadapt", "fastq_quality_filter"]
 
+
 def pre_run_check():
 
     pkgs_exist = {name: is_tool(name) for name in PACKAGES}

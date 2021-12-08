@@ -7,9 +7,10 @@ from rich import box
 from rich.prompt import Confirm
 from rich.table import Table
 
+from ._checks import pre_run_check
 from .console import console
 from .read_filter import get_filter_count
-from ._checks import pre_run_check
+
 
 def get_args():
     parser = argparse.ArgumentParser(
@@ -60,7 +61,6 @@ def get_args():
         help=argparse.SUPPRESS,
         action="store_true",
     )
-
 
     # extract specific parameters
     extract_parser = parser.add_argument_group(title="extract options")
