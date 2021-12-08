@@ -5,7 +5,7 @@ from rich.table import Table
 
 from .console import console
 
-PACKAGES = ["starcode", "cutadapt", "fastq_quality_filter"]
+PACKAGES = ["cutadapt", "fastq_quality_filter", "pysam", "starcode"]
 
 
 def pre_run_check():
@@ -34,5 +34,11 @@ def pre_run_check():
 
 def is_tool(name):
     """Check whether `name` is on PATH and marked as executable."""
+    if name == "pysam":
+        try:
+            import pysam  # noqa
 
+            return True
+        except ImportError:
+            return False
     return which(name) is not None
