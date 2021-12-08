@@ -9,7 +9,7 @@ from rich.table import Table
 
 from .console import console
 from .read_filter import get_filter_count
-
+from ._checks import pre_run_check
 
 def get_args():
     parser = argparse.ArgumentParser(
@@ -55,6 +55,12 @@ def get_args():
         metavar="",
         default="pipeline",
     )
+    parser.add_argument(
+        "--skip-init-check",
+        help=argparse.SUPPRESS,
+        action="store_true",
+    )
+
 
     # extract specific parameters
     extract_parser = parser.add_argument_group(title="extract options")
@@ -174,6 +180,9 @@ def get_args():
     )
 
     args = parser.parse_args()
+
+    if not args.skip_init_check:
+        pre_run_check()
 
     return {
         "main": {

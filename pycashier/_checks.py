@@ -5,16 +5,17 @@ from rich.table import Table
 
 from .console import console
 
+PACKAGES = ["starcode", "cutadapt", "fastq_quality_filter"]
 
-def pre_run_check(tools):
+def pre_run_check():
 
-    tools_exist = {name: is_tool(name) for name in tools}
-    if False in tools_exist.values():
+    pkgs_exist = {name: is_tool(name) for name in PACKAGES}
+    if False in pkgs_exist.values():
         console.print("\n[red bold] FAILED PRE-RUN CHECKS!!\n")
         table = Table(title="Pre-run Dependency Check")
         table.add_column("package", justify="right")
         table.add_column("found?", justify="left")
-        for name, exists in tools_exist.items():
+        for name, exists in pkgs_exist.items():
             if exists:
                 found = "[green] yes"
             else:
