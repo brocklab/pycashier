@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pycashier"
-version = "0.2.1"
+version = "0.2.2"
 description = "cash in on expressed barcode tags"
 authors = ["Daylin Morgan <daylinmorgan@gmail.com>"]
 license = "MIT"
