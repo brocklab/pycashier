@@ -29,8 +29,8 @@ conda activate cashierenv
 ```
 
 Additionally you may install with pip. Though it will be up to you to ensure all the
-dependencies you would install from bioconda are on your path and installed correctly. 
-`Pycashier` will check for them before running. 
+dependencies you would install from bioconda are on your path and installed correctly.
+`Pycashier` will check for them before running.
 
 ```bash
 pip install pycashier
@@ -48,7 +48,7 @@ For additional parameters see `pycashier -h`.
 
 As the files are processed two additional directories will be created `pipeline` and `outs`.
 
-**Note**: these can be specified with `-pd/--pipelinedir` and  `-o/--outdir`.  
+**Note**: these can be specified with `-pd/--pipelinedir` and  `-o/--outdir`.
 
 Currently all intermediary files generated as a result of the program will be found in `pipeline`.
 
@@ -94,4 +94,3 @@ Pycashier will **NOT** overwrite intermediary files. If there is an issue in the
 
 [Cashier](https://github.com/russelldurrett/cashier) is a tool developed by Russell Durrett for the analysis and extraction of expressed barcode tags.
 This version like it's predecessor wraps around several command line bioinformatic tools to pull out expressed barcode tags.
-
