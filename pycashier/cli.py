@@ -8,6 +8,7 @@ from rich.prompt import Confirm
 from rich.table import Table
 
 from ._checks import pre_run_check
+from ._version import __version__
 from .console import console
 from .read_filter import get_filter_count
 
@@ -61,7 +62,15 @@ def get_args():
         help=argparse.SUPPRESS,
         action="store_true",
     )
+    parser.add_argument(
+        "-V",
+        "--version",
+        help="show version information and exit",
+        action="version",
+        version="%(prog)s " + __version__,
+    )
 
+    
     # extract specific parameters
     extract_parser = parser.add_argument_group(title="extract options")
 
