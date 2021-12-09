@@ -70,7 +70,6 @@ def get_args():
         version="%(prog)s " + __version__,
     )
 
-    
     # extract specific parameters
     extract_parser = parser.add_argument_group(title="extract options")
 
