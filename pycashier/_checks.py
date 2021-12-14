@@ -5,7 +5,7 @@ from rich.table import Table
 
 from .console import console
 
-PACKAGES = ["cutadapt", "fastq_quality_filter", "pysam", "starcode"]
+PACKAGES = ["cutadapt", "fastq_quality_filter", "pear", "pysam", "starcode"]
 
 
 def pre_run_check():
@@ -24,7 +24,7 @@ def pre_run_check():
             table.add_row(name, found)
         console.print(table)
         console.print(
-            "It's recommeneded to install pycashier within a conda environment."
+            "It's recommended to install pycashier within a conda environment."
         )
         console.print(
             "See README on github for details: [link]https://github.com/brocklab/pycashier[/link]"
