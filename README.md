@@ -17,7 +17,7 @@ ClonMapper lineage tracing experiments, but is extensible to other similarly des
 It's recommended to use [conda](https://docs.conda.io/en/latest/)/[mamba](https://github.com/mamba-org/mamba) to install and manage the dependencies for this package
 
 ```bash
-conda install -c conda-forge -c bioconda cutadapt fastx-toolkit pear pysam starcode pycashier
+conda install -c conda-forge -c bioconda cutadapt fastx_toolkit pear pysam starcode pycashier
 ```
 
 You can also use the included `environment.yml` to create your environment and install everything you need.
