@@ -30,7 +30,15 @@ def cluster(sample, ratio, distance, quality, threads, **kwargs):
         )
         if kwargs["verbose"]:
             console.print("[yellow]STARCODE OUTPUT:")
-            console.print('\n'.join([line for line in p.stdout.splitlines() if not line.startswith("progress")]))
+            console.print(
+                "\n".join(
+                    [
+                        line
+                        for line in p.stdout.splitlines()
+                        if not line.startswith("progress")
+                    ]
+                )
+            )
 
         console.log(f"[green]{sample}[/green]: clustering complete")
 

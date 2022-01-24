@@ -5,7 +5,7 @@ from rich.table import Table
 
 from .console import console
 
-PACKAGES = ["cutadapt", "fastq_quality_filter", "pear", "pysam", "starcode"]
+PACKAGES = ["cutadapt", "fastp", "pysam", "starcode"]
 
 
 def pre_run_check():
