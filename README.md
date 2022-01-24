@@ -9,15 +9,14 @@ ClonMapper lineage tracing experiments, but is extensible to other similarly des
 ### Bioconda Dependencies
 - cutadapt (sequence extraction)
 - starcode (sequence clustering)
-- fastx-toolkit (PHred score filtering)
-- pear (paired end read merging)
+- fastp (merging/quality filtering)
 - pysam (sam file convertion to fastq)
 
 ## Installation
 It's recommended to use [conda](https://docs.conda.io/en/latest/)/[mamba](https://github.com/mamba-org/mamba) to install and manage the dependencies for this package
 
 ```bash
-conda install -c conda-forge -c bioconda cutadapt fastx_toolkit pear pysam starcode pycashier
+conda install -c conda-forge -c bioconda cutadapt fastp pysam starcode pycashier
 ```
 
 You can also use the included `environment.yml` to create your environment and install everything you need.
