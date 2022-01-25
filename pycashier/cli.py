@@ -169,19 +169,13 @@ def get_args():
     merge_parser.add_argument(
         "-m",
         "--merge",
-        help="merge R1 and R2 fastq files using pear",
+        help="merge R1 and R2 fastq files using fastp",
         action="store_true",
     )
     merge_parser.add_argument(
-        "-ko",
-        "--keep_output",
-        help="keep auxiliary files output by pear in mergefastqs directory",
-        action="store_true",
-    )
-    merge_parser.add_argument(
-        "-pa",
-        "--pear_args",
-        help="additional arguments to pass to pear",
+        "-fa",
+        "--fastp_args",
+        help="additional arguments to pass to fastp while merging",
         metavar="",
         type=str,
         default="",
@@ -215,8 +209,7 @@ def get_args():
         },
         "merge": {
             "merge": args.merge,
-            "keep_output": args.keep_output,
-            "pear_args": args.pear_args,
+            "fastp_args": args.fastp_args,
         },
         "filter": {
             "filter_percent": args.filter_percent,
@@ -343,6 +336,7 @@ def sample_check(sourcedir, fastqs, cli_args):
     }
 
     samples = [f.name.split(".")[0] for f in fastqs]
+    samples.sort()
     # outs_files = sorted([f.name for f in Path(args['outdir']).iterdir()])
     # check_outs(samples, outs_files)\
     processed_samples = make_sample_check_table(samples, args)

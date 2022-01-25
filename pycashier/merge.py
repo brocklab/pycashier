@@ -4,13 +4,22 @@ import subprocess
 import sys
 from pathlib import Path
 
+from rich.prompt import Confirm
+
 from .console import console
 
 
 def merge_single(
-    sample, fastqs, sourcedir, threads, verbose, pipelinedir, pear_args, keep_output
+    sample,
+    fastqs,
+    sourcedir,
+    threads,
+    verbose,
+    pipelinedir,
+    fastp_args,
 ):
     pipeline = Path(pipelinedir)
+    (pipeline / "merge_qc").mkdir(exist_ok=True)
 
     # TODO: refactor for clarity and memory usage
     for f in fastqs:
@@ -31,9 +40,6 @@ def merge_single(
 
     mergedfastq = Path("mergedfastqs")
     merged_barcode_fastq = mergedfastq / f"{sample}.merged.raw.fastq"
-    merged_barcode_file_prefix = pipeline / f"{sample}.merged.raw"
-
-    files = [R1_file, R2_file]
 
     if not merged_barcode_fastq.is_file():
 
@@ -44,21 +50,17 @@ def merge_single(
         path_to_r1 = sourcedir / R1_file
         path_to_r2 = sourcedir / R2_file
 
-        command = f"gunzip -k {path_to_r1} {path_to_r2}"
-        args = shlex.split(command)
-        p = subprocess.run(args)
-
-        files = [Path(f) for f in files]  # replace with sample dict of files
-
-        for f in files:
-
-            old_path = sourcedir / f.stem
-            new_path = pipeline / f.stem
-            old_path.rename(new_path)
-
         console.log(f"[green]{sample}[/green]: starting fastq merge")
-        command = f"pear -f {path_to_r1} -r {path_to_r2} \
-            -o {merged_barcode_file_prefix} -j {threads} {pear_args}"
+        command = f"fastp \
+                -i {path_to_r1}  \
+                -I {path_to_r2} \
+                -w {threads} \
+                -m -c -G -Q -L \
+                -j {pipeline}/merge_qc/{sample}.json \
+                -h {pipeline}/merge_qc/{sample}.html \
+                --merged_out {merged_barcode_fastq} \
+                {fastp_args}"
+
         args = shlex.split(command)
 
         p = subprocess.run(
@@ -69,25 +71,11 @@ def merge_single(
         )
 
         if verbose:
-            console.print("[yellow]PEAR OUTPUT:")
+            console.print("[yellow]FASTP OUTPUT:")
             console.print(p.stdout)
 
-        # remove the extra files made from pear
-        if not keep_output:
-            for suffix in [
-                "discarded.fastq",
-                "unassembled.forward.fastq",
-                "unassembled.reverse.fastq",
-            ]:
-                f = Path(f"{merged_barcode_file_prefix}.{suffix}")
-                f.unlink()
-
-        merged_barcode_file_prefix.with_suffix(
-            merged_barcode_file_prefix.suffix + ".assembled.fastq"
-        ).rename(merged_barcode_fastq)
-
     else:
-        print(f"Found merged barcode fastq for sample:{sample}")
+        console.log(f"[green]{sample}[/green]: Found merged barcode fastq")
         console.log(f"[green]{sample}[/green]: skipping fastq merge")
 
 
@@ -105,18 +93,21 @@ def merge(fastqs, sourcedir, cli_args):
             samples.append(m.group(1))
         else:
             print(f"Failed to obtain sample name from {f}")
+            print("Merge mode expects gzipped fastqs. Exiting.")
             sys.exit(1)
 
     print("Found the following samples:")
     for s in set(samples):
         console.print(f"[green]{s}")
     print()
+    if not Confirm.ask("Continue with these samples?"):
+        sys.exit()
 
     if len(samples) / len(set(samples)) != 2:
         print("There should be an R1 and R2 fastq file for each sample.")
         sys.exit(1)
 
-    for sample in set(samples):
+    for sample in sorted(set(samples)):
 
         with console.status(
             f"Processing sample: [green]{sample}[/green]", spinner="dots12"
@@ -129,8 +120,7 @@ def merge(fastqs, sourcedir, cli_args):
                 cli_args["main"]["threads"],
                 verbose=cli_args["main"]["verbose"],
                 pipelinedir=cli_args["main"]["pipelinedir"],
-                pear_args=cli_args["merge"]["pear_args"],
-                keep_output=cli_args["merge"]["keep_output"],
+                fastp_args=cli_args["merge"]["fastp_args"],
             )
 
         console.log(f"[green]{sample}[/green]: processing completed")
