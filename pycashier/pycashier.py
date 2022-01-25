@@ -28,15 +28,16 @@ def main():
         sys.exit(1)
 
     Path(cli_args["main"]["pipelinedir"]).mkdir(exist_ok=True)
+
+    if cli_args["merge"]["merge"]:
+
+        merge(fastqs, sourcedir, cli_args)
+
     Path(cli_args["main"]["outdir"]).mkdir(exist_ok=True)
 
     if cli_args["single_cell"]:
 
         single_cell(sourcedir, cli_args)
-
-    if cli_args["merge"]["merge"]:
-
-        merge(fastqs, sourcedir, cli_args)
 
     for f in fastqs:
 
