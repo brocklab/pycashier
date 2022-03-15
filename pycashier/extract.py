@@ -14,7 +14,7 @@ def extract_all(
     downstream_adapter,
     unlinked_adapters,
     quality,
-    unqualifed_percent,
+    unqualified_percent,
     ratio,
     distance,
     filter,
@@ -45,7 +45,7 @@ def extract_all(
                 downstream_adapter,
                 unlinked_adapters,
                 quality,
-                unqualifed_percent,
+                unqualified_percent,
                 verbose,
             )
 

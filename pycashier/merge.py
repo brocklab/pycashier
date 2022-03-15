@@ -26,7 +26,7 @@ def merge_single(sample, fastqs, input, pipeline, output, threads, verbose, fast
             R2_file = m.group(0)
 
     if R1_file is None or R2_file is None:
-        print("oops I didnt find an R1 or R2 file")
+        print("oops I didn't find an R1 or R2 file")
         sys.exit(1)
 
     merged_barcode_fastq = output / f"{sample}.merged.raw.fastq"

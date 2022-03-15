@@ -145,7 +145,9 @@ def sample_check(
         queue_all,
     )
 
-    if len(processed_samples)!=len(samples) and not Confirm.ask("Continue with these samples?"):
+    if len(processed_samples) != len(samples) and not Confirm.ask(
+        "Continue with these samples?"
+    ):
         sys.exit()
 
     return [f for sample, f in samples.items() if sample in processed_samples]
@@ -323,7 +325,7 @@ _trim_options = [
     click.option(
         "-l",
         "--length",
-        help="target length of exracted distance",
+        help="target length of extracted barcode",
         default=20,
         show_default=True,
     ),
@@ -484,13 +486,13 @@ def cli():
     required=True,
     type=click.Path(exists=True, file_okay=False, path_type=Path),
 )
-@click.option(
-    "-l",
-    "--length",
-    help="target length of exracted distance",
-    default=20,
-    show_default=20,
-)
+# @click.option(
+#     "-l",
+#     "--length",
+#     help="target length of extracted barcode",
+#     default=20,
+#     show_default=20,
+# )
 @add_options(
     [
         *_output_options,
@@ -596,7 +598,7 @@ def extract(
 @click.option(
     "-fa",
     "--fastp-args",
-    help="additional arguements provided as a string passed verbatim to fastp",
+    help="additional arguments provided as a string passed verbatim to fastp",
     type=str,
 )
 @click.pass_context
