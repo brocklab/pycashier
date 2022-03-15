@@ -178,17 +178,12 @@ def fake_header_add(in_file):
 """
     # TODO: change to with statement
     f = tempfile.NamedTemporaryFile(delete=False, dir=Path.cwd())
-    # print(f'copying new tmp sam to {f.name}')
     f.write((bytes(fake_header, encoding="utf-8")))
     f.flush()
 
-    subprocess.run(["cat", in_file], stdout=f)
-
-    # #python implementation
-    # with open(in_file, 'r') as sam_file:
-    #     for line in sam_file:
-    #         f.write(bytes(line, encoding='utf-8'))
-    #    #f.write(bytes(sam_file.read()), encoding='utf-8')
+    with open(in_file, "r") as sam_file:
+        for line in sam_file:
+            f.write(bytes(line, encoding="utf-8"))
 
     f.close()
     return f.name
@@ -296,7 +291,8 @@ def single_cell(
     for sample, f in sam_files.items():
 
         with console.status(
-            f"Processing sample: [green]{sample}[/green]", spinner="dots12"
+            f"Processing sample: [green]{sample}[/green]\r\n",
+            spinner="dots12",
         ) as status:
             single_cell_process(
                 sample,
@@ -312,7 +308,6 @@ def single_cell(
                 verbose,
                 status,
             )
-
         console.print(f"[green]{sample}[/green]: processing completed")
         console.rule()
 
