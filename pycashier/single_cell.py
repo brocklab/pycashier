@@ -10,6 +10,7 @@ except ImportError:
     pass
 
 from rich.progress import Progress
+from rich.prompt import Confirm
 
 from .console import console
 
@@ -193,23 +194,26 @@ def fake_header_add(in_file):
     return f.name
 
 
-def single_cell_process(sample, f, sourcedir, cli_args, status):
+def single_cell_process(
+    sample,
+    f,
+    pipeline,
+    output,
+    error,
+    minimum_length,
+    length,
+    upstream_adapter,
+    downstream_adapter,
+    threads,
+    verbose,
+    status,
+):
 
-    error_rate = cli_args["extract"]["error_rate"]
-    threads = cli_args["main"]["threads"]
-    barcode_length_min = 10
-    barcode_length = cli_args["extract"]["barcode_length"]
-    upstream_adapter = cli_args["extract"]["upstream_adapter"]
-    downstream_adapter = cli_args["extract"]["downstream_adapter"]
     adapter_string = f"-g {upstream_adapter} -a {downstream_adapter}"
-
     input_file = f
-    pipeline_dir = Path(cli_args["main"]["pipelinedir"])
-    fastq_out = pipeline_dir / f"{sample}.cell_record_labeled.fastq"
-    output_file = pipeline_dir / f"{sample}.cell_record_labeled.barcode.fastq"
-    tsv_out = (
-        Path(cli_args["main"]["outdir"]) / f"{sample}.cell_record_labeled.barcode.tsv"
-    )
+    fastq_out = pipeline / f"{sample}.cell_record_labeled.fastq"
+    output_file = pipeline / f"{sample}.cell_record_labeled.barcode.fastq"
+    tsv_out = output / f"{sample}.cell_record_labeled.barcode.tsv"
 
     if not fastq_out.is_file():
         console.log(f"[green]{sample}[/green]: converting sam to labeled fastq")
@@ -226,10 +230,10 @@ def single_cell_process(sample, f, sourcedir, cli_args, status):
         console.log(f"[green]{sample}[/green]: extracting barcodes")
 
         command = f"cutadapt \
-            -e {error_rate} \
+            -e {error} \
             -j {threads} \
-            --minimum-length={barcode_length_min} \
-            --maximum-length={barcode_length} \
+            --minimum-length={minimum_length} \
+            --maximum-length={length} \
             --max-n=0 \
             --trimmed-only {adapter_string} \
             -n 2 \
@@ -244,7 +248,7 @@ def single_cell_process(sample, f, sourcedir, cli_args, status):
             universal_newlines=True,
         )
 
-        if cli_args["main"]["verbose"]:
+        if verbose:
             console.print("[yellow]CUTADAPT OUTPUT:")
             console.print(p.stdout)
 
@@ -258,28 +262,56 @@ def single_cell_process(sample, f, sourcedir, cli_args, status):
         )
 
 
-def single_cell(sourcedir, cli_args):
-
-    console.rule("SINGLE CELL MODE", align="center", style="red")
+def single_cell(
+    input,
+    pipeline,
+    output,
+    error,
+    minimum_length,
+    length,
+    upstream_adapter,
+    downstream_adapter,
+    threads,
+    verbose,
+):
     print()
+    for d in [pipeline, output]:
+        d.mkdir(exist_ok=True)
 
-    sam_files = [f for f in sourcedir.iterdir()]
+    # TODO: raise error if can't get sample name
+    sam_files = {f.name.split(".")[0]: f for f in input.iterdir()}
 
-    for f in sam_files:
+    for f in sam_files.values():
 
         ext = f.suffix
 
         if ext != ".sam":
             raise ValueError("There is a non sam file in the provided input directory:")
 
-    for f in sam_files:
+    console.print(f"[b cyan]Samples[/]: {', '.join(sorted(sam_files.keys()))}\n")
 
-        sample = f.name.split(".")[0]
+    if not Confirm.ask("Continue with these samples?"):
+        sys.exit()
+
+    for sample, f in sam_files.items():
 
         with console.status(
             f"Processing sample: [green]{sample}[/green]", spinner="dots12"
         ) as status:
-            single_cell_process(sample, f, sourcedir, cli_args, status)
+            single_cell_process(
+                sample,
+                f,
+                pipeline,
+                output,
+                error,
+                minimum_length,
+                length,
+                upstream_adapter,
+                downstream_adapter,
+                threads,
+                verbose,
+                status,
+            )
 
         console.log(f"[green]{sample}[/green]: processing completed")
         console.rule()

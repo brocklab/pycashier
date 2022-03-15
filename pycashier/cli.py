@@ -1,390 +1,732 @@
-import argparse
-import re
 import sys
 from pathlib import Path
 
+import rich_click as click
 from rich import box
+from rich.panel import Panel
 from rich.prompt import Confirm
 from rich.table import Table
+from ruamel.yaml import YAML
 
 from ._checks import pre_run_check
-from ._version import __version__
 from .console import console
+from .extract import extract_all
+from .merge import merge_all
 from .read_filter import get_filter_count
+from .single_cell import single_cell
+from .utils import combine_outs, get_fastqs
+
+yaml = YAML()
+
+click.rich_click.USE_RICH_MARKUP = True
+# click.rich_click.USE_MARKDOWN = True
+click.rich_click.MAX_WIDTH = 100
+
+PROG_NAME = "pycashier"
+CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
 
-def get_args():
-    parser = argparse.ArgumentParser(
-        prog="pycashier",
-        usage="%(prog)s [-h] sourcedir"
-        #       formatter_class=argparse.ArgumentDefaultsHelpFormatter
+def print_params(ctx):
+    params = ctx.params
+    params.pop("save_config")
+    params = {k: v for k, v in params.items() if v is not None}
+    grid = Table.grid(expand=True)
+    grid.add_column(justify="right", style="bold cyan")
+    grid.add_column(justify="center")
+    grid.add_column(style="yellow")
+
+    for key, value in params.items():
+        grid.add_row(key, ": ", str(value))
+
+    console.print(
+        Panel.fit(
+            grid,
+            border_style=click.rich_click.STYLE_COMMANDS_PANEL_BORDER,
+            title=f"{ctx.info_name.capitalize()} Parameters",
+            title_align=click.rich_click.ALIGN_COMMANDS_PANEL,
+            width=click.rich_click.MAX_WIDTH,
+        )
     )
 
-    parser.add_argument(
-        "sourcedir", help="directory containing sam/fastq files to process"
-    )
-    parser.add_argument(
-        "-t",
-        "--threads",
-        help="number of cpu cores to use (default: %(default)s)",
-        metavar="",
-        default=1,
-    )
-    parser.add_argument(
-        "-sc",
-        "--single_cell",
-        help="turn unampped sam files into cell barcode & umi labeled tsv",
-        action="store_true",
-    )
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        help="show output of command line calls",
-        action="store_true",
-    )
-    parser.add_argument(
-        "-o",
-        "--outdir",
-        help="output directory (default: %(default)s)",
-        metavar="",
-        default="outs",
-    )
-    parser.add_argument(
-        "-pd",
-        "--pipelinedir",
-        help="directory containing pipeline \
-            output files (default: %(default)s)",
-        metavar="",
-        default="pipeline",
-    )
-    parser.add_argument(
-        "--skip-init-check",
-        help=argparse.SUPPRESS,
-        action="store_true",
-    )
-    parser.add_argument(
-        "-V",
-        "--version",
-        help="show version information and exit",
-        action="version",
-        version="%(prog)s " + __version__,
-    )
 
-    # extract specific parameters
-    extract_parser = parser.add_argument_group(title="extract options")
+def save_params(ctx):
+    params = ctx.params
+    save_type = params.pop("save_config")
+    try:
+        config_file = Path(ctx.obj["config_file"])
+    except TypeError:
+        raise click.BadParameter("use `--save-config` with a specified `--config-file`")
 
-    extract_parser.add_argument(
-        "-e",
-        "--error",
-        help="error tolerance supplied to cutadapt (default: %(default)s)",
-        metavar="",
-        default=0.1,
-        type=float,
-    )
-    extract_parser.add_argument(
-        "-bl",
-        "--barcode_length",
-        help="integer length of expected barcode (default: %(default)s)",
-        metavar="",
-        type=int,
-        default=20,
-    )
-    extract_parser.add_argument(
-        "-mbl",
-        "--min_barcode_length",
-        help="minimum length of expected barcode (default: %(default)s)",
-        metavar="",
-        type=int,
-        default=20,
-    )
-    extract_parser.add_argument(
-        "-ua",
-        "--upstream_adapter",
-        help="5' sequence flanking barcode",
-        metavar="",
-        type=str,
-        default="ATCTTGTGGAAAGGACGAAACACCG",
-    )
-    extract_parser.add_argument(
-        "-da",
-        "--downstream_adapter",
-        help="3' sequence flanking barcode region",
-        metavar="",
-        type=str,
-        default="GTTTTAGAGCTAGAAATAGCAAGTT",
-    )
-    extract_parser.add_argument(
-        "-ul",
-        "--unlinked_adapters",
-        help="run cutadapt using unlinked adapters",
-        action="store_true",
-    )
-    extract_parser.add_argument(
-        "-q",
-        "--quality",
-        help="minimum PHRED quality to use to \
-            filter reads (default: %(default)s)",
-        metavar="",
-        default=30,
-        type=int,
-    )
+    if config_file.is_file():
+        console.print(f"Updating current config file at [b cyan]{config_file}")
+        with config_file.open("r") as f:
+            config = yaml.load(f)
+    else:
+        print(f"Staring a config file at [b cyan]{config_file}")
+        config = {}
 
-    cluster_parser = parser.add_argument_group(title="cluster options")
-    cluster_parser.add_argument(
-        "-r",
-        "--ratio",
-        help="ratio to use for message passing clustering (default: %(default)s)",
-        metavar="",
-        default=3,
-        type=int,
-    )
-    cluster_parser.add_argument(
-        "-d",
-        "--distance",
-        help="levenshtein distance for clustering (default: %(default)s)",
-        metavar="",
-        default=1,
-        type=int,
-    )
+    if save_type == "explicit":
+        params = {
+            k: v for k, v in params.items() if ctx.get_parameter_source(k).value != 3
+        }
 
-    filter_parser = parser.add_argument_group("filter_options")
-    filter_parser.add_argument(
-        "-fc",
-        "--filter_count",
-        help="nominal number of reads for sequence to pass filter",
-        metavar="",
-        default=None,
-        type=int,
-    )
-    filter_parser.add_argument(
-        "-fp",
-        "--filter_percent",
-        help="minimum percentage of total reads for sequence to pass filter",
-        metavar="",
-        default=0.005,
-        type=float,
-    )
+    # sanitize the path's for writing to yaml
+    for k in ["input", "pipeline", "output"]:
+        if k in params.keys():
+            params[k] = str(params[k])
 
-    merge_parser = parser.add_argument_group(title="merge options")
-    merge_parser.add_argument(
-        "-m",
-        "--merge",
-        help="merge R1 and R2 fastq files using fastp",
-        action="store_true",
-    )
-    merge_parser.add_argument(
-        "-fa",
-        "--fastp_args",
-        help="additional arguments to pass to fastp while merging",
-        metavar="",
-        type=str,
-        default="",
-    )
+    config[ctx.info_name] = params
 
-    args = parser.parse_args()
+    with config_file.open("wb") as f:
+        yaml.dump(config, f)
 
-    if not args.skip_init_check:
+    console.print("Exiting...")
+    ctx.exit()
+
+
+def load_params(ctx, param, filename):
+    if not filename or ctx.resilient_parsing:
+        return
+
+    ctx.default_map = {}
+    if Path(filename).is_file():
+        with Path(filename).open("r") as f:
+            params = yaml.load(f)
+        if params:
+            ctx.default_map = params.get(ctx.info_name, {})
+    else:
+        console.print("No config file found. ignoring..")
+
+    ctx.obj = {"config_file": filename}
+
+
+def init_check(ctx, param, check):
+    if not check:
         pre_run_check()
 
-    return {
-        "main": {
-            "sourcedir": args.sourcedir,
-            "threads": args.threads,
-            "quality": args.quality,
-            "verbose": args.verbose,
-            "outdir": args.outdir,
-            "pipelinedir": args.pipelinedir,
-        },
-        "extract": {
-            "error_rate": args.error,
-            "upstream_adapter": args.upstream_adapter,
-            "downstream_adapter": args.downstream_adapter,
-            "barcode_length": args.barcode_length,
-            "min_barcode_length": args.min_barcode_length,
-            "unlinked_adapters": args.unlinked_adapters,
-        },
-        "cluster": {
-            "ratio": args.ratio,
-            "distance": args.distance,
-        },
-        "merge": {
-            "merge": args.merge,
-            "fastp_args": args.fastp_args,
-        },
-        "filter": {
-            "filter_percent": args.filter_percent,
-            "filter_count": args.filter_count,
-        },
-        "single_cell": args.single_cell,
-    }
+
+def validate_filter_args(ctx):
+    if ctx.params["filter_count"]:
+        if ctx.get_parameter_source("filter_percent").value == 3:
+            ctx.params["filter_percent"] = None
+            return {"filter_count": ctx.params["filter_count"]}
+        else:
+            raise click.BadParameter(
+                "`--filter-count` and `--filter-percent` are mutually exclusive"
+            )
+    else:
+        return {"filter_percent": ctx.params["filter_percent"]}
 
 
-def make_sample_check_table(samples, args):
-    processed_samples = []
-    table = Table(
-        title="[yellow]Samples Queued For Processing",
-        box=box.HORIZONTALS,
-        header_style="bold bright_blue",
-        min_width=80,
+def add_options(options):
+    def _add_options(func):
+        for option in reversed(options):
+            func = option(func)
+        return func
+
+    return _add_options
+
+
+# Click option definitions
+##########################
+
+
+_output_options = [
+    click.option(
+        "-o",
+        "--output",
+        help="output directory",
+        default="./outs",
+        show_default=True,
+        type=click.Path(file_okay=False, path_type=Path),
+    ),
+    click.option(
+        "-p",
+        "--pipeline",
+        help="pipeline directory",
+        default="./pipeline",
+        show_default=True,
+        type=click.Path(file_okay=False, path_type=Path),
+    ),
+]
+
+_general_options = [
+    click.option(
+        "-v", "--verbose", help="print the output of underlying software", is_flag=True
+    ),
+    click.option(
+        "-t",
+        "--threads",
+        help="number of cpu cores to use",
+        default=1,
+        show_default=True,
+    ),
+    click.option(
+        "-c",
+        "--config",
+        type=click.Path(dir_okay=False),
+        callback=load_params,
+        is_eager=True,
+        expose_value=False,
+        help="read parameter values from config file",
+        show_default=True,
+    ),
+    click.option(
+        "--save-config",
+        help="save current params to file specified by `--config`",
+        type=click.Choice(["explicit", "full"], case_sensitive=False),
+    ),
+    click.option(
+        "--skip-init-check",
+        help="skip runtime dependency check",
+        is_flag=True,
+        hidden=True,
+        expose_value=False,
+        callback=init_check,
+    ),
+]
+
+_trim_options = [
+    click.option(
+        "-e",
+        "--error",
+        help="error tolerance supplied to cutadapt",
+        default=0.1,
+        show_default=True,
+    ),
+    click.option(
+        "-l",
+        "--length",
+        help="target length of exracted distance",
+        default=20,
+        show_default=True,
+    ),
+    click.option(
+        "-ua",
+        "--upstream-adapter",
+        help="5' sequence flanking barcode",
+        default="ATCTTGTGGAAAGGACGAAACACCG",
+    ),
+    click.option(
+        "-da",
+        "--downstream-adapter",
+        help="3' sequence flanking barcode",
+        default="GTTTTAGAGCTAGAAATAGCAAGTT",
+    ),
+    click.option(
+        "--unlinked-adapters", help="run cutadapt using unlinked adapters", is_flag=True
+    ),
+]
+
+_quality_options = [
+    click.option(
+        "-q", "--quality", help="minimum PHRED quality for filtering reads", default=30
+    ),
+    click.option(
+        "-up",
+        "--unqualified-percent",
+        help="minimum percent of bases which can be below quality threshold",
+        default=80,
+    ),
+]
+
+_cluster_options = [
+    click.option(
+        "-r", "--ratio", help="ratio to use for message passing clustering", default=3
+    ),
+    click.option(
+        "-d", "--distance", help="levenstein distance for clustering", default=1
+    ),
+]
+
+_filter_options = [
+    click.option(
+        "-fc",
+        "--filter-count",
+        help="minium nominal number of reads for sequence",
+        type=int,
+    ),
+    click.option(
+        "-fp",
+        "--filter-percent",
+        help="minimum percentage of total reads",
+        default=0.005,
+        show_default=True,
+    ),
+    click.option(
+        "--offset",
+        help="length offset from target barcode length post-clustering",
+        default=1,
+        show_default=True,
+    ),
+]
+##########################
+
+
+# Rich Click Option groups
+##########################
+
+
+_general_options_group = {
+    "name": "General Options",
+    "options": [
+        "--help",
+        "--verbose",
+        "--threads",
+        "--config",
+        "--save-config",
+    ],
+}
+_trim_options_group = {
+    "name": "Trim (Cutadapt) Options",
+    "options": [
+        "--error",
+        "--length",
+        "--upstream-adapter",
+        "--downstream-adapter",
+        "--unlinked-adapters",
+    ],
+}
+
+_input_output_options_group = {
+    "name": "Input/Output Options",
+    "options": ["--input", "--output", "--pipeline"],
+}
+
+click.rich_click.OPTION_GROUPS = {
+    "pycashier extract": [
+        _input_output_options_group,
+        _trim_options_group,
+        *[
+            {
+                "name": "Cluster (Starcode) Options",
+                "options": [
+                    "--ratio",
+                    "--distance",
+                ],
+            },
+            {
+                "name": "Quality (Fastp) Options",
+                "options": ["--quality", "--unqualified-percent"],
+            },
+            {
+                "name": "Filter Options",
+                "options": ["--filter-count", "--filter-percent", "--offset"],
+            },
+        ],
+        _general_options_group,
+    ],
+    "pycashier merge": [
+        _input_output_options_group,
+        {"name": "Merge (Fastp) Options", "options": ["--fastp-args"]},
+        _general_options_group,
+    ],
+    "pycashier scrna": [
+        _input_output_options_group,
+        {
+            "name": _trim_options_group["name"],
+            "options": ["--minimum-length"] + _trim_options_group["options"][:-1],
+        },
+        _general_options_group,
+    ],
+    "pycashier combine": [_input_output_options_group, _general_options_group],
+}
+##########################
+
+
+# Click Command Configs
+##########################
+
+
+@click.group(
+    context_settings=CONTEXT_SETTINGS,
+)
+@click.version_option(package_name="pycashier", prog_name="pycashier")
+def cli():
+    """Cash in on DNA Barcode Tags
+    \n\n\n
+    See `[b cyan]pycashier COMMAND -h[/]` for more information.
+    """
+    pass
+
+
+@cli.command()
+@click.option(
+    "-i",
+    "--input",
+    help="source directory containing fastq files",
+    required=True,
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+)
+@click.option(
+    "-l",
+    "--length",
+    help="target length of exracted distance",
+    default=20,
+    show_default=20,
+)
+@add_options(
+    [
+        *_output_options,
+        *_general_options,
+        *_trim_options,
+        *_quality_options,
+        *_cluster_options,
+        *_filter_options,
+    ]
+)
+@click.pass_context
+def extract(
+    ctx,
+    input,
+    output,
+    pipeline,
+    error,
+    length,
+    upstream_adapter,
+    downstream_adapter,
+    unlinked_adapters,
+    quality,
+    unqualified_percent,
+    ratio,
+    distance,
+    filter_percent,
+    filter_count,
+    offset,
+    verbose,
+    threads,
+    save_config,
+):
+    """
+    extract DNA barcodes from a directory of fastq files
+    \n\n\n
+    Sample names should be delimited with a ".", such as `[b cyan][yellow]<sample>[/yellow].raw.fastq[/]`,
+    anything succeeding the first period will be ignored by `[b cyan]pycashier[/]`.
+    \n\n\n
+    If your data is paired-end with overlapping barcodes, see `[b cyan]pycashier merge[/]`.
+    """
+
+    # validate that filter count and filter percent aren't both defined
+    filter = validate_filter_args(ctx)
+
+    if save_config:
+        save_params(ctx)
+
+    console.print(("[b]\n[cyan]PYCASHIER:[/cyan] Starting Extraction\n"))
+    print_params(ctx)
+
+    fastqs = get_fastqs(input)
+
+    processed_fastqs = sample_check(
+        fastqs,
+        pipeline,
+        output,
+        quality,
+        ratio,
+        distance,
+        filter,
+        offset,
     )
+
+    fastqs = [f for f in fastqs if f not in processed_fastqs]
+
+    extract_all(
+        fastqs,
+        output,
+        pipeline,
+        error,
+        length,
+        upstream_adapter,
+        downstream_adapter,
+        unlinked_adapters,
+        quality,
+        unqualified_percent,
+        ratio,
+        distance,
+        filter,
+        offset,
+        verbose,
+        threads,
+    )
+
+
+@cli.command()
+@click.option(
+    "-i",
+    "--input",
+    help="source directory containing gzipped R1 and R2 fastq files",
+    required=True,
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+)
+@click.option(
+    "-o",
+    "--output",
+    help="output directory",
+    default="./mergedfastqs",
+    show_default=True,
+    type=click.Path(file_okay=False, path_type=Path),
+)
+@add_options([_output_options[1], *_general_options])
+@click.option(
+    "-fa",
+    "--fastp-args",
+    help="additional arguements provided as a string passed verbatim to fastp",
+    type=str,
+)
+@click.pass_context
+def merge(
+    ctx,
+    input,
+    output,
+    pipeline,
+    fastp_args,
+    threads,
+    verbose,
+    save_config,
+):
+    """
+    merge overlapping paired-end reads using fastp
+    \n\n\n
+    Simple wrapper over `[b cyan]fastp[/]` to combine R1 and R2 from PE fastq files.
+    \n\n\n
+    [i]NOTE[/]: fastq files must be gzipped or `[b cyan]pycashier[/]` will exit.
+    """
+
+    if save_config:
+        save_params(ctx)
+
+    console.print(("[b]\n[cyan]PYCASHIER:[/cyan] Starting Merge\n"))
+
+    print_params(ctx)
+
+    merge_all(
+        [f for f in input.iterdir()],
+        input,
+        pipeline,
+        output,
+        threads,
+        verbose,
+        fastp_args,
+    )
+
+
+@cli.command()
+@click.option(
+    "-i",
+    "--input",
+    help="source directory containing sam files from scRNA-seq",
+    required=True,
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+)
+@click.option(
+    "-ml",
+    "--minimum-length",
+    help="minimum length of extracted barcode",
+    default=10,
+    show_default=True,
+)
+@add_options([*_output_options, *_trim_options[:-1], *_general_options])
+@click.pass_context
+def scrna(
+    ctx,
+    input,
+    output,
+    pipeline,
+    minimum_length,
+    length,
+    error,
+    upstream_adapter,
+    downstream_adapter,
+    threads,
+    verbose,
+    save_config,
+):
+    """
+    extract expressed DNA barcodes from scRNA-seq
+    \n\n\n
+    Designed for interoperability with 10X scRNA-seq workflow.
+    After processing samples with `[b cyan]cellranger[/]` resulting
+    bam files should be converted to sam files using `[b cyan]samtools[/]`.
+    \n\n\n
+    [i]NOTE[/]: You can speed this up by providing a sam file with only
+    the unmapped reads.
+    """
+    if save_config:
+        save_params(ctx)
+
+    console.print(("[b]\n[cyan]PYCASHIER:[/cyan] Starting Single Cell Extraction\n"))
+    print_params(ctx)
+    single_cell(
+        input,
+        pipeline,
+        output,
+        error,
+        minimum_length,
+        length,
+        upstream_adapter,
+        downstream_adapter,
+        threads,
+        verbose,
+    )
+
+
+@cli.command()
+@click.option(
+    "-i",
+    "--input",
+    help="source directory containing output files from [b cyan]pycashier extract",
+    default="outs",
+    show_default=True,
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+)
+@click.option(
+    "-o",
+    "--output",
+    help="combined tsv of all samples found in input directory",
+    default="combined.tsv",
+    show_default=True,
+    type=click.Path(exists=False, dir_okay=False, path_type=Path),
+)
+@add_options([*_general_options[2:]])
+@click.pass_context
+def combine(
+    ctx,
+    input,
+    output,
+    save_config,
+):
+    """
+    combine resulting output of [b cyan]extract[/]
+    """
+    combine_outs(input, output)
+    pass
+
+
+if __name__ == "__main__":
+    cli()
+
+
+def make_sample_check_table(
+    samples, pipeline, output, quality, ratio, distance, filter, offset, queue_all
+):
+    processed_samples = []
+    table = Table(box=box.SIMPLE, header_style="bold cyan", collapse_padding=True)
     table.add_column(
-        "Sample",
+        "sample",
         justify="center",
         style="green",
         no_wrap=True,
     )
+    table.add_column(f"q{quality}", justify="center")
+    table.add_column("barcodes", justify="center")
     table.add_column(
-        f"Read Quality\n(Phred Score)\n {args['quality']} ", justify="center"
-    )
-    table.add_column(
-        f"Clustering\n(ratio, distance)\n {args['ratio']}, {args['distance']}",
+        f"r{ratio}d{distance}",
         justify="center",
     )
-    if args["filter_count"] is not None:
-        table.add_column(
-            f"Filter Cutoff\n(min reads)\n {args['filter_count']}", justify="center"
-        )
+    if "filter_count" in filter.keys():
+        # filter_expr = f"min{filter['filter_count']}"
+        filter_expr = "min(N)"
     else:
-        table.add_column(
-            f"Filter Cutoff\n(min %)\n {args['filter_percent']} %", justify="center"
-        )
-    table.add_column("Processed?", justify="center")
+        # filter_expr=f"min({filter['filter_percent']}%)"
+        filter_expr = "min(%)"
+    table.add_column(f"{filter_expr}_off{offset}", justify="center")
 
     for sample in samples:
-        row, processed = check_pipeline_outs(sample, args)
-
-        if processed:
-            processed_samples.append(sample)
+        if not queue_all:
+            row = make_row(
+                sample, pipeline, output, quality, ratio, distance, filter, offset
+            )
+            if "[bold green]" in row[0]:
+                processed_samples.append(sample)
+        else:
+            row = [f"[bold yellow]{sample}"] + ["[yellow]Queued"] * 4
 
         table.add_row(*row)
 
-    console.print(table, justify="center")
+    console.print(
+        Panel.fit(
+            table,
+            border_style=click.rich_click.STYLE_COMMANDS_PANEL_BORDER,
+            title="Queue",
+            title_align=click.rich_click.ALIGN_COMMANDS_PANEL,
+            width=click.rich_click.MAX_WIDTH,
+        )
+    )
 
-    print()
+    console.print(
+        f"There are {len(samples)-len(processed_samples)} samples to finish processing.\n"
+    )
 
     return processed_samples
 
 
-def check_pipeline_outs(sample, args):
-    pipeline = Path(args["pipelinedir"])
-    row_list = [sample]
-
-    p1 = re.compile(
-        fr'{sample}\.barcodes\.q{args["quality"]}.\
-            r{args["ratio"]}d{args["distance"]}\.tsv'
-    )
-    p2 = re.compile(fr'{sample}\.barcodes\.q{args["quality"]}\.tsv')
-    p3 = re.compile(
-        fr'{sample}\.barcodes\.q{args["quality"]}.\
-            r{args["ratio"]}d{args["distance"]}\.min(?P<filter_count>\d+)\.tsv'
-    )
-
-    filters = []
-    for f in pipeline.iterdir():
-        m = p1.search(f.name)
-
-        if m:
-            row_list += ["[bold green]\u2713"] * 2
-
-            filters = []
-            for f2 in sorted([f.name for f in Path(args["outdir"]).iterdir()]):
-                m = p3.search(f2)
-                if m:
-                    if args["filter_count"] is not None:
-                        filter_count_check = args["filter_count"]
-                    else:
-                        filter_count_check = get_filter_count(f, args["filter_percent"])
-
-                    if str(filter_count_check) == m.group("filter_count"):
-                        filters.append(f"[green]{m.group('filter_count')}[/green]")
-                    else:
-                        filters.append(m.group("filter_count"))
-
-            if filters:
-                row_list.append(", ".join(filters))
-
-            break
-
-    if row_list == [sample]:
-        for f in pipeline.iterdir():
-            m = p2.search(f.name)
-            if m:
-                row_list += [":heavy_check_mark:"]
-
-    row_list.extend(["[yellow]Queued"] * (4 - len(row_list)))
-
-    if r"[green]" in "".join(filters):
-        row_list.append("[bold green]\u2713")
-        processed = True
+def check_in_dir(sample, suffix, directory):
+    filepath = f"{sample}{suffix}"
+    if directory / filepath in directory.glob(f"*{suffix}"):
+        return "[bold green]\u2713"
     else:
-        row_list.append("[bold red] Incomplete")
-        processed = False
-
-    return row_list, processed
+        return "[yellow]Queued"
 
 
-def sample_check(sourcedir, fastqs, cli_args):
+def make_row(sample, pipeline, output, quality, ratio, distance, filter, offset):
 
-    args = {
-        "quality": cli_args["main"]["quality"],
-        "ratio": cli_args["cluster"]["ratio"],
-        "distance": cli_args["cluster"]["distance"],
-        "filter_percent": cli_args["filter"]["filter_percent"],
-        "filter_count": cli_args["filter"]["filter_count"],
-        "pipelinedir": cli_args["main"]["pipelinedir"],
-        "outdir": cli_args["main"]["outdir"],
-    }
+    # start the table row
+    row = []
+    row.append(check_in_dir(sample, f".q{quality}.fastq", pipeline))
+    row.append(check_in_dir(sample, f".q{quality}.barcodes.tsv", pipeline))
+    row.append(
+        check_in_dir(sample, f".q{quality}.barcodes.r{ratio}d{distance}.tsv", pipeline)
+    )
+    if row[-1] == "[bold green]\u2713":
+        if "filter_percent" in filter.keys():
+            filter_count = get_filter_count(
+                pipeline / f"{sample}.q{quality}.barcodes.r{ratio}d{distance}.tsv",
+                filter["filter_percent"],
+            )
+        else:
+            filter_count = filter["filter_count"]
+        row.append(
+            check_in_dir(
+                sample,
+                f".q{quality}.barcodes.r{ratio}d{distance}.min{filter_count}_off{offset}.tsv",
+                output,
+            )
+        )
 
-    samples = [f.name.split(".")[0] for f in fastqs]
-    samples.sort()
-    # outs_files = sorted([f.name for f in Path(args['outdir']).iterdir()])
-    # check_outs(samples, outs_files)\
-    processed_samples = make_sample_check_table(samples, args)
+    if set(row[1:]) == {"[bold green]\u2713"}:
+        row = [f"[bold green]{sample}"] + row
+    else:
+        row.extend(["[yellow]Queued"] * (4 - len(row)))
+        row = [f"[bold yellow]{sample}"] + row
+
+    return row
+
+
+def sample_check(
+    fastqs,
+    pipeline,
+    output,
+    quality,
+    ratio,
+    distance,
+    filter,
+    offset,
+):
+    samples = {f.name.split(".")[0]: f for f in fastqs}
+    queue_all = pipeline.is_dir()
+    processed_samples = make_sample_check_table(
+        sorted(samples.keys()),
+        pipeline,
+        output,
+        quality,
+        ratio,
+        distance,
+        filter,
+        offset,
+        queue_all,
+    )
 
     if not Confirm.ask("Continue with these samples?"):
         sys.exit()
 
-    return processed_samples
-
-
-####################################################
-#  functions to get additional samples found in outs
-####################################################
-
-# def get_params(f):
-#     p = re.compile(
-#         r'(?P<sample>\w+)\.barcodes\.q(?P<quality>\d\d).r(?P<ratio>\d+)d(?P<distance>\d+)\.min(?P<filter_count>\d+)\.tsv'
-#     )
-#     m = p.search(f)
-#     if m:
-#         return m.groupdict()
-#     else:
-#         raise ValueError(f"Unexpected file in outs directory:{f}")
-
-# def check_outs(samples, files):
-#     table_rows = []
-
-#     for f in files:
-#         params = get_params(f)
-#         if params['sample'] not in samples:
-#             table_rows.append([
-#                 params['sample'], params['quality'],
-#                 f"{params['ratio']}, {params['distance']}",
-#                 params['filter_count']
-#             ])
-#     if table_rows:
-#         console = Console()
-#         table = Table(title="Additional Samples Found in Outs Directory",
-#                       box=box.HORIZONTALS,
-#                       header_style="bold bright_blue",
-#                       min_width=70)
-#         table.add_column("Sample",
-#                          justify="center",
-#                          style="green",
-#                          no_wrap=True)
-#         table.add_column("Read Quality\n(Phred Score)", justify="center")
-#         table.add_column('Clustering\n(ratio,distance)', justify='center')
-#         table.add_column('Filter Cutoff\n(min reads)', justify='center')
-#         for row in table_rows:
-#             table.add_row(*row)
-#         console.print(table)
+    return [f for sample, f in samples.items() if sample in processed_samples]

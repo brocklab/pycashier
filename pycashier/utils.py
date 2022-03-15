@@ -1,3 +1,27 @@
+import sys
+
+from .console import console
+
+
+def get_fastqs(src):
+    fastqs = [f for f in src.iterdir()]
+    if not fastqs:
+        console.log(f"Source dir: {src}, appears to be empty...")
+        console.log("Exiting.")
+        sys.exit(1)
+
+    for f in fastqs:
+
+        if f.suffix != ".fastq":
+            print(
+                f"ERROR! There is a non fastq file in the provided fastq directory: {f}"
+            )
+            print("Exiting.")
+            sys.exit(1)
+
+    return fastqs
+
+
 def convert_to_csv(in_file, out_file):
 
     for i, line in enumerate(in_file):
@@ -27,3 +51,17 @@ def extract_csv_column(csv_file, column):
                 csv_out.write(f"{linesplit[column-1]}")
 
     return tmp_out
+
+
+def combine_outs(input, output):
+
+    files = {f.name.split(".")[0]: f for f in input.iterdir()}
+
+    console.print(f"Combing output files for {len(files)} samples.")
+
+    with output.open("w") as csv_out:
+        csv_out.write("sample\tsequence\tcount\n")
+        for sample, f in files.items():
+            with f.open("r") as csv_in:
+                for line in csv_in:
+                    csv_out.write(f"{sample}\t{line}")

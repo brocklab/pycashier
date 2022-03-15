@@ -2,26 +2,17 @@ import re
 import shlex
 import subprocess
 import sys
-from pathlib import Path
 
 from rich.prompt import Confirm
 
 from .console import console
 
 
-def merge_single(
-    sample,
-    fastqs,
-    sourcedir,
-    threads,
-    verbose,
-    pipelinedir,
-    fastp_args,
-):
-    pipeline = Path(pipelinedir)
+def merge_single(sample, fastqs, input, pipeline, output, threads, verbose, fastp_args):
     (pipeline / "merge_qc").mkdir(exist_ok=True)
 
     # TODO: refactor for clarity and memory usage
+    # also allow unzipped fastqs
     for f in fastqs:
 
         R1_regex = r"" + re.escape(sample) + r"\..*R1.*\.fastq\.gz"
@@ -38,8 +29,7 @@ def merge_single(
         print("oops I didnt find an R1 or R2 file")
         sys.exit(1)
 
-    mergedfastq = Path("mergedfastqs")
-    merged_barcode_fastq = mergedfastq / f"{sample}.merged.raw.fastq"
+    merged_barcode_fastq = output / f"{sample}.merged.raw.fastq"
 
     if not merged_barcode_fastq.is_file():
 
@@ -47,8 +37,8 @@ def merge_single(
         # future implementations may use a python based extraction (using gzip)
         # TODO: Make fastq extraction conditional
 
-        path_to_r1 = sourcedir / R1_file
-        path_to_r2 = sourcedir / R2_file
+        path_to_r1 = input / R1_file
+        path_to_r2 = input / R2_file
 
         console.log(f"[green]{sample}[/green]: starting fastq merge")
         command = f"fastp \
@@ -79,10 +69,10 @@ def merge_single(
         console.log(f"[green]{sample}[/green]: skipping fastq merge")
 
 
-def merge(fastqs, sourcedir, cli_args):
-    console.rule("MERGE MODE", align="center", style="red")
+def merge_all(fastqs, input, pipeline, output, threads, verbose, fastp_args):
     print()
-    Path("mergedfastqs").mkdir(exist_ok=True)
+    for d in [pipeline, output]:
+        d.mkdir(exist_ok=True)
 
     samples = []
 
@@ -96,10 +86,8 @@ def merge(fastqs, sourcedir, cli_args):
             print("Merge mode expects gzipped fastqs. Exiting.")
             sys.exit(1)
 
-    print("Found the following samples:")
-    for s in set(samples):
-        console.print(f"[green]{s}")
-    print()
+    console.print(f"[b cyan]Samples[/]: {', '.join(sorted(samples))}\n")
+
     if not Confirm.ask("Continue with these samples?"):
         sys.exit()
 
@@ -114,13 +102,7 @@ def merge(fastqs, sourcedir, cli_args):
         ):
 
             merge_single(
-                sample,
-                fastqs,
-                sourcedir,
-                cli_args["main"]["threads"],
-                verbose=cli_args["main"]["verbose"],
-                pipelinedir=cli_args["main"]["pipelinedir"],
-                fastp_args=cli_args["merge"]["fastp_args"],
+                sample, fastqs, input, pipeline, output, threads, verbose, fastp_args
             )
 
         console.log(f"[green]{sample}[/green]: processing completed")

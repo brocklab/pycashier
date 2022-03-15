@@ -1,20 +1,18 @@
 import shlex
 import subprocess
-from pathlib import Path
 
 from .console import console
 from .utils import extract_csv_column
 
 
-def cluster(sample, ratio, distance, quality, threads, **kwargs):
-    pipeline = Path(kwargs["pipelinedir"])
+def cluster(sample, pipeline, ratio, distance, quality, threads, verbose):
 
-    extracted_csv = pipeline / f"{sample}.barcodes.q{quality}.tsv"
+    extracted_csv = pipeline / f"{sample}.q{quality}.barcodes.tsv"
 
     if not extracted_csv.with_suffix(".c2.tsv").is_file():
         input_file = extract_csv_column(extracted_csv, 2)
 
-    output_file = pipeline / f"{sample}.barcodes.q{quality}.r{ratio}d{distance}.tsv"
+    output_file = pipeline / f"{sample}.q{quality}.barcodes.r{ratio}d{distance}.tsv"
 
     if not output_file.is_file():
         console.log(f"[green]{sample}[/green]: clustering barcodes")
@@ -28,7 +26,7 @@ def cluster(sample, ratio, distance, quality, threads, **kwargs):
             stderr=subprocess.STDOUT,
             universal_newlines=True,
         )
-        if kwargs["verbose"]:
+        if verbose:
             console.print("[yellow]STARCODE OUTPUT:")
             console.print(
                 "\n".join(
