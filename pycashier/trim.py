@@ -1,7 +1,6 @@
 import shlex
 import subprocess
 import sys
-from pathlib import Path
 
 from .console import console
 from .utils import fastq_to_csv
