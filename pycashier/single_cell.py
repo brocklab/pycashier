@@ -24,7 +24,7 @@ def sam_to_name_labeled_fastq(sample, in_file, out_file):
             new_sam = True
 
     if new_sam:
-        console.log(f"[green]{sample}[/green]: sam is headerless, adding a fake one")
+        console.print(f"[green]{sample}[/green]: sam is headerless, adding a fake one")
         sam_file = fake_header_add(in_file)
     else:
         sam_file = in_file
@@ -216,18 +216,18 @@ def single_cell_process(
     tsv_out = output / f"{sample}.cell_record_labeled.barcode.tsv"
 
     if not fastq_out.is_file():
-        console.log(f"[green]{sample}[/green]: converting sam to labeled fastq")
+        console.print(f"[green]{sample}[/green]: converting sam to labeled fastq")
         status.stop()
         sam_to_name_labeled_fastq(sample, input_file, fastq_out)
         status.start()
     else:
-        console.log(
+        console.print(
             f"[green]{sample}[/green]: skipping sam to labeled fastq conversion"
         )
 
     if not output_file.is_file():
 
-        console.log(f"[green]{sample}[/green]: extracting barcodes")
+        console.print(f"[green]{sample}[/green]: extracting barcodes")
 
         command = f"cutadapt \
             -e {error} \
@@ -253,11 +253,11 @@ def single_cell_process(
             console.print(p.stdout)
 
     if not tsv_out.is_file():
-        console.log(f"[green]{sample}[/green]: converting labeled fastq to tsv")
+        console.print(f"[green]{sample}[/green]: converting labeled fastq to tsv")
         labeled_fastq_to_tsv(output_file, tsv_out)
 
     else:
-        console.log(
+        console.print(
             f"[green]{sample}[/green]: skipping labeled fastq to tsv conversion"
         )
 
@@ -313,7 +313,7 @@ def single_cell(
                 status,
             )
 
-        console.log(f"[green]{sample}[/green]: processing completed")
+        console.print(f"[green]{sample}[/green]: processing completed")
         console.rule()
 
     console.print("\n[green]FINISHED!")

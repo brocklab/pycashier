@@ -39,7 +39,7 @@ def trim(
 
     if not filtered_barcode_fastq.is_file():
 
-        console.log(f"[green]{sample}[/green]: extracting and filtering barcodes")
+        console.print(f"[green]{sample}[/green]: extracting and filtering barcodes")
 
         command = f"fastp \
             -i {input_file} \
@@ -105,15 +105,15 @@ def trim(
 
         # barcode_fastq.unlink()
 
-        console.log(f"[green]{sample}[/green]: extraction and filtering complete")
+        console.print(f"[green]{sample}[/green]: extraction and filtering complete")
 
     else:
-        console.log(f"[green]{sample}[/green]: skipping extraction")
+        console.print(f"[green]{sample}[/green]: skipping extraction")
 
     barcodes_out = pipeline / f"{sample}.q{quality}.barcodes.tsv"
 
     if not barcodes_out.is_file():
-        console.log(f"[green]{sample}[/green]: converting fastq to tsv")
+        console.print(f"[green]{sample}[/green]: converting fastq to tsv")
         fastq_to_csv(filtered_barcode_fastq, barcodes_out)
     else:
-        console.log(f"[green]{sample}[/green]: skipping fastq to tsv conversion")
+        console.print(f"[green]{sample}[/green]: skipping fastq to tsv conversion")

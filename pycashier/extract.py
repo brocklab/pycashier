@@ -22,6 +22,8 @@ def extract_all(
     verbose,
     threads,
 ):
+    print()
+
     for d in [pipeline, output]:
         d.mkdir(exist_ok=True)
 
@@ -63,7 +65,7 @@ def extract_all(
                 distance,
             )
 
-        console.log(f"[green]{sample}[/green]: processing completed")
+        console.print(f"[green]{sample}[/green]: processing completed")
         console.rule()
 
     console.print("\n[green]FINISHED!")

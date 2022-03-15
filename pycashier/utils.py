@@ -6,8 +6,8 @@ from .console import console
 def get_fastqs(src):
     fastqs = [f for f in src.iterdir()]
     if not fastqs:
-        console.log(f"Source dir: {src}, appears to be empty...")
-        console.log("Exiting.")
+        console.print(f"Source dir: {src}, appears to be empty...")
+        console.print("Exiting.")
         sys.exit(1)
 
     for f in fastqs:

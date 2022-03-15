@@ -55,7 +55,7 @@ def read_filter(
     file_in = pipeline / f"{sample}.q{quality}.barcodes.r{ratio}d{distance}.tsv"
 
     if "filter_count" in filter.keys():
-        console.log(
+        console.print(
             f"[green]{sample}[/green]: removing "
             f"sequences with less than {filter['filter_count']} reads"
         )
@@ -63,7 +63,7 @@ def read_filter(
         filter_by_count(file_in, filter["filter_count"], length, offset, output)
 
     else:
-        console.log(
+        console.print(
             f"[green]{sample}[/green]: removing"
             f" sequences with less than {filter['filter_percent']}% of total reads"
         )

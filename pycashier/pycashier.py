@@ -23,8 +23,8 @@ def main():
     fastqs = [f for f in sourcedir.iterdir()]
 
     if not fastqs:
-        console.log(f"Source dir: {sourcedir}, appears to be empty...")
-        console.log("Exiting.")
+        console.print(f"Source dir: {sourcedir}, appears to be empty...")
+        console.print("Exiting.")
         sys.exit(1)
 
     Path(cli_args["main"]["pipelinedir"]).mkdir(exist_ok=True)
@@ -57,7 +57,7 @@ def main():
         sample = fastq.name.split(".")[0]
 
         if sample in processed_samples:
-            console.log(f"Skipping Processing for [green]{sample}[/green]")
+            console.print(f"Skipping Processing for [green]{sample}[/green]")
             console.rule()
             continue
 
@@ -76,7 +76,7 @@ def main():
                 **cli_args["cluster"],
             )
 
-        console.log(f"[green]{sample}[/green]: processing completed")
+        console.print(f"[green]{sample}[/green]: processing completed")
         console.rule()
 
     console.print("\n[green]FINISHED!")

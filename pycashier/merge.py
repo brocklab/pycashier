@@ -33,14 +33,14 @@ def merge_single(sample, fastqs, input, pipeline, output, threads, verbose, fast
 
     if not merged_barcode_fastq.is_file():
 
-        console.log(f"[green]{sample}[/green]: extracting and moving fastqs")
+        console.print(f"[green]{sample}[/green]: extracting and moving fastqs")
         # future implementations may use a python based extraction (using gzip)
         # TODO: Make fastq extraction conditional
 
         path_to_r1 = input / R1_file
         path_to_r2 = input / R2_file
 
-        console.log(f"[green]{sample}[/green]: starting fastq merge")
+        console.print(f"[green]{sample}[/green]: starting fastq merge")
         command = f"fastp \
                 -i {path_to_r1}  \
                 -I {path_to_r2} \
@@ -65,8 +65,8 @@ def merge_single(sample, fastqs, input, pipeline, output, threads, verbose, fast
             console.print(p.stdout)
 
     else:
-        console.log(f"[green]{sample}[/green]: Found merged barcode fastq")
-        console.log(f"[green]{sample}[/green]: skipping fastq merge")
+        console.print(f"[green]{sample}[/green]: Found merged barcode fastq")
+        console.print(f"[green]{sample}[/green]: skipping fastq merge")
 
 
 def merge_all(fastqs, input, pipeline, output, threads, verbose, fastp_args):
@@ -86,7 +86,7 @@ def merge_all(fastqs, input, pipeline, output, threads, verbose, fastp_args):
             print("Merge mode expects gzipped fastqs. Exiting.")
             sys.exit(1)
 
-    console.print(f"[b cyan]Samples[/]: {', '.join(sorted(samples))}\n")
+    console.print(f"[b cyan]Samples[/]: {', '.join(sorted(set(samples)))}\n")
 
     if not Confirm.ask("Continue with these samples?"):
         sys.exit()
@@ -105,7 +105,7 @@ def merge_all(fastqs, input, pipeline, output, threads, verbose, fastp_args):
                 sample, fastqs, input, pipeline, output, threads, verbose, fastp_args
             )
 
-        console.log(f"[green]{sample}[/green]: processing completed")
+        console.print(f"[green]{sample}[/green]: processing completed")
         console.rule()
 
     console.print("\n[green]FINISHED!")
