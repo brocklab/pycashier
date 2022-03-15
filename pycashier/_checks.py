@@ -1,6 +1,9 @@
 import sys
 from shutil import which
 
+import rich_click as click
+from rich import box
+from rich.panel import Panel
 from rich.table import Table
 
 from .console import console
@@ -13,7 +16,9 @@ def pre_run_check():
     pkgs_exist = {name: is_tool(name) for name in PACKAGES}
     if False in pkgs_exist.values():
         console.print("\n[red bold] FAILED PRE-RUN CHECKS!!\n")
-        table = Table(title="Pre-run Dependency Check")
+
+        table = Table(box=box.SIMPLE, header_style="bold cyan", collapse_padding=True)
+
         table.add_column("package", justify="right")
         table.add_column("found?", justify="left")
         for name, exists in pkgs_exist.items():
@@ -22,7 +27,17 @@ def pre_run_check():
             else:
                 found = "[red] no"
             table.add_row(name, found)
-        console.print(table)
+
+        console.print(
+            Panel.fit(
+                table,
+                border_style=click.rich_click.STYLE_COMMANDS_PANEL_BORDER,
+                title="Dependencies",
+                title_align=click.rich_click.ALIGN_COMMANDS_PANEL,
+                width=click.rich_click.MAX_WIDTH,
+            )
+        )
+
         console.print(
             "It's recommended to install pycashier within a conda environment."
         )
