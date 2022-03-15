@@ -363,7 +363,7 @@ _cluster_options = [
         "-r", "--ratio", help="ratio to use for message passing clustering", default=3
     ),
     click.option(
-        "-d", "--distance", help="levenstein distance for clustering", default=1
+        "-d", "--distance", help="levenshtein distance for clustering", default=1
     ),
 ]
 
@@ -371,7 +371,7 @@ _filter_options = [
     click.option(
         "-fc",
         "--filter-count",
-        help="minium nominal number of reads for sequence",
+        help="minium nominal number of reads",
         type=int,
     ),
     click.option(
