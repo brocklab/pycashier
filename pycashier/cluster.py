@@ -9,12 +9,12 @@ def cluster(sample, pipeline, ratio, distance, quality, threads, verbose):
 
     extracted_csv = pipeline / f"{sample}.q{quality}.barcodes.tsv"
 
-    if not extracted_csv.with_suffix(".c2.tsv").is_file():
-        input_file = extract_csv_column(extracted_csv, 2)
-
     output_file = pipeline / f"{sample}.q{quality}.barcodes.r{ratio}d{distance}.tsv"
 
     if not output_file.is_file():
+        if not extracted_csv.with_suffix(".c2.tsv").is_file():
+            input_file = extract_csv_column(extracted_csv, 2)
+
         console.print(f"[green]{sample}[/green]: clustering barcodes")
         command = f"starcode -d {distance} -r {ratio} -t {threads} -i {input_file} -o {output_file}"
 
@@ -37,6 +37,7 @@ def cluster(sample, pipeline, ratio, distance, quality, threads, verbose):
                     ]
                 )
             )
+        input_file.unlink()
 
         console.print(f"[green]{sample}[/green]: clustering complete")
 

@@ -269,7 +269,6 @@ def single_cell(
     threads,
     verbose,
 ):
-    print()
     for d in [pipeline, output]:
         d.mkdir(exist_ok=True)
 
@@ -290,6 +289,9 @@ def single_cell(
 
     for sample, f in sam_files.items():
 
+        print()
+        console.print(f"──────────────── {sample} ───────────────────", style="dim")
+
         with console.status(
             f"Processing sample: [green]{sample}[/green]\r\n",
             spinner="dots12",
@@ -309,7 +311,6 @@ def single_cell(
                 status,
             )
         console.print(f"[green]{sample}[/green]: processing completed")
-        console.rule()
 
     console.print("\n[green]FINISHED!")
     sys.exit()
