@@ -8,13 +8,15 @@ def extract_all(
     fastqs,
     output,
     pipeline,
+    quality,
+    unqualified_percent,
+    fastp_args,
+    skip_trimming,
     error,
     length,
     upstream_adapter,
     downstream_adapter,
     unlinked_adapters,
-    quality,
-    unqualified_percent,
     ratio,
     distance,
     filter,
@@ -22,14 +24,16 @@ def extract_all(
     verbose,
     threads,
 ):
-    print()
 
     for d in [pipeline, output]:
         d.mkdir(exist_ok=True)
 
-    for fastq in fastqs:
+    for fastq in sorted(fastqs):
 
         sample = fastq.name.split(".")[0]
+
+        print()
+        console.print(f"──────────────── {sample} ───────────────────", style="dim")
 
         with console.status(
             f"Processing sample: [green]{sample}[/green]", spinner="dots12"
@@ -39,6 +43,9 @@ def extract_all(
                 sample,
                 pipeline,
                 fastq,
+                quality,
+                unqualified_percent,
+                fastp_args,
                 error,
                 threads,
                 length,
@@ -46,8 +53,7 @@ def extract_all(
                 upstream_adapter,
                 downstream_adapter,
                 unlinked_adapters,
-                quality,
-                unqualified_percent,
+                skip_trimming,
                 verbose,
             )
 
@@ -66,6 +72,5 @@ def extract_all(
             )
 
         console.print(f"[green]{sample}[/green]: processing completed")
-        console.rule()
 
     console.print("\n[green]FINISHED!")

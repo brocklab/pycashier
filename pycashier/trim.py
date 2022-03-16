@@ -1,4 +1,5 @@
 import shlex
+import shutil
 import subprocess
 import sys
 
@@ -10,6 +11,9 @@ def trim(
     sample,
     pipeline,
     fastq,
+    quality,
+    unqualified_percent,
+    fastp_args,
     error,
     threads,
     length,
@@ -17,8 +21,7 @@ def trim(
     upstream_adapter,
     downstream_adapter,
     unlinked_adapters,
-    quality,
-    unqualified_percent,
+    skip_trimming,
     verbose,
 ):
 
@@ -37,10 +40,9 @@ def trim(
 
     (pipeline / "qc").mkdir(exist_ok=True)
 
-    if not filtered_barcode_fastq.is_file():
+    if not filtered_fastq.is_file():
 
-        console.print(f"[green]{sample}[/green]: extracting and filtering barcodes")
-
+        console.print(f"[green]{sample}[/green]: quality filtering illumina reads")
         command = f"fastp \
             -i {input_file} \
             -o {filtered_fastq} \
@@ -49,7 +51,8 @@ def trim(
             -w {threads} \
             -h {html_qc} \
             -j {json_qc} \
-            --dont_eval_duplication"
+            --dont_eval_duplication \
+            {fastp_args}"
 
         args = shlex.split(command)
 
@@ -69,6 +72,13 @@ def trim(
         elif verbose:
             console.print("[yellow]FASTP OUTPUT:")
             console.print(p.stdout)
+
+    if skip_trimming:
+        shutil.copy(filtered_fastq, filtered_barcode_fastq)
+
+    if not filtered_barcode_fastq.is_file():
+
+        console.print(f"[green]{sample}[/green]: extracting barcodes")
 
         command = f"cutadapt \
             -e {error} \
@@ -90,7 +100,7 @@ def trim(
             universal_newlines=True,
         )
 
-        if filtered_barcode_fastq.stat().st_size == 0:
+        if p.returncode != 0 or filtered_barcode_fastq.stat().st_size == 0:
             console.print("[yellow]CUTADAPT OUTPUT:")
             console.print(p.stdout)
             console.print(
@@ -102,8 +112,6 @@ def trim(
         elif verbose:
             console.print("[yellow]CUTADAPT OUTPUT:")
             console.print(p.stdout)
-
-        # barcode_fastq.unlink()
 
         console.print(f"[green]{sample}[/green]: extraction and filtering complete")
 

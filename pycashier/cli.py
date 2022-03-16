@@ -169,9 +169,9 @@ def print_params(ctx):
     console.print(
         Panel.fit(
             grid,
-            border_style=click.rich_click.STYLE_COMMANDS_PANEL_BORDER,
+            border_style=click.rich_click.STYLE_OPTIONS_PANEL_BORDER,
             title=f"{ctx.info_name.capitalize()} Parameters",
-            title_align=click.rich_click.ALIGN_COMMANDS_PANEL,
+            title_align=click.rich_click.ALIGN_OPTIONS_PANEL,
             width=click.rich_click.MAX_WIDTH,
         )
     )
@@ -190,7 +190,7 @@ def save_params(ctx):
         with config_file.open("r") as f:
             config = yaml.load(f)
     else:
-        print(f"Staring a config file at [b cyan]{config_file}")
+        console.print(f"Staring a config file at [b cyan]{config_file}")
         config = {}
 
     if save_type == "explicit":
@@ -344,26 +344,51 @@ _trim_options = [
     click.option(
         "--unlinked-adapters", help="run cutadapt using unlinked adapters", is_flag=True
     ),
+    click.option(
+        "--skip-trimming",
+        help="skip cutadapt trimming entirely and use reads as-is",
+        is_flag=True,
+    ),
 ]
 
 _quality_options = [
     click.option(
-        "-q", "--quality", help="minimum PHRED quality for filtering reads", default=30
+        "-q",
+        "--quality",
+        help="minimum PHRED quality for filtering reads",
+        default=30,
+        show_default=True,
     ),
     click.option(
         "-up",
         "--unqualified-percent",
         help="minimum percent of bases which can be below quality threshold",
-        default=80,
+        default=20,
+        show_default=True,
+    ),
+    click.option(
+        "-fa",
+        "--fastp-args",
+        help="additional arguments provided as a string passed verbatim to fastp",
+        type=str,
     ),
 ]
 
 _cluster_options = [
     click.option(
-        "-r", "--ratio", help="ratio to use for message passing clustering", default=3
+        "-r",
+        "--ratio",
+        help="ratio to use for message passing clustering",
+        default=3,
+        show_default=True,
     ),
     click.option(
-        "-d", "--distance", help="levenshtein distance for clustering", default=1
+        "-d",
+        "--distance",
+        help="levenshtein distance for clustering",
+        default=1,
+        show_default=True,
+        type=click.IntRange(0, 8),
     ),
 ]
 
@@ -413,6 +438,7 @@ _trim_options_group = {
         "--upstream-adapter",
         "--downstream-adapter",
         "--unlinked-adapters",
+        "--skip-trimming",
     ],
 }
 
@@ -435,7 +461,7 @@ click.rich_click.OPTION_GROUPS = {
             },
             {
                 "name": "Quality (Fastp) Options",
-                "options": ["--quality", "--unqualified-percent"],
+                "options": ["--quality", "--unqualified-percent", "--fastp-args"],
             },
             {
                 "name": "Filter Options",
@@ -486,13 +512,6 @@ def cli():
     required=True,
     type=click.Path(exists=True, file_okay=False, path_type=Path),
 )
-# @click.option(
-#     "-l",
-#     "--length",
-#     help="target length of extracted barcode",
-#     default=20,
-#     show_default=20,
-# )
 @add_options(
     [
         *_output_options,
@@ -509,13 +528,15 @@ def extract(
     input,
     output,
     pipeline,
+    quality,
+    unqualified_percent,
+    fastp_args,
+    skip_trimming,
     error,
     length,
     upstream_adapter,
     downstream_adapter,
     unlinked_adapters,
-    quality,
-    unqualified_percent,
     ratio,
     distance,
     filter_percent,
@@ -562,13 +583,15 @@ def extract(
         fastqs,
         output,
         pipeline,
+        quality,
+        unqualified_percent,
+        fastp_args,
+        skip_trimming,
         error,
         length,
         upstream_adapter,
         downstream_adapter,
         unlinked_adapters,
-        quality,
-        unqualified_percent,
         ratio,
         distance,
         filter,
@@ -653,7 +676,7 @@ def merge(
     default=10,
     show_default=True,
 )
-@add_options([*_output_options, *_trim_options[:-1], *_general_options])
+@add_options([*_output_options, *_trim_options[:-2], *_general_options])
 @click.pass_context
 def scrna(
     ctx,
