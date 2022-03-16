@@ -234,7 +234,7 @@ def init_check(ctx, param, check):
 
 
 def validate_filter_args(ctx):
-    if ctx.params["filter_count"]:
+    if ctx.params["filter_count"] or ctx.params["filter_count"] == 0:
         if ctx.get_parameter_source("filter_percent").value == 3:
             ctx.params["filter_percent"] = None
             return {"filter_count": ctx.params["filter_count"]}
