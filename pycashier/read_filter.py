@@ -1,5 +1,4 @@
 import csv
-from pathlib import Path
 
 from .console import console
 
@@ -24,14 +23,14 @@ def filter_by_percent(file_in, filter_percent, length, offset, outdir):
     )
 
 
-def filter_by_count(file_in, filter_count, length, offset, outdir):
+def filter_by_count(file_in, filter_count, length, offset, output):
 
     name = file_in.stem
     ext = file_in.suffix
-    csv_out = Path(outdir) / f"{name}.min{filter_count}_off{offset}{ext}"
+    final = output / f"{name}.min{filter_count}_off{offset}{ext}"
 
     with open(file_in, "r") as csv_in:
-        with open(csv_out, "w") as csv_out:
+        with open(final, "w") as csv_out:
             for line in csv_in:
                 linesplit = line.split("\t")
                 if (
@@ -39,6 +38,11 @@ def filter_by_count(file_in, filter_count, length, offset, outdir):
                     and abs(len(linesplit[0]) - length) <= offset
                 ):
                     csv_out.write(f"{linesplit[0]}\t{linesplit[1]}")
+
+    if final.stat().st_size == 0:
+        console.print(
+            "[yellow]WARNING[/]: no barcodes passed final length and abundance filters"
+        )
 
 
 def read_filter(
