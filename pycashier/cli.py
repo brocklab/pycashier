@@ -388,7 +388,7 @@ _cluster_options = [
         help="levenshtein distance for clustering",
         default=1,
         show_default=True,
-        type=click.IntRange(0, 8),
+        type=click.IntRange(1, 8),
     ),
 ]
 
