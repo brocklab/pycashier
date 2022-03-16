@@ -15,12 +15,12 @@ def merge_single(sample, fastqs, input, pipeline, output, threads, verbose, fast
     # also allow unzipped fastqs
     for f in fastqs:
 
-        R1_regex = r"" + re.escape(sample) + r"\..*R1.*\.fastq\.gz"
+        R1_regex = r"" + re.escape(sample) + r"\..*R1.*\.fastq.*"  # \.gz"
         m = re.search(R1_regex, f.name)
         if m:
             R1_file = m.group(0)
 
-        R2_regex = r"" + re.escape(sample) + r"\..*R2.*\.fastq\.gz"
+        R2_regex = r"" + re.escape(sample) + r"\..*R2.*\.fastq.*"  # \.gz"
         m = re.search(R2_regex, f.name)
         if m:
             R2_file = m.group(0)
@@ -32,10 +32,6 @@ def merge_single(sample, fastqs, input, pipeline, output, threads, verbose, fast
     merged_barcode_fastq = output / f"{sample}.merged.raw.fastq"
 
     if not merged_barcode_fastq.is_file():
-
-        console.print(f"[green]{sample}[/green]: extracting and moving fastqs")
-        # future implementations may use a python based extraction (using gzip)
-        # TODO: Make fastq extraction conditional
 
         path_to_r1 = input / R1_file
         path_to_r2 = input / R2_file
@@ -52,13 +48,18 @@ def merge_single(sample, fastqs, input, pipeline, output, threads, verbose, fast
                 {fastp_args}"
 
         args = shlex.split(command)
-
         p = subprocess.run(
             args,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             universal_newlines=True,
         )
+
+        if p.returncode != 0 or merged_barcode_fastq.stat().st_size == 0:
+            console.print("[red]FASTP FAILED!")
+            console.print("[yellow]FASTP OUTPUT:")
+            console.print(p.stdout)
+            sys.exit()
 
         if verbose:
             console.print("[yellow]FASTP OUTPUT:")
@@ -70,7 +71,6 @@ def merge_single(sample, fastqs, input, pipeline, output, threads, verbose, fast
 
 
 def merge_all(fastqs, input, pipeline, output, threads, verbose, fastp_args):
-    print()
     for d in [pipeline, output]:
         d.mkdir(exist_ok=True)
 
@@ -78,7 +78,7 @@ def merge_all(fastqs, input, pipeline, output, threads, verbose, fastp_args):
 
     for f in fastqs:
 
-        m = re.search(r"(.+?)\..*R.*\.fastq\.gz", f.name)
+        m = re.search(r"(.+?)\..*R.*\.fastq.*", f.name)
         if m:
             samples.append(m.group(1))
         else:
@@ -97,6 +97,9 @@ def merge_all(fastqs, input, pipeline, output, threads, verbose, fastp_args):
 
     for sample in sorted(set(samples)):
 
+        print()
+        console.print(f"──────────────── {sample} ───────────────────", style="dim")
+
         with console.status(
             f"Processing sample: [green]{sample}[/green]", spinner="dots12"
         ):
@@ -106,7 +109,6 @@ def merge_all(fastqs, input, pipeline, output, threads, verbose, fastp_args):
             )
 
         console.print(f"[green]{sample}[/green]: processing completed")
-        console.rule()
 
     console.print("\n[green]FINISHED!")
     sys.exit()
