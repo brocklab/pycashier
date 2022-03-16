@@ -136,6 +136,10 @@ pycashier scrna -i sams
 
 When finished the `outs` directory will have a `.tsv` containing the following columns: Illumina Read Info, UMI Barcode, Cell Barcode, gRNA Barcode
 
+### Combine
+
+This command can be used if you wish to generate a combined tsv from all files including headers and sample information.
+By default it uses `./outs` for input and `./combined.tsv` for output.
 
 ## Config File
 
