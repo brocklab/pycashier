@@ -13,6 +13,7 @@ python = "^3.7, <3.10"
 rich = ">=12.0.0"
 "ruamel.yaml" = "^0.17.21"
 rich-click = "^1.2.1"
+tomlkit = "^0.10.1"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"
@@ -22,7 +23,7 @@ pre-commit = "^2.15.0"
 bumpver = "^2022.1116"
 
 [build-system]
-requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
@@ -41,9 +42,7 @@ tag = true
 
 [tool.bumpver.file_patterns]
 "pyproject.toml" = [
-    'current_version = "{version}"',
-    'version = "{pep440_version}'
+  'current_version = "{version}"',
+  'version = "{pep440_version}',
 ]
-"pycashier/_version.py" = [
-    '__version__ = "{pep440_version}'
-]
+"pycashier/_version.py" = ['__version__ = "{pep440_version}']

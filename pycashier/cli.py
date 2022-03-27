@@ -2,11 +2,11 @@ import sys
 from pathlib import Path
 
 import rich_click as click
+import tomlkit
 from rich import box
 from rich.panel import Panel
 from rich.prompt import Confirm
 from rich.table import Table
-from ruamel.yaml import YAML
 
 from ._checks import pre_run_check
 from .console import console
@@ -15,8 +15,6 @@ from .merge import merge_all
 from .read_filter import get_filter_count
 from .single_cell import single_cell
 from .utils import combine_outs, get_fastqs
-
-yaml = YAML()
 
 click.rich_click.USE_RICH_MARKUP = True
 click.rich_click.MAX_WIDTH = 100
@@ -178,35 +176,43 @@ def print_params(ctx):
 
 
 def save_params(ctx):
-    params = ctx.params
+    cmd = ctx.info_name
+    params = {k: v for k, v in ctx.params.items() if v}
     save_type = params.pop("save_config")
+
     try:
         config_file = Path(ctx.obj["config_file"])
     except TypeError:
-        raise click.BadParameter("use `--save-config` with a specified `--config-file`")
+        raise click.BadParameter("use `--save-config` with a specified `--config`")
 
     if config_file.is_file():
         console.print(f"Updating current config file at [b cyan]{config_file}")
         with config_file.open("r") as f:
-            config = yaml.load(f)
+            config = tomlkit.load(f)
     else:
         console.print(f"Staring a config file at [b cyan]{config_file}")
-        config = {}
+        config = tomlkit.document()
 
     if save_type == "explicit":
         params = {
             k: v for k, v in params.items() if ctx.get_parameter_source(k).value != 3
         }
 
-    # sanitize the path's for writing to yaml
+    # sanitize the path's for writing to toml
     for k in ["input", "pipeline", "output"]:
         if k in params.keys():
             params[k] = str(params[k])
 
-    config[ctx.info_name] = params
+    config[cmd] = params
 
-    with config_file.open("wb") as f:
-        yaml.dump(config, f)
+    null_hints = {"extract": ["filter_count", "fastp_args"], "merge": ["fastp_args"]}
+    if cmd in null_hints.keys() and save_type == "full":
+        for param in null_hints[cmd]:
+            if param not in params.keys():
+                config[cmd].add(tomlkit.comment(f"{param} ="))
+
+    with config_file.open("w") as f:
+        f.write(tomlkit.dumps(config))
 
     console.print("Exiting...")
     ctx.exit()
@@ -219,7 +225,7 @@ def load_params(ctx, param, filename):
     ctx.default_map = {}
     if Path(filename).is_file():
         with Path(filename).open("r") as f:
-            params = yaml.load(f)
+            params = tomlkit.load(f)
         if params:
             ctx.default_map = params.get(ctx.info_name, {})
     else:
@@ -237,12 +243,14 @@ def validate_filter_args(ctx):
     if ctx.params["filter_count"] or ctx.params["filter_count"] == 0:
         if ctx.get_parameter_source("filter_percent").value == 3:
             ctx.params["filter_percent"] = None
+            del ctx.params["filter_percent"]
             return {"filter_count": ctx.params["filter_count"]}
         else:
             raise click.BadParameter(
                 "`--filter-count` and `--filter-percent` are mutually exclusive"
             )
     else:
+        del ctx.params["filter_count"]
         return {"filter_percent": ctx.params["filter_percent"]}
 
 

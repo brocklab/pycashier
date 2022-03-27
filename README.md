@@ -143,27 +143,28 @@ By default it uses `./outs` for input and `./combined.tsv` for output.
 
 ## Config File
 
-As of `v0.3.0` you may generate and supply `pycashier` with a yaml config file using `-c/--config`.
+As of `v0.3.1` you may generate and supply `pycashier` with a toml config file using `-c/--config`.
 The expected structure is each command followed by key value pairs of flags with hypens replaced by underscores:
 
-```yaml
-extract:
-  input: fastqs
-  threads: 10
-  unqualified_percent: 100
-merge:
-  input: rawfastqgz
-  output: fastqs
-  fastp_args: "-t 1"
+```toml
+[extract]
+input = "fastqs"
+threads = 10
+unqualified_percent = 20
+
+[merge]
+input = "rawfastqgzs"
+output = "mergedfastqs"
+fastp_args = "-t 1"
 ```
 
 The order of precedence for arguments is command line > config file > defaults.
 
-For example if you were to use the above `config.yml` with `pycashier extract -c config.yml -t 15`.
+For example if you were to use the above `config.toml` with `pycashier extract -c config.toml -t 15`.
 The value used for threads would be 15.
 You can confirm the parameter values as they will be printed prior to any execution.
 
-For convenience, you can update/create your config file with `pycasher COMMAND --save-config [explicit|full] -c config.yml`.
+For convenience, you can update/create your config file with `pycasher COMMAND --save-config [explicit|full] -c config.toml`.
 
 "Explicit" will only save parameters already included in the config file or specified at runtime.
 "Full" will include all parameters again maintaining preset values in config or specified at runtime.
