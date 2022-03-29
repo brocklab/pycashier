@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2022-03-29
+### [Added]
+- `Pycashier` now manages version with `bumpver`
+
+### [Changed]
+- Dropped yaml-based config for toml
+
+
 ## [0.3.0] - 2022-03-16
 ### [Added]
 - This CHANGELOG
@@ -21,5 +29,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dropped regex in "extract" in favor of simple string matching
 - Merge can take unzipped fastqs now
 
-[Unreleased]: https://github.com/brocklab/pycashier/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/brocklab/pycashier/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/brocklab/pycashier/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/brocklab/pycashier/compare/v0.2.8...v0.3.0
