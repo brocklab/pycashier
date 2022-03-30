@@ -762,3 +762,11 @@ def combine(
         save_params(ctx)
 
     combine_outs(input, output)
+
+
+def main():
+    cli(prog_name="pycashier")
+
+
+if __name__ == "__main__":
+    main()
