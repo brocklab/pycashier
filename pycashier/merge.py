@@ -45,7 +45,7 @@ def merge_single(sample, fastqs, input, pipeline, output, threads, verbose, fast
                 -j {pipeline}/merge_qc/{sample}.json \
                 -h {pipeline}/merge_qc/{sample}.html \
                 --merged_out {merged_barcode_fastq} \
-                {fastp_args}"
+                {fastp_args or ''}"
 
         args = shlex.split(command)
         p = subprocess.run(

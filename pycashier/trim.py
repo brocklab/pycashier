@@ -52,7 +52,7 @@ def trim(
             -h {html_qc} \
             -j {json_qc} \
             --dont_eval_duplication \
-            {fastp_args}"
+            {fastp_args or ''}"
 
         args = shlex.split(command)
 
