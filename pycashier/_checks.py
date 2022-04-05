@@ -1,7 +1,6 @@
 import sys
 from shutil import which
 
-import rich_click as click
 from rich import box
 from rich.panel import Panel
 from rich.table import Table
@@ -31,10 +30,7 @@ def pre_run_check():
         console.print(
             Panel.fit(
                 table,
-                border_style=click.rich_click.STYLE_COMMANDS_PANEL_BORDER,
                 title="Dependencies",
-                title_align=click.rich_click.ALIGN_COMMANDS_PANEL,
-                width=click.rich_click.MAX_WIDTH,
             )
         )
 

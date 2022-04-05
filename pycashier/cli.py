@@ -1,8 +1,10 @@
 import sys
 from pathlib import Path
 
-import rich_click as click
+# import rich_click as click
+import click
 import tomlkit
+from click_rich_help import StyledGroup
 from rich import box
 from rich.panel import Panel
 from rich.prompt import Confirm
@@ -15,12 +17,6 @@ from .merge import merge_all
 from .read_filter import get_filter_count
 from .single_cell import single_cell
 from .utils import combine_outs, get_fastqs
-
-click.rich_click.USE_RICH_MARKUP = True
-click.rich_click.MAX_WIDTH = 100
-
-PROG_NAME = "pycashier"
-CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
 
 def make_sample_check_table(
@@ -63,10 +59,7 @@ def make_sample_check_table(
     console.print(
         Panel.fit(
             table,
-            border_style=click.rich_click.STYLE_COMMANDS_PANEL_BORDER,
             title="Queue",
-            title_align=click.rich_click.ALIGN_COMMANDS_PANEL,
-            width=click.rich_click.MAX_WIDTH,
         )
     )
 
@@ -165,13 +158,7 @@ def print_params(ctx):
         grid.add_row(key, ": ", str(value))
 
     console.print(
-        Panel.fit(
-            grid,
-            border_style=click.rich_click.STYLE_OPTIONS_PANEL_BORDER,
-            title=f"{ctx.info_name.capitalize()} Parameters",
-            title_align=click.rich_click.ALIGN_OPTIONS_PANEL,
-            width=click.rich_click.MAX_WIDTH,
-        )
+        Panel.fit(grid, title=f"{ctx.info_name.capitalize()} Parameters", padding=1)
     )
 
 
@@ -424,13 +411,11 @@ _filter_options = [
 ##########################
 
 
-# Rich Click Option groups
+# Click Help Groups
 ##########################
 
-
-_general_options_group = {
-    "name": "General Options",
-    "options": [
+_general_option_group = {
+    "General Options": [
         "--help",
         "--verbose",
         "--threads",
@@ -438,9 +423,12 @@ _general_options_group = {
         "--save-config",
     ],
 }
-_trim_options_group = {
-    "name": "Trim (Cutadapt) Options",
-    "options": [
+
+_input_output_option_group = {
+    "Input/Output Options": ["--input", "--output", "--pipeline"],
+}
+_trim_option_group = {
+    "Trim (Cutadapt) Options": [
         "--error",
         "--length",
         "--upstream-adapter",
@@ -449,58 +437,33 @@ _trim_options_group = {
         "--skip-trimming",
     ],
 }
-
-_input_output_options_group = {
-    "name": "Input/Output Options",
-    "options": ["--input", "--output", "--pipeline"],
-}
-
-click.rich_click.OPTION_GROUPS = {
-    "pycashier extract": [
-        _input_output_options_group,
-        _trim_options_group,
-        *[
-            {
-                "name": "Cluster (Starcode) Options",
-                "options": [
-                    "--ratio",
-                    "--distance",
-                ],
-            },
-            {
-                "name": "Quality (Fastp) Options",
-                "options": ["--quality", "--unqualified-percent", "--fastp-args"],
-            },
-            {
-                "name": "Filter Options",
-                "options": ["--filter-count", "--filter-percent", "--offset"],
-            },
+_extract_option_groups = {
+    **_input_output_option_group,
+    **_trim_option_group,
+    **{
+        "Cluster (Starcode) Options": [
+            "--ratio",
+            "--distance",
         ],
-        _general_options_group,
-    ],
-    "pycashier merge": [
-        _input_output_options_group,
-        {"name": "Merge (Fastp) Options", "options": ["--fastp-args"]},
-        _general_options_group,
-    ],
-    "pycashier scrna": [
-        _input_output_options_group,
-        {
-            "name": _trim_options_group["name"],
-            "options": ["--minimum-length"] + _trim_options_group["options"][:-1],
-        },
-        _general_options_group,
-    ],
-    "pycashier combine": [_input_output_options_group, _general_options_group],
+        "Quality (Fastp) Options": [
+            "--quality",
+            "--unqualified-percent",
+            "--fastp-args",
+        ],
+        "Filter Options": ["--filter-count", "--filter-percent", "--offset"],
+    },
+    **_general_option_group,
 }
-##########################
 
 
 # Click Command Configs
 ##########################
 
+CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"], max_content_width=90)
+
 
 @click.group(
+    cls=StyledGroup,
     context_settings=CONTEXT_SETTINGS,
 )
 @click.version_option(package_name="pycashier", prog_name="pycashier")
@@ -512,7 +475,7 @@ def cli():
     pass
 
 
-@cli.command()
+@cli.command(option_groups=_extract_option_groups)
 @click.option(
     "-i",
     "--input",
@@ -609,7 +572,13 @@ def extract(
     )
 
 
-@cli.command()
+@cli.command(
+    option_groups={
+        **_input_output_option_group,
+        **{"Merge (Fastp) Options": ["--fastp-args"]},
+        **_general_option_group,
+    }
+)
 @click.option(
     "-i",
     "--input",
@@ -669,7 +638,16 @@ def merge(
     )
 
 
-@cli.command()
+@cli.command(
+    option_groups={
+        **_input_output_option_group,
+        **{
+            "Trim (Cutadapt) Options": ["--minimum-length"]
+            + _trim_option_group["Trim (Cutadapt) Options"][:-2]
+        },
+        **_general_option_group,
+    }
+)
 @click.option(
     "-i",
     "--input",
@@ -729,12 +707,17 @@ def scrna(
     )
 
 
-@cli.command()
+@cli.command(
+    option_groups={
+        "Input/Output Options": ["--input", "--output"],
+        "General Options": ["--help", "--config", "--save-config"],
+    }
+)
 @click.option(
     "-i",
     "--input",
-    help="source directory containing output files from [b cyan]pycashier extract",
-    default="outs",
+    help="source directory containing output files from [b cyan]pycashier extract[/]",
+    default="./outs",
     show_default=True,
     type=click.Path(exists=True, file_okay=False, path_type=Path),
 )
@@ -742,7 +725,7 @@ def scrna(
     "-o",
     "--output",
     help="combined tsv of all samples found in input directory",
-    default="combined.tsv",
+    default="./combined.tsv",
     show_default=True,
     type=click.Path(exists=False, dir_okay=False, path_type=Path),
 )
