@@ -20,7 +20,8 @@ ClonMapper lineage tracing experiments, but is extensible to other similarly des
 ### Pip/conda-forge Dependencies
 - [rich](https://github.com/Textualize/rich)
 - [rich-click](https://github.com/ewels/rich-click)
-- [ruamel.yaml](https://sourceforge.net/p/ruamel-yaml/code/ci/default/tree/)
+- [click-rich-help](https://github.com/daylinmorgan/click-rich-help)
+- [tomlkit](https://github.com/sdispater/tomlkit)
 
 ## Installation
 It's recommended to use [conda](https://docs.conda.io/en/latest/)/[mamba](https://github.com/mamba-org/mamba) to install and manage the dependencies for this package.
