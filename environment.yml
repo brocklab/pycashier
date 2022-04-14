@@ -4,12 +4,12 @@ channels:
   - bioconda
   - defaults
 dependencies:
-  - python=3.8
+  - python>=3.7
   - cutadapt>=3.5
   - starcode>=1.4
   - pysam=0.17*
   - fastp=0.23*
-  - rich=10.12*
-  - rich-click=1.2*
-  - ruamel.yaml=0.17*
+  - rich>=10
+  - click-rich-help>=22.1
+  - tomlkit>=0.10
   - pycashier
