@@ -12,7 +12,7 @@ def get_fastqs(src):
 
     for f in fastqs:
 
-        if f.suffix != ".fastq":
+        if f.suffix not in [".fastq",".fastq.gz"] :
             print(
                 f"ERROR! There is a non fastq file in the provided fastq directory: {f}"
             )

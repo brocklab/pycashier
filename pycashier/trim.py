@@ -27,9 +27,7 @@ def trim(
 
     json_qc = pipeline / "qc" / f"{sample}.json"
     html_qc = pipeline / "qc" / f"{sample}.html"
-    # barcode_fastq = pipeline / f"{sample}.barcode.fastq"
     input_file = fastq
-    # filtered_barcode_fastq = pipeline / f"{sample}.barcode.q{quality}.fastq"
     filtered_fastq = pipeline / f"{sample}.q{quality}.fastq"
     filtered_barcode_fastq = pipeline / f"{sample}.q{quality}.barcode.fastq"
 
