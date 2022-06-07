@@ -53,7 +53,7 @@ pip install pycashier
 If you prefer not to install `pycashier` locally you can also use `docker`.
 
 ```bash
-docker run --rm -it -v $PWD:/data daylinmorgan/pycashier
+docker run --rm -it -v $PWD:/data -u $(id -u):$(id -g) daylinmorgan/pycashier
 ```
 
 ## Usage
