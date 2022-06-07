@@ -1,7 +1,7 @@
+import shutil
 import sys
 from pathlib import Path
 
-# import rich_click as click
 import click
 import tomlkit
 from click_rich_help import StyledGroup
@@ -458,8 +458,10 @@ _extract_option_groups = {
 
 # Click Command Configs
 ##########################
-
-CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"], max_content_width=90)
+CONTEXT_SETTINGS = dict(
+    help_option_names=["-h", "--help"],
+    max_content_width=shutil.get_terminal_size(fallback=(110, 24))[0],
+)
 
 
 @click.group(
@@ -519,10 +521,11 @@ def extract(
 ):
     """
     extract DNA barcodes from a directory of fastq files
-    \n\n\n
+
+    \b
     Sample names should be delimited with a ".", such as `[b cyan][yellow]<sample>[/yellow].raw.fastq[/]`,
     anything succeeding the first period will be ignored by `[b cyan]pycashier[/]`.
-    \n\n\n
+
     If your data is paired-end with overlapping barcodes, see `[b cyan]pycashier merge[/]`.
     """
 
@@ -680,11 +683,12 @@ def scrna(
 ):
     """
     extract expressed DNA barcodes from scRNA-seq
-    \n\n\n
+    \n
+    \b
     Designed for interoperability with 10X scRNA-seq workflow.
     After processing samples with `[b cyan]cellranger[/]` resulting
     bam files should be converted to sam files using `[b cyan]samtools[/]`.
-    \n\n\n
+    \n
     [i]NOTE[/]: You can speed this up by providing a sam file with only
     the unmapped reads.
     """
