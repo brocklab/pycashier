@@ -2,6 +2,9 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
+[![PYPI][pypi-shield]][pypi-url]
+[![Conda][conda-shield]][conda-url]
+[![Docker][docker-shield]][docker-url]
 
 # Pycashier
 
@@ -19,7 +22,7 @@ ClonMapper lineage tracing experiments, but is extensible to other similarly des
 
 ### Pip/conda-forge Dependencies
 - [rich](https://github.com/Textualize/rich)
-- [rich-click](https://github.com/ewels/rich-click)
+- [click](https://github.com/pallets/click)
 - [click-rich-help](https://github.com/daylinmorgan/click-rich-help)
 - [tomlkit](https://github.com/sdispater/tomlkit)
 
@@ -44,6 +47,16 @@ dependencies you would install from bioconda are on your path and installed corr
 ```bash
 pip install pycashier
 ```
+
+
+### Docker
+
+If you prefer not to install `pycashier` locally you can also use `docker`.
+
+```bash
+docker run --rm -it -v $PWD:/data daylinmorgan/pycashier
+```
+
 
 ## Usage
 
@@ -202,11 +215,17 @@ This version like it's predecessor wraps around several command line bioinformat
 
 
 
-[forks-shield]: https://img.shields.io/github/forks/brocklab/pycashier.svg?style=flat
+[conda-shield]: https://img.shields.io/conda/vn/conda-forge/pycashier
+[conda-url]: https://anaconda.org/conda-forge/pycashier
+[pypi-shield]: https://img.shields.io/pypi/v/pycashier
+[pypi-url]: https://pypi.org/project/pycashier/
+[docker-shield]: https://img.shields.io/docker/v/daylinmorgan/pycashier?label=docker
+[docker-url]: https://hub.docker.com/repository/docker/daylinmorgan/pycashier
+[forks-shield]: https://img.shields.io/github/forks/brocklab/pycashier.svg
 [forks-url]: https://github.com/brocklab/pycashier/network/members
-[stars-shield]: https://img.shields.io/github/stars/brocklab/pycashier.svg?style=flat
+[stars-shield]: https://img.shields.io/github/stars/brocklab/pycashier.svg
 [stars-url]: https://github.com/brocklab/pycashier/stargazers
-[issues-shield]: https://img.shields.io/github/issues/brocklab/pycashier.svg?style=flat
+[issues-shield]: https://img.shields.io/github/issues/brocklab/pycashier.svg
 [issues-url]: https://github.com/brocklab/pycashier/issues
-[license-shield]: https://img.shields.io/github/license/brocklab/pycashier.svg?style=flat
+[license-shield]: https://img.shields.io/github/license/brocklab/pycashier.svg
 [license-url]: https://github.com/brocklab/pycashier/blob/main/LICENSE

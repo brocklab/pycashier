@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.4] - 2022-06-07
+### [Added]
+- Docker image instructions
+### [Changed]
+- Use wider format help on bigger terminals
+
 
 ## [0.3.3] - 2022-05-23
 ### [Added]
@@ -42,7 +48,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dropped regex in "extract" in favor of simple string matching
 - Merge can take unzipped fastqs now
 
-[Unreleased]: https://github.com/brocklab/pycashier/compare/v0.3.3...HEAD
+[Unreleased]: https://github.com/brocklab/pycashier/compare/v0.3.4...HEAD
+[0.3.4]: https://github.com/brocklab/pycashier/compare/v0.3.3...v0.3.4
 [0.3.3]: https://github.com/brocklab/pycashier/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/brocklab/pycashier/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/brocklab/pycashier/compare/v0.3.0...v0.3.1
