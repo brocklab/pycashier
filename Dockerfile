@@ -9,6 +9,7 @@ RUN micromamba \
   fastp=0.23* \
   rich>=10 \
   click-rich-help>=22.1 \
+  click>=8.1.0 \
   tomlkit>=0.10 \
   poetry-core>=1.0.0 \
   && \
