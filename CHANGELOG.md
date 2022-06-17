@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.5] - 2022-06-17
+### [Added]
+- Encourage user to increase thread count
+
+### [Changed]
+- Drop `just` for `make` to streamline development
+
 ## [0.3.4] - 2022-06-07
 ### [Added]
 - Docker image instructions
@@ -48,7 +55,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dropped regex in "extract" in favor of simple string matching
 - Merge can take unzipped fastqs now
 
-[Unreleased]: https://github.com/brocklab/pycashier/compare/v0.3.4...HEAD
+[Unreleased]: https://github.com/brocklab/pycashier/compare/v0.3.5...HEAD
+[0.3.5]: https://github.com/brocklab/pycashier/compare/v0.3.4...v0.3.5
 [0.3.4]: https://github.com/brocklab/pycashier/compare/v0.3.3...v0.3.4
 [0.3.3]: https://github.com/brocklab/pycashier/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/brocklab/pycashier/compare/v0.3.1...v0.3.2
