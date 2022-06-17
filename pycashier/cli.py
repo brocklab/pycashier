@@ -620,7 +620,6 @@ def merge(
     \n\n\n
     Simple wrapper over `[b cyan]fastp[/]` to combine R1 and R2 from PE fastq files.
     \n\n\n
-    [i]NOTE[/]: fastq files must be gzipped or `[b cyan]pycashier[/]` will exit.
     """
 
     if save_config:
