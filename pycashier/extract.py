@@ -1,6 +1,6 @@
 from .cluster import cluster
-from .console import console
 from .read_filter import read_filter
+from .term import console
 from .trim import trim
 
 

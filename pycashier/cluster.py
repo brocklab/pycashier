@@ -1,7 +1,7 @@
 import shlex
 import subprocess
 
-from .console import console
+from .term import console
 from .utils import extract_csv_column
 
 

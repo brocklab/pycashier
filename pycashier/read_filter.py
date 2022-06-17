@@ -1,19 +1,5 @@
-import csv
-
-from .console import console
-
-
-def get_filter_count(file_in, filter_percent):
-    total_reads = 0
-
-    with open(file_in, newline="") as csvfile:
-        spamreader = csv.reader(csvfile, delimiter="\t")
-        for row in spamreader:
-            total_reads += float(row[1])
-
-    filter_count = int(round(total_reads * filter_percent / 100, 0))
-
-    return filter_count
+from .term import console
+from .utils import get_filter_count
 
 
 def filter_by_percent(file_in, filter_percent, length, offset, outdir):

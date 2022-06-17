@@ -5,7 +5,7 @@ import sys
 
 from rich.prompt import Confirm
 
-from .console import console
+from .term import console
 
 
 def merge_single(sample, fastqs, input, pipeline, output, threads, verbose, fastp_args):

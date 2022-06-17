@@ -12,7 +12,7 @@ except ImportError:
 from rich.progress import Progress
 from rich.prompt import Confirm
 
-from .console import console
+from .term import console
 
 
 def sam_to_name_labeled_fastq(sample, in_file, out_file):

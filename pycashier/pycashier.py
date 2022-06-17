@@ -1,86 +1,170 @@
-import sys
-from pathlib import Path
-
-from .cli import get_args, sample_check
-from .cluster import cluster
-from .console import console
-from .extract import extract
-from .merge import merge
-from .read_filter import read_filter
+from .extract import extract_all
+from .merge import merge_all
 from .single_cell import single_cell
+from .term import console
+from .termui import print_params, sample_check
+from .utils import combine_outs, get_fastqs, save_params, validate_filter_args
 
 
-def main():
+class Pycashier:
+    def __init__(self, ctx, save_config):
+        if save_config:
+            save_params(ctx)
 
-    cli_args = get_args()
+        print_params(ctx)
 
-    console.rule()
-    console.rule("Barcode Extraction with CASHIER")
-    console.rule()
+    def extract(
+        self,
+        ctx,
+        input,
+        output,
+        pipeline,
+        quality,
+        unqualified_percent,
+        fastp_args,
+        skip_trimming,
+        error,
+        length,
+        upstream_adapter,
+        downstream_adapter,
+        unlinked_adapters,
+        ratio,
+        distance,
+        offset,
+        verbose,
+        threads,
+        **kwargs,
+    ):
+        """
+        extract DNA barcodes from a directory of fastq files
 
-    sourcedir = Path(cli_args["main"]["sourcedir"])
+        \b
+        Sample names should be delimited with a ".", such as `[b cyan][yellow]<sample>[/yellow].raw.fastq[/]`,
+        anything succeeding the first period will be ignored by `[b cyan]pycashier[/]`.
 
-    fastqs = [f for f in sourcedir.iterdir()]
+        If your data is paired-end with overlapping barcodes, see `[b cyan]pycashier merge[/]`.
+        """
 
-    if not fastqs:
-        console.print(f"Source dir: {sourcedir}, appears to be empty...")
-        console.print("Exiting.")
-        sys.exit(1)
+        # validate that filter count and filter percent aren't both defined
+        filter = validate_filter_args(ctx)
 
-    Path(cli_args["main"]["pipelinedir"]).mkdir(exist_ok=True)
+        console.print(("[b]\n[cyan]PYCASHIER:[/cyan] Starting Extraction\n"))
 
-    if cli_args["merge"]["merge"]:
+        fastqs = get_fastqs(input)
 
-        merge(fastqs, sourcedir, cli_args)
+        processed_fastqs = sample_check(
+            fastqs,
+            pipeline,
+            output,
+            quality,
+            ratio,
+            distance,
+            filter,
+            offset,
+        )
 
-    Path(cli_args["main"]["outdir"]).mkdir(exist_ok=True)
+        fastqs = [f for f in fastqs if f not in processed_fastqs]
 
-    if cli_args["single_cell"]:
+        extract_all(
+            fastqs,
+            output,
+            pipeline,
+            quality,
+            unqualified_percent,
+            fastp_args,
+            skip_trimming,
+            error,
+            length,
+            upstream_adapter,
+            downstream_adapter,
+            unlinked_adapters,
+            ratio,
+            distance,
+            filter,
+            offset,
+            verbose,
+            threads,
+        )
 
-        single_cell(sourcedir, cli_args)
+    def merge(
+        self,
+        ctx,
+        input,
+        output,
+        pipeline,
+        fastp_args,
+        threads,
+        verbose,
+    ):
+        """
+        merge overlapping paired-end reads using fastp
+        \n\n\n
+        Simple wrapper over `[b cyan]fastp[/]` to combine R1 and R2 from PE fastq files.
+        \n\n\n
+        """
 
-    for f in fastqs:
+        console.print(("[b]\n[cyan]PYCASHIER:[/cyan] Starting Merge\n"))
 
-        ext = f.suffix
+        merge_all(
+            [f for f in input.iterdir()],
+            input,
+            pipeline,
+            output,
+            threads,
+            verbose,
+            fastp_args,
+        )
 
-        if ext != ".fastq":
-            print(
-                f"ERROR! There is a non fastq file in the provided fastq directory: {f}"
-            )
-            print("Exiting.")
-            sys.exit(1)
+    def scrna(
+        self,
+        ctx,
+        input,
+        output,
+        pipeline,
+        minimum_length,
+        length,
+        error,
+        upstream_adapter,
+        downstream_adapter,
+        threads,
+        verbose,
+    ):
+        """
+        extract expressed DNA barcodes from scRNA-seq
+        \n
+        \b
+        Designed for interoperability with 10X scRNA-seq workflow.
+        After processing samples with `[b cyan]cellranger[/]` resulting
+        bam files should be converted to sam files using `[b cyan]samtools[/]`.
+        \n
+        [i]NOTE[/]: You can speed this up by providing a sam file with only
+        the unmapped reads.
+        """
+        console.print(
+            ("[b]\n[cyan]PYCASHIER:[/cyan] Starting Single Cell Extraction\n")
+        )
 
-    processed_samples = sample_check(sourcedir, fastqs, cli_args)
+        single_cell(
+            input,
+            pipeline,
+            output,
+            error,
+            minimum_length,
+            length,
+            upstream_adapter,
+            downstream_adapter,
+            threads,
+            verbose,
+        )
 
-    for fastq in fastqs:
+    def combine(
+        self,
+        ctx,
+        input,
+        output,
+    ):
+        """
+        combine resulting output of [b cyan]extract[/]
+        """
 
-        sample = fastq.name.split(".")[0]
-
-        if sample in processed_samples:
-            console.print(f"Skipping Processing for [green]{sample}[/green]")
-            console.rule()
-            continue
-
-        with console.status(
-            f"Processing sample: [green]{sample}[/green]", spinner="dots12"
-        ):
-
-            extract(sample, fastq, **cli_args["main"], **cli_args["extract"])
-
-            cluster(sample, **cli_args["main"], **cli_args["cluster"])
-
-            read_filter(
-                sample,
-                **cli_args["main"],
-                **cli_args["filter"],
-                **cli_args["cluster"],
-            )
-
-        console.print(f"[green]{sample}[/green]: processing completed")
-        console.rule()
-
-    console.print("\n[green]FINISHED!")
-
-
-if __name__ == "__main__":
-    main()
+        combine_outs(input, output)

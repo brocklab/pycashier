@@ -1,6 +1,11 @@
+import csv
 import sys
+from pathlib import Path
 
-from .console import console
+import click
+import tomlkit
+
+from .term import console
 
 
 def get_fastqs(src):
@@ -65,3 +70,90 @@ def combine_outs(input, output):
             with f.open("r") as csv_in:
                 for line in csv_in:
                     csv_out.write(f"{sample}\t{line}")
+
+
+def get_filter_count(file_in, filter_percent):
+    total_reads = 0
+
+    with open(file_in, newline="") as csvfile:
+        spamreader = csv.reader(csvfile, delimiter="\t")
+        for row in spamreader:
+            total_reads += float(row[1])
+
+    filter_count = int(round(total_reads * filter_percent / 100, 0))
+
+    return filter_count
+
+
+def validate_filter_args(ctx):
+    if ctx.params["filter_count"] or ctx.params["filter_count"] == 0:
+        if ctx.get_parameter_source("filter_percent").value == 3:
+            ctx.params["filter_percent"] = None
+            del ctx.params["filter_percent"]
+            return {"filter_count": ctx.params["filter_count"]}
+        else:
+            raise click.BadParameter(
+                "`--filter-count` and `--filter-percent` are mutually exclusive"
+            )
+    else:
+        del ctx.params["filter_count"]
+        return {"filter_percent": ctx.params["filter_percent"]}
+
+
+def save_params(ctx):
+    cmd = ctx.info_name
+    params = {k: v for k, v in ctx.params.items() if v}
+    save_type = params.pop("save_config")
+
+    try:
+        config_file = Path(ctx.obj["config_file"])
+    except TypeError:
+        raise click.BadParameter("use `--save-config` with a specified `--config`")
+
+    if config_file.is_file():
+        console.print(f"Updating current config file at [b cyan]{config_file}")
+        with config_file.open("r") as f:
+            config = tomlkit.load(f)
+    else:
+        console.print(f"Staring a config file at [b cyan]{config_file}")
+        config = tomlkit.document()
+
+    if save_type == "explicit":
+        params = {
+            k: v for k, v in params.items() if ctx.get_parameter_source(k).value != 3
+        }
+
+    # sanitize the path's for writing to toml
+    for k in ["input", "pipeline", "output"]:
+        if k in params.keys():
+            params[k] = str(params[k])
+
+    config[cmd] = params
+
+    null_hints = {"extract": ["filter_count", "fastp_args"], "merge": ["fastp_args"]}
+    if cmd in null_hints.keys() and save_type == "full":
+        for param in null_hints[cmd]:
+            if param not in params.keys():
+                config[cmd].add(tomlkit.comment(f"{param} ="))
+
+    with config_file.open("w") as f:
+        f.write(tomlkit.dumps(config))
+
+    console.print("Exiting...")
+    ctx.exit()
+
+
+def load_params(ctx, param, filename):
+    if not filename or ctx.resilient_parsing:
+        return
+
+    ctx.default_map = {}
+    if Path(filename).is_file():
+        with Path(filename).open("r") as f:
+            params = tomlkit.load(f)
+        if params:
+            ctx.default_map = params.get(ctx.info_name, {})
+    else:
+        console.print("No config file found. ignoring..")
+
+    ctx.obj = {"config_file": filename}

@@ -1,4 +1,3 @@
-import multiprocessing
 import sys
 from shutil import which
 
@@ -6,10 +5,9 @@ from rich import box
 from rich.panel import Panel
 from rich.table import Table
 
-from .console import console
+from .term import console
 
 PACKAGES = ["cutadapt", "fastp", "pysam", "starcode"]
-SYS_THREADS = multiprocessing.cpu_count()
 
 
 def pre_run_check():
@@ -55,9 +53,3 @@ def is_tool(name):
         except ImportError:
             return False
     return which(name) is not None
-
-
-def thread_check(threads):
-    if threads == 1 and threads <= SYS_THREADS / 4:
-        console.print("[i]NOTE[/]: use `[code]--threads[/]` to increase the speed")
-        console.print(f"Available threads: {SYS_THREADS}")

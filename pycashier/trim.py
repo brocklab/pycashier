@@ -3,7 +3,7 @@ import shutil
 import subprocess
 import sys
 
-from .console import console
+from .term import console
 from .utils import fastq_to_csv
 
 
