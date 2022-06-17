@@ -10,7 +10,7 @@ from rich.panel import Panel
 from rich.prompt import Confirm
 from rich.table import Table
 
-from ._checks import pre_run_check
+from ._checks import pre_run_check, thread_check
 from .console import console
 from .extract import extract_all
 from .merge import merge_all
@@ -160,6 +160,8 @@ def print_params(ctx):
     console.print(
         Panel.fit(grid, title=f"{ctx.info_name.capitalize()} Parameters", padding=1)
     )
+
+    thread_check(params["threads"])
 
 
 def save_params(ctx):

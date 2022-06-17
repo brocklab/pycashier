@@ -48,7 +48,6 @@ dependencies you would install from bioconda are on your path and installed corr
 pip install pycashier
 ```
 
-
 ### Docker
 
 If you prefer not to install `pycashier` locally you can also use `docker`.
@@ -56,7 +55,6 @@ If you prefer not to install `pycashier` locally you can also use `docker`.
 ```bash
 docker run --rm -it -v $PWD:/data daylinmorgan/pycashier
 ```
-
 
 ## Usage
 
