@@ -153,7 +153,5 @@ def load_params(ctx, param, filename):
             params = tomlkit.load(f)
         if params:
             ctx.default_map = params.get(ctx.info_name, {})
-    else:
-        console.print("No config file found. ignoring..")
 
     ctx.obj = {"config_file": filename}

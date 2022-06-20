@@ -88,7 +88,6 @@ class Pycashier:
 
     def merge(
         self,
-        ctx,
         input,
         output,
         pipeline,
@@ -117,7 +116,6 @@ class Pycashier:
 
     def scrna(
         self,
-        ctx,
         input,
         output,
         pipeline,
@@ -159,7 +157,6 @@ class Pycashier:
 
     def combine(
         self,
-        ctx,
         input,
         output,
     ):
