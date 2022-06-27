@@ -2,9 +2,17 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+and this project adheres to a type of [CalVer](https://calver.org).
+
+version -> vYY.MM.PATCH
 
 ## [Unreleased]
+### [Added]
+- Fixed(#8)
+
+### [Changed]
+- refactored cli source for simplicity
+- project now adheres to [CalVer](https://calver.org)
 
 ## [0.3.5] - 2022-06-17
 ### [Added]
@@ -23,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.3.3] - 2022-05-23
 ### [Added]
 - Dockerfile
+
 ### [Changed]
 - Fix #8 to allow .fastq.gz in input directory
 
