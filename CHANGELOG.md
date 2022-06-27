@@ -7,6 +7,8 @@ and this project adheres to a type of [CalVer](https://calver.org).
 version -> vYY.MM.PATCH
 
 ## [Unreleased]
+### [Changed]
+- Switch project management to pdm
 
 ## [22.6.1] - 2022-06-27
 ### [Added]

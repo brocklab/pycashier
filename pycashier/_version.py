@@ -1,1 +1,3 @@
-__version__ = "22.6.1"
+from importlib.metadata import version
+
+__version__ = version("pycashier")
