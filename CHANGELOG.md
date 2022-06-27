@@ -7,6 +7,8 @@ and this project adheres to a type of [CalVer](https://calver.org).
 version -> vYY.MM.PATCH
 
 ## [Unreleased]
+
+## [22.6.1] - 2022-06-27
 ### [Added]
 - Fixed(#8)
 
@@ -65,6 +67,7 @@ version -> vYY.MM.PATCH
 - Merge can take unzipped fastqs now
 
 [Unreleased]: https://github.com/brocklab/pycashier/compare/v0.3.5...HEAD
+[22.6.1]: https://github.com/brocklab/pycashier/compare/v0.3.5...v22.6.1
 [0.3.5]: https://github.com/brocklab/pycashier/compare/v0.3.4...v0.3.5
 [0.3.4]: https://github.com/brocklab/pycashier/compare/v0.3.3...v0.3.4
 [0.3.3]: https://github.com/brocklab/pycashier/compare/v0.3.2...v0.3.3
