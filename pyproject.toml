@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pycashier"
-version = "22.6.0"
+version = "22.6.1"
 description = "cash in on expressed barcode tags"
 authors = ["Daylin Morgan <daylinmorgan@gmail.com>"]
 license = "MIT"
@@ -34,7 +34,7 @@ profile = "black"
 multi_line_output = 3
 
 [tool.bumpver]
-current_version = "v22.6.0"
+current_version = "v22.6.1"
 version_pattern = "vYY.MM.PATCH[-TAG]"
 commit_message = "chore: bump version {old_version} -> {new_version}"
 commit = true
