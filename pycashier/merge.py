@@ -70,7 +70,7 @@ def merge_single(sample, fastqs, input, pipeline, output, threads, verbose, fast
         console.print(f"[green]{sample}[/green]: skipping fastq merge")
 
 
-def merge_all(fastqs, input, pipeline, output, threads, verbose, fastp_args):
+def merge_all(fastqs, input, pipeline, output, threads, verbose, fastp_args, yes):
     for d in [pipeline, output]:
         d.mkdir(exist_ok=True)
 
@@ -88,7 +88,7 @@ def merge_all(fastqs, input, pipeline, output, threads, verbose, fastp_args):
 
     console.print(f"[b cyan]Samples[/]: {', '.join(sorted(set(samples)))}\n")
 
-    if not Confirm.ask("Continue with these samples?"):
+    if not yes and not Confirm.ask("Continue with these samples?"):
         sys.exit()
 
     if len(samples) / len(set(samples)) != 2:

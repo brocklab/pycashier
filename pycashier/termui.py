@@ -106,14 +106,7 @@ def make_row(sample, pipeline, output, quality, ratio, distance, filter, offset)
 
 
 def sample_check(
-    fastqs,
-    pipeline,
-    output,
-    quality,
-    ratio,
-    distance,
-    filter,
-    offset,
+    fastqs, pipeline, output, quality, ratio, distance, filter, offset, yes
 ):
     samples = {f.name.split(".")[0]: f for f in fastqs}
     queue_all = not pipeline.is_dir()
@@ -129,8 +122,9 @@ def sample_check(
         queue_all,
     )
 
-    if len(processed_samples) != len(samples) and not Confirm.ask(
-        "Continue with these samples?"
+    if not yes and (
+        len(processed_samples) != len(samples)
+        and not Confirm.ask("Continue with these samples?")
     ):
         sys.exit()
 

@@ -268,6 +268,7 @@ def single_cell(
     downstream_adapter,
     threads,
     verbose,
+    yes,
 ):
     for d in [pipeline, output]:
         d.mkdir(exist_ok=True)
@@ -284,7 +285,7 @@ def single_cell(
 
     console.print(f"[b cyan]Samples[/]: {', '.join(sorted(sam_files.keys()))}\n")
 
-    if not Confirm.ask("Continue with these samples?"):
+    if not yes and not Confirm.ask("Continue with these samples?"):
         sys.exit()
 
     for sample, f in sam_files.items():

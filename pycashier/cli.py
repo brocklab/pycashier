@@ -115,6 +115,11 @@ shared_options = {
                 callback=init_check,
             ),
         ),
+        Option(
+            ["-y", "--yes"],
+            help="answer yes to prompts",
+            is_flag=True,
+        ),
     ],
     "trim": [
         Option(
@@ -274,7 +279,7 @@ options = {
             show_default=True,
             type=click.Path(exists=False, dir_okay=False, path_type=Path),
         ),
-        *[option for option in shared_options["general"][2:]],
+        *[option for option in shared_options["general"][2:-1]],
     ],
 }
 

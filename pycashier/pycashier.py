@@ -10,7 +10,6 @@ class Pycashier:
     def __init__(self, ctx, save_config):
         if save_config:
             save_params(ctx)
-
         print_params(ctx)
 
     def extract(
@@ -33,6 +32,7 @@ class Pycashier:
         offset,
         verbose,
         threads,
+        yes,
         **kwargs,
     ):
         """
@@ -61,6 +61,7 @@ class Pycashier:
             distance,
             filter,
             offset,
+            yes,
         )
 
         fastqs = [f for f in fastqs if f not in processed_fastqs]
@@ -86,15 +87,7 @@ class Pycashier:
             threads,
         )
 
-    def merge(
-        self,
-        input,
-        output,
-        pipeline,
-        fastp_args,
-        threads,
-        verbose,
-    ):
+    def merge(self, input, output, pipeline, fastp_args, threads, verbose, yes):
         """
         merge overlapping paired-end reads using fastp
         \n\n\n
@@ -112,6 +105,7 @@ class Pycashier:
             threads,
             verbose,
             fastp_args,
+            yes,
         )
 
     def scrna(
@@ -126,6 +120,7 @@ class Pycashier:
         downstream_adapter,
         threads,
         verbose,
+        yes,
     ):
         """
         extract expressed DNA barcodes from scRNA-seq
@@ -153,6 +148,7 @@ class Pycashier:
             downstream_adapter,
             threads,
             verbose,
+            yes,
         )
 
     def combine(
