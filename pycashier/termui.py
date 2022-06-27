@@ -153,9 +153,9 @@ def print_params(ctx):
     console.print(
         Panel.fit(grid, title=f"{ctx.info_name.capitalize()} Parameters", padding=1)
     )
-
-    if params["threads"] == 1 and params["threads"] <= SYS_THREADS / 4:
-        console.print(
-            f"[dim]Using {params['threads']} of {SYS_THREADS} available threads.\n"
-            "[i]HINT[/]: use `--threads` to increase"
-        )
+    if not ctx.info_name == "combine":
+        if params["threads"] == 1 and params["threads"] <= SYS_THREADS / 4:
+            console.print(
+                f"[dim]Using {params['threads']} of {SYS_THREADS} available threads.\n"
+                "[i]HINT[/]: use `--threads` to increase"
+            )

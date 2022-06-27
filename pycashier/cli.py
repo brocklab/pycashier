@@ -364,7 +364,6 @@ def extract(ctx, save_config, **kwargs):
 @add_options([option.get_click_option() for option in options["merge"]])
 @click.pass_context
 def merge(ctx, save_config, **kwargs):
-    print(kwargs)
     pycashier = Pycashier(ctx, save_config)
     pycashier.merge(**kwargs)
 
