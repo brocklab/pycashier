@@ -43,7 +43,7 @@ docker-push: version-check docker-build
 	docker push daylinmorgan/pycashier:latest
 
 
-.ONESHELL:
+.ONESHELL: conda-env setup-env
 
 conda-env: environment-dev.yml
 	CONDA_ALWAYS_YES="true" mamba env create -f environment-dev.yml -p ./env --force
