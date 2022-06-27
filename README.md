@@ -172,14 +172,14 @@ fastp_args = "-t 1"
 
 The order of precedence for arguments is command line > config file > defaults.
 
-For example if you were to use the above `config.toml` with `pycashier extract -c config.toml -t 15`.
+For example if you were to use the above `pycashier.toml` with `pycashier extract -c pycashier.toml -t 15`.
 The value used for threads would be 15.
 You can confirm the parameter values as they will be printed prior to any execution.
 
-For convenience, you can update/create your config file with `pycasher COMMAND --save-config [explicit|full] -c config.toml`.
+For convenience, you can update/create your config file with `pycasher COMMAND --save-config [explicit|full]`.
 
 "Explicit" will only save parameters already included in the config file or specified at runtime.
-"Full" will include all parameters again maintaining preset values in config or specified at runtime.
+"Full" will include all parameters, again, maintaining preset values in config or specified at runtime.
 
 ## Non-Configurable Defaults
 
