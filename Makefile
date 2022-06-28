@@ -55,6 +55,7 @@ setup-env:
 	$(CONDA) conda activate ./env
 	pdm install
 	pdm plugin add pdm-shell
+	pdm config --local python.use_venv true
 	pdm run pre-commit install
 
 FILL = 15
