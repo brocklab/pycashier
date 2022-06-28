@@ -2,7 +2,6 @@ FROM mambaorg/micromamba:0.22.0
 
 USER root
 RUN mkdir /code && chown -R $MAMBA_USER:$MAMBA_USER /code
-
 USER $MAMBA_USER
 
 RUN micromamba \
@@ -30,10 +29,7 @@ WORKDIR /code
 # install dependencies and project
 COPY --chown=$MAMBA_USER:$MAMBA_USER . ./
 
-# RUN pdm config python.use_venv true && \
-  # pdm build --no-isolation --no-sdist && \
-  # pip install dist/*.whl
-RUN pip install .
+RUN pip install --no-deps .
 
 WORKDIR /data
 
