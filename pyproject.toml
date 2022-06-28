@@ -1,13 +1,16 @@
 [project]
 name = "pycashier"
 description = "cash in on expressed barcode tags"
-authors = [
-    {name = "Daylin Morgan", email = "daylinmorgan@gmail.com"},
+authors = [{ name = "Daylin Morgan", email = "daylinmorgan@gmail.com" }]
+dependencies = [
+  "rich>=12.0.0",
+  "tomlkit>=0.10.1",
+  "click-rich-help>=22.1.0",
+  "click>=8.1.0",
 ]
-dependencies = ["rich>=12.0.0", "tomlkit>=0.10.1", "click-rich-help>=22.1.0", "click>=8.1.0"]
 requires-python = ">=3.7,<3.10"
 readme = "README.md"
-license = {text = "MIT"}
+license = { text = "MIT" }
 dynamic = ["version"]
 
 [project.urls]
@@ -17,12 +20,10 @@ repository = "https://github.com/brocklab/pycashier/"
 pycashier = "pycashier.cli:main"
 
 [tool.pdm]
-version = {use_scm = true}
+version = { use_scm = true }
 
 [tool.pdm.dev-dependencies]
-dev = [
-    "pre-commit<3.0.0,>=2.15.0",
-]
+dev = ["pre-commit<3.0.0,>=2.15.0"]
 
 [build-system]
 requires = ["pdm-pep517"]
