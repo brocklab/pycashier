@@ -83,7 +83,7 @@ def merge_all(fastqs, input, pipeline, output, threads, verbose, fastp_args, yes
             samples.append(m.group(1))
         else:
             print(f"Failed to obtain sample name from {f}")
-            print("Merge mode expects gzipped fastqs. Exiting.")
+            print("Merge mode expects fastqs with R1 or R2 in the name. Exiting.")
             sys.exit(1)
 
     console.print(f"[b cyan]Samples[/]: {', '.join(sorted(set(samples)))}\n")
