@@ -16,9 +16,7 @@ repository = "https://github.com/brocklab/pycashier/"
 [project.scripts]
 pycashier = "pycashier.cli:main"
 
-
 [tool.pdm]
-includes = ["LICENSE"]
 version = {use_scm = true}
 
 [tool.pdm.dev-dependencies]
@@ -33,4 +31,3 @@ build-backend = "pdm.pep517.api"
 [tool.isort]
 profile = "black"
 multi_line_output = 3
-

@@ -1,7 +1,7 @@
 CURRENT_SHELL := $(shell echo $$SHELL)
 SHELL = $(CURRENT_SHELL)
 VERSION := $(shell git describe --tags --dirty)
-CONDA_ACTIVATE = source $$(conda info --base)/etc/profile.d/conda.sh ; conda activate ; conda activate
+CONDA = source $$(conda info --base)/etc/profile.d/conda.sh ; conda activate ;
 
 .PHONY: $(MAKECMDGOALS)
 
@@ -30,7 +30,7 @@ build-all:
 
 ## build wheel
 wheel:
-	poetry build
+	pdm build
 
 ## build and tag docker image with version
 docker-build:
@@ -42,17 +42,20 @@ docker-push: version-check docker-build
 	docker push daylinmorgan/pycashier:$(VERSION)
 	docker push daylinmorgan/pycashier:latest
 
+.PHONY: env conda-env setup-env
+.ONESHELL: env conda-env setup-env
 
-.ONESHELL: conda-env setup-env
+env: conda-env setup-env
 
 conda-env: environment-dev.yml
-	CONDA_ALWAYS_YES="true" mamba env create -f environment-dev.yml -p ./env --force
+	$(CONDA) CONDA_ALWAYS_YES="true" mamba env create -f environment-dev.yml -p ./env --force
 
 ## setup conda env with poetry/pre-commit
-setup-env: conda-env
-	$(CONDA_ACTIVATE) ./env
-	poetry install
-	pre-commit install
+setup-env:
+	$(CONDA) conda activate ./env
+	pdm install
+	pdm plugin add pdm-shell
+	pdm run pre-commit install
 
 FILL = 15
 ## Display this help screen
@@ -61,3 +64,7 @@ help:
     if (helpMessage) { helpCommand = substr($$1, 0, index($$1, ":")-1); \
     helpMessage = substr(lastLine, RSTART + 3, RLENGTH); printf "\033[36m%-$(FILL)s\033[0m%s\n"\
     , helpCommand, helpMessage;}} { lastLine = $$0 }' $(MAKEFILE_LIST)
+
+test-mamba:
+	# CONDA_ALWAYS_YES="true" mamba
+	CONDA_ALWAYS_YES="true" mamba env create -f environment-dev.yml -p ./env --force

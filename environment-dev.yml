@@ -9,4 +9,4 @@ dependencies:
   - starcode=1.4
   - pysam=0.17*
   - fastp=0.23*
-  - poetry=1.1*
+  - pdm>=1.15
