@@ -6,6 +6,7 @@
 !pyproject.toml
 !README.md
 !LICENSE
+!docker/*.lock
 !.git/
 
 # Ignore unnecessary files inside allowed directories

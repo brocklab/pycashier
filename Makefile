@@ -33,14 +33,19 @@ wheel:
 	pdm build
 
 ## build and tag docker image with version
-docker-build:
-	docker build --tag daylinmorgan/pycashier:$(VERSION) .
+docker-build: $(addprefix docker/, builder.lock prod.lock)
+	docker build --tag daylinmorgan/pycashier:$(VERSION) -f docker/Dockerfile .
 	docker tag daylinmorgan/pycashier:$(VERSION) daylinmorgan/pycashier:latest
 
 ## push docker tagged and latest docker image
 docker-push: version-check docker-build
 	docker push daylinmorgan/pycashier:$(VERSION)
 	docker push daylinmorgan/pycashier:latest
+
+docker/%.lock: docker/%.yml
+	docker run -it --rm -v $$(pwd):/tmp -u $$(id -u):$$(id -g) mambaorg/micromamba:0.24.0 \
+   /bin/bash -c "micromamba create --yes --name env --file $< && \
+                 micromamba env export --name env --explicit > $@"
 
 .PHONY: env conda-env setup-env
 .ONESHELL: env conda-env setup-env
