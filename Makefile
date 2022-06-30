@@ -33,7 +33,7 @@ wheel:
 	pdm build
 
 ## build and tag docker image with version
-docker-build: $(addprefix docker/, builder.lock prod.lock)
+docker-build: docker/prod.lock
 	docker build --tag daylinmorgan/pycashier:$(VERSION) -f docker/Dockerfile .
 	docker tag daylinmorgan/pycashier:$(VERSION) daylinmorgan/pycashier:latest
 
