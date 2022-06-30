@@ -63,4 +63,4 @@ RUN pip install /pkg/*
 
 WORKDIR /data
 
-# ENTRYPOINT ["/usr/local/bin/_entrypoint.sh", "pycashier"]
+ENTRYPOINT ["/usr/local/bin/_entrypoint.sh", "pycashier"]
