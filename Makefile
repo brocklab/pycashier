@@ -52,8 +52,8 @@ docker/%.lock: docker/%.yml
 
 env: conda-env setup-env
 
-conda-env: environment-dev.yml
-	$(CONDA) CONDA_ALWAYS_YES="true" mamba env create -f environment-dev.yml -p ./env --force
+conda-env: env-dev.yml
+	$(CONDA) CONDA_ALWAYS_YES="true" mamba env create -f env-dev.yml -p ./env --force
 
 ## setup conda env with poetry/pre-commit
 setup-env:

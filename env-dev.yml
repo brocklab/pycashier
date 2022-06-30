@@ -1,0 +1,14 @@
+name: cashierdev
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.9
+  - cutadapt>=4.1
+  - starcode>=1.4
+  - pysam=0.19*
+  - fastp=0.23*
+  - click-rich-help>=22.1
+  - click>=8.1.0
+  - tomlkit>=0.10
+  - pdm>=1.15

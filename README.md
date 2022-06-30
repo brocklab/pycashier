@@ -33,10 +33,10 @@ It's recommended to use [conda](https://docs.conda.io/en/latest/)/[mamba](https:
 conda install -c conda-forge -c bioconda cutadapt fastp pysam starcode pycashier
 ```
 
-You can also use the included `environment.yml` to create your environment and install everything you need.
+You can also use the included `env.yml` to create your environment and install everything you need.
 
 ```bash
-conda env create -f https://raw.githubusercontent.com/brocklab/pycashier/main/environment.yml
+conda env create -f https://raw.githubusercontent.com/brocklab/pycashier/main/env.yml
 conda activate cashierenv
 ```
 
