@@ -6,69 +6,77 @@ and this project adheres to a type of [CalVer](https://calver.org).
 
 version -> vYY.MM.PATCH
 
-## [Unreleased]
-### [Changed]
-- Switch project management to pdm
+## [22.6.2] - 2022-06-30
+### Added
+- new `-y/--yes` flag to skip prompts
+
+### Changed
+- switch project management to pdm
+- improved merge error message
+- made docker build multi-stage to reduce footprint
+- updated ci to use python action instead of poetry
 
 ## [22.6.1] - 2022-06-27
-### [Added]
+### Fixed
 - Fixed(#8)
 
-### [Changed]
+### Changed
 - refactored cli source for simplicity
 - project now adheres to [CalVer](https://calver.org)
 
 ## [0.3.5] - 2022-06-17
-### [Added]
+### Added
 - Encourage user to increase thread count
 
-### [Changed]
+### Changed
 - Drop `just` for `make` to streamline development
 
 ## [0.3.4] - 2022-06-07
-### [Added]
+### Added
 - Docker image instructions
-### [Changed]
+
+### Changed
 - Use wider format help on bigger terminals
 
 
 ## [0.3.3] - 2022-05-23
-### [Added]
+### Added
 - Dockerfile
 
-### [Changed]
+### Changed
 - Fix #8 to allow .fastq.gz in input directory
 
 
 ## [0.3.2] - 2022-04-06
-### [Changed]
+### Changed
 - Swapped `rich-click` for `click-rich-help`
 
 
 ## [0.3.1] - 2022-03-29
-### [Added]
+### Added
 - `Pycashier` now manages version with `bumpver`
 
-### [Changed]
+### Changed
 - Dropped yaml-based config for toml
 
 
 ## [0.3.0] - 2022-03-16
-### [Added]
+### Added
 - This CHANGELOG
 - Combine command to simply combine output tsv's into one file
 - Length offset to filter sequences post-clustering
 - Option to `--skip-trimming` in extract
 - Config file to improve UX
 
-### [Changed]
+### Changed
 - Entire CLI was redesigned around click/rich
 - When performing adapter trimming the min/max length is set to length +/- Levenshtein distance
 - Sample Queue table is formatted inline with new CLI
 - Dropped regex in "extract" in favor of simple string matching
 - Merge can take unzipped fastqs now
 
-[Unreleased]: https://github.com/brocklab/pycashier/compare/v0.3.5...HEAD
+[Unreleased]: https://github.com/brocklab/pycashier/compare/v22.6.2...HEAD
+[22.6.2]: https://github.com/brocklab/pycashier/compare/v22.6.1...v22.6.2
 [22.6.1]: https://github.com/brocklab/pycashier/compare/v0.3.5...v22.6.1
 [0.3.5]: https://github.com/brocklab/pycashier/compare/v0.3.4...v0.3.5
 [0.3.4]: https://github.com/brocklab/pycashier/compare/v0.3.3...v0.3.4
