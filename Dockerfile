@@ -1,16 +1,33 @@
-FROM mambaorg/micromamba:0.22.0
+FROM mambaorg/micromamba:0.24.0 as builder
+
+RUN micromamba \
+  install --name base \
+  --yes \
+  -c conda-forge \
+  python=3.9 \
+  git \
+  pdm \
+  pdm-pep517 && \
+  micromamba clean --all --force-pkgs-dirs --yes
+
+ARG MAMBA_DOCKERFILE_ACTIVATE=1  # (otherwise python will not be found)
 
 USER root
-RUN mkdir /code && chown -R $MAMBA_USER:$MAMBA_USER /code
-USER $MAMBA_USER
+
+WORKDIR /pkg
+
+COPY --chown=$MAMBA_USER:$MAMBA_USER . .
+
+RUN pdm build --no-sdist --no-isolation
+
+FROM mambaorg/micromamba:0.24.0 as prod
 
 RUN micromamba \
   install --name base \
   --yes \
   -c conda-forge \
   -c bioconda \
-  git \
-  python>=3.7 \
+  python=3.9 \
   cutadapt>=3.5 \
   starcode>=1.4 \
   pysam=0.17* \
@@ -20,16 +37,13 @@ RUN micromamba \
   click>=8.1.0 \
   tomlkit>=0.10 \
   && \
-  micromamba clean --all --yes
+  micromamba clean --all --force-pkgs-dirs --yes
 
 ARG MAMBA_DOCKERFILE_ACTIVATE=1  # (otherwise python will not be found)
 
-WORKDIR /code
+COPY --from=builder --chown=$MAMBA_USER:$MAMBA_USER /pkg/dist/ /pkg
 
-# install dependencies and project
-COPY --chown=$MAMBA_USER:$MAMBA_USER . ./
-
-RUN pip install --no-deps .
+RUN pip install /pkg/*
 
 WORKDIR /data
 
