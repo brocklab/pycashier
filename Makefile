@@ -1,6 +1,6 @@
 CURRENT_SHELL := $(shell echo $$SHELL)
 SHELL = $(CURRENT_SHELL)
-VERSION := $(shell git describe --tags --dirty)
+VERSION := $(shell git describe --tags --dirty | sed -e 's/dirty/dev/g')
 CONDA = source $$(conda info --base)/etc/profile.d/conda.sh ; conda activate ;
 
 .PHONY: $(MAKECMDGOALS)

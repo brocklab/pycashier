@@ -18,6 +18,9 @@ WORKDIR /pkg
 
 COPY . .
 
+# ignore files that weren't copied over so the git status isn't dirty
+RUN git ls-files --deleted | git update-index --assume-unchanged --stdin
+
 RUN python -m \
   build \
   --wheel \
@@ -60,4 +63,4 @@ RUN pip install /pkg/*
 
 WORKDIR /data
 
-ENTRYPOINT ["/usr/local/bin/_entrypoint.sh", "pycashier"]
+# ENTRYPOINT ["/usr/local/bin/_entrypoint.sh", "pycashier"]
