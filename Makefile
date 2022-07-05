@@ -9,15 +9,6 @@ CONDA = source $$(conda info --base)/etc/profile.d/conda.sh ; conda activate ;
 lint:
 	pre-commit run --all
 
-# target-check:
-# 	@[ "${TARGET}" ] || \
-# 		( echo ">> TARGET is not set";\
-# 		  echo ">> options: all,wheel,docker";\
-# 		  exit 1 )
-
-# build: target-check
-# 	$(MAKE) build-$(TARGET)
-
 version-check:
 	@if [[ "${VERSION}" == *'-'* ]];then\
 		echo ">> version is invalid: $(VERSION)"; exit 1;\
@@ -70,7 +61,3 @@ help:
     if (helpMessage) { helpCommand = substr($$1, 0, index($$1, ":")-1); \
     helpMessage = substr(lastLine, RSTART + 3, RLENGTH); printf "\033[36m%-$(FILL)s\033[0m%s\n"\
     , helpCommand, helpMessage;}} { lastLine = $$0 }' $(MAKEFILE_LIST)
-
-test-mamba:
-	# CONDA_ALWAYS_YES="true" mamba
-	CONDA_ALWAYS_YES="true" mamba env create -f environment-dev.yml -p ./env --force
