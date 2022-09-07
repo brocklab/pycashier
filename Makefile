@@ -1,63 +1,72 @@
-CURRENT_SHELL := $(shell echo $$SHELL)
-SHELL = $(CURRENT_SHELL)
 VERSION := $(shell git describe --tags --dirty | sed -e 's/dirty/dev/g')
-CONDA = source $$(conda info --base)/etc/profile.d/conda.sh ; conda activate ;
 
-.PHONY: $(MAKECMDGOALS)
 
-## lint w/pre-commit
+## lint | run pre-commit (black,isort,flake8)
+.PHONY: lint
 lint:
 	pre-commit run --all
 
+# target-check:
+# 	@[ "${TARGET}" ] || \
+# 		( echo ">> TARGET is not set";\
+# 		  echo ">> options: all,wheel,docker";\
+# 		  exit 1 )
+
+# build: target-check
+# 	$(MAKE) build-$(TARGET)
+
+.PHONY: version-check
 version-check:
 	@if [[ "${VERSION}" == *'-'* ]];then\
 		echo ">> version is invalid: $(VERSION)"; exit 1;\
 	fi
 
-## build wheel & docker images
-build-all:
+## build | build-{dist,docker}
+.PHONY: build
+build:
 	$(MAKE) wheel
 	$(MAKE) docker-build
 
-## build wheel
-wheel:
+## build-dist | make wheel & source distribution
+.PHONY: wheel
+build-dist:
 	pdm build
 
-## build and tag docker image with version
-docker-build: docker/prod.lock
+## build-docker | build and tag docker image with version
+.PHONY: docker-build
+build-docker: docker/prod.lock
 	docker build --tag daylinmorgan/pycashier:$(VERSION) -f docker/Dockerfile .
 	docker tag daylinmorgan/pycashier:$(VERSION) daylinmorgan/pycashier:latest
 
-## push docker tagged and latest docker image
-docker-push: version-check docker-build
+## push-docker | push docker tagged and latest docker image
+.PHONY: push-docker
+push-docker: version-check docker-build
 	docker push daylinmorgan/pycashier:$(VERSION)
 	docker push daylinmorgan/pycashier:latest
 
 docker/%.lock: docker/%.yml
 	docker run -it --rm -v $$(pwd):/tmp -u $$(id -u):$$(id -g) mambaorg/micromamba:0.24.0 \
    /bin/bash -c "micromamba create --yes --name env --file $< && \
-                 micromamba env export --name env --explicit > $@"
+      micromamba env export --name env --explicit > $@"
 
-.PHONY: env conda-env setup-env
-.ONESHELL: env conda-env setup-env
-
+## env | bootstrap conda/pdm/pre-commit
+.PHONY: env
 env: conda-env setup-env
 
 conda-env: env-dev.yml
-	$(CONDA) CONDA_ALWAYS_YES="true" mamba env create -f env-dev.yml -p ./env --force
+	mamba env create -f $< -p ./env --force
 
-## setup conda env with poetry/pre-commit
 setup-env:
-	$(CONDA) conda activate ./env
-	pdm install
-	pdm plugin add pdm-shell
-	pdm config --local python.use_venv true
-	pdm run pre-commit install
+	mamba run -p ./env pdm install
+	mamba run -p ./env pre-commit install
 
-FILL = 15
-## Display this help screen
-help:
-	@awk '/^[a-z.A-Z_-]+:/ { helpMessage = match(lastLine, /^##(.*)/); \
-    if (helpMessage) { helpCommand = substr($$1, 0, index($$1, ":")-1); \
-    helpMessage = substr(lastLine, RSTART + 3, RLENGTH); printf "\033[36m%-$(FILL)s\033[0m%s\n"\
-    , helpCommand, helpMessage;}} { lastLine = $$0 }' $(MAKEFILE_LIST)
+define USAGE ?=
+==> {a.b_green}Pycashier Development Tasks{a.end} <==
+
+{ansi.$(HEADER_COLOR)}usage{ansi.end}:
+  make <recipe>
+
+endef
+
+-include .task.mk
+$(if $(wildcard .task.mk),,.task.mk: ; curl -fsSL https://raw.githubusercontent.com/daylinmorgan/task.mk/v22.9.7/task.mk -o .task.mk)

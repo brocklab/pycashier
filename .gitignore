@@ -170,3 +170,4 @@ test/
 .vscode/
 tmp/
 .pdm.toml
+.task.mk
