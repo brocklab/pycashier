@@ -1,3 +1,4 @@
+SHELL := bash
 VERSION := $(shell git describe --tags --dirty | sed -e 's/dirty/dev/g')
 
 
@@ -17,7 +18,7 @@ lint:
 
 .PHONY: version-check
 version-check:
-	@if [[ "${VERSION}" == *'-'* ]];then\
+	@if [[ "$(VERSION)" == *'-'* ]]; then\
 		echo ">> version is invalid: $(VERSION)"; exit 1;\
 	fi
 
