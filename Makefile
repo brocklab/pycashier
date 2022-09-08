@@ -1,4 +1,3 @@
-SHELL := bash
 VERSION := $(shell git describe --tags --dirty | sed -e 's/dirty/dev/g')
 
 
@@ -25,16 +24,16 @@ version-check:
 ## build | build-{dist,docker}
 .PHONY: build
 build:
-	$(MAKE) wheel
-	$(MAKE) docker-build
+	$(MAKE) build-dist
+	$(MAKE) build-docker
 
 ## build-dist | make wheel & source distribution
-.PHONY: wheel
+.PHONY: build-dist
 build-dist:
 	pdm build
 
 ## build-docker | build and tag docker image with version
-.PHONY: docker-build
+.PHONY: build-docker
 build-docker: docker/prod.lock
 	docker build --tag daylinmorgan/pycashier:$(VERSION) -f docker/Dockerfile .
 	docker tag daylinmorgan/pycashier:$(VERSION) daylinmorgan/pycashier:latest
