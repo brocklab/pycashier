@@ -3,16 +3,13 @@ import shlex
 import subprocess
 import sys
 
-from rich.prompt import Confirm
-
-from .term import console
+from .term import term
 
 
 def merge_single(sample, fastqs, input, pipeline, output, threads, verbose, fastp_args):
     (pipeline / "merge_qc").mkdir(exist_ok=True)
 
     # TODO: refactor for clarity and memory usage
-    # also allow unzipped fastqs
     for f in fastqs:
 
         R1_regex = r"" + re.escape(sample) + r"\..*R1.*\.fastq.*"  # \.gz"
@@ -36,7 +33,7 @@ def merge_single(sample, fastqs, input, pipeline, output, threads, verbose, fast
         path_to_r1 = input / R1_file
         path_to_r2 = input / R2_file
 
-        console.print(f"[green]{sample}[/green]: starting fastq merge")
+        term.print(f"[green]{sample}[/green]: starting fastq merge")
         command = f"fastp \
                 -i {path_to_r1}  \
                 -I {path_to_r2} \
@@ -56,18 +53,18 @@ def merge_single(sample, fastqs, input, pipeline, output, threads, verbose, fast
         )
 
         if p.returncode != 0 or merged_barcode_fastq.stat().st_size == 0:
-            console.print("[red]FASTP FAILED!")
-            console.print("[yellow]FASTP OUTPUT:")
-            console.print(p.stdout)
+            term.print("[red]FASTP FAILED!")
+            term.print("[yellow]FASTP OUTPUT:")
+            term.print(p.stdout)
             sys.exit()
 
         if verbose:
-            console.print("[yellow]FASTP OUTPUT:")
-            console.print(p.stdout)
+            term.print("[yellow]FASTP OUTPUT:")
+            term.print(p.stdout)
 
     else:
-        console.print(f"[green]{sample}[/green]: Found merged barcode fastq")
-        console.print(f"[green]{sample}[/green]: skipping fastq merge")
+        term.print(f"[green]{sample}[/green]: Found merged barcode fastq")
+        term.print(f"[green]{sample}[/green]: skipping fastq merge")
 
 
 def merge_all(fastqs, input, pipeline, output, threads, verbose, fastp_args, yes):
@@ -86,9 +83,9 @@ def merge_all(fastqs, input, pipeline, output, threads, verbose, fastp_args, yes
             print("Merge mode expects fastqs with R1 or R2 in the name. Exiting.")
             sys.exit(1)
 
-    console.print(f"[b cyan]Samples[/]: {', '.join(sorted(set(samples)))}\n")
+    term.print(f"[b cyan]Samples[/]: {', '.join(sorted(set(samples)))}\n")
 
-    if not yes and not Confirm.ask("Continue with these samples?"):
+    if not yes and not term.ask("Continue with these samples?"):
         sys.exit()
 
     if len(samples) / len(set(samples)) != 2:
@@ -98,9 +95,9 @@ def merge_all(fastqs, input, pipeline, output, threads, verbose, fastp_args, yes
     for sample in sorted(set(samples)):
 
         print()
-        console.print(f"──────────────── {sample} ───────────────────", style="dim")
+        term.print(f"──────────────── {sample} ───────────────────", style="dim")
 
-        with console.status(
+        with term.status(
             f"Processing sample: [green]{sample}[/green]", spinner="dots12"
         ):
 
@@ -108,7 +105,7 @@ def merge_all(fastqs, input, pipeline, output, threads, verbose, fastp_args, yes
                 sample, fastqs, input, pipeline, output, threads, verbose, fastp_args
             )
 
-        console.print(f"[green]{sample}[/green]: processing completed")
+        term.print(f"[green]{sample}[/green]: processing completed")
 
-    console.print("\n[green]FINISHED!")
+    term.print("\n[green]FINISHED!")
     sys.exit()

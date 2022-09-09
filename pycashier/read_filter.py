@@ -1,4 +1,4 @@
-from .term import console
+from .term import term
 from .utils import get_filter_count
 
 
@@ -26,7 +26,7 @@ def filter_by_count(file_in, filter_count, length, offset, output):
                     csv_out.write(f"{linesplit[0]}\t{linesplit[1]}")
 
     if final.stat().st_size == 0:
-        console.print(
+        term.print(
             "[yellow]WARNING[/]: no barcodes passed final length and abundance filters"
         )
 
@@ -45,7 +45,7 @@ def read_filter(
     file_in = pipeline / f"{sample}.q{quality}.barcodes.r{ratio}d{distance}.tsv"
 
     if "filter_count" in filter.keys():
-        console.print(
+        term.print(
             f"[green]{sample}[/green]: removing "
             f"sequences with less than {filter['filter_count']} reads"
         )
@@ -53,7 +53,7 @@ def read_filter(
         filter_by_count(file_in, filter["filter_count"], length, offset, output)
 
     else:
-        console.print(
+        term.print(
             f"[green]{sample}[/green]: removing"
             f" sequences with less than {filter['filter_percent']}% of total reads"
         )

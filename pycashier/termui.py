@@ -3,10 +3,9 @@ import sys
 
 from rich import box
 from rich.panel import Panel
-from rich.prompt import Confirm
 from rich.table import Table
 
-from .term import console
+from .term import term
 from .utils import get_filter_count
 
 SYS_THREADS = multiprocessing.cpu_count()
@@ -30,10 +29,8 @@ def make_sample_check_table(
         justify="center",
     )
     if "filter_count" in filter.keys():
-        # filter_expr = f"min{filter['filter_count']}"
         filter_expr = "min(N)"
     else:
-        # filter_expr=f"min({filter['filter_percent']}%)"
         filter_expr = "min(%)"
     table.add_column(f"{filter_expr}_off{offset}", justify="center")
 
@@ -49,15 +46,12 @@ def make_sample_check_table(
 
         table.add_row(*row)
 
-    console.print(
+    term.print(
         Panel.fit(
             table,
             title="Queue",
-        )
-    )
-
-    console.print(
-        f"There are {len(samples)-len(processed_samples)} samples to finish processing.\n"
+        ),
+        f"\nThere are {len(samples)-len(processed_samples)} samples to finish processing.\n",
     )
 
     return processed_samples
@@ -124,7 +118,7 @@ def sample_check(
 
     if not yes and (
         len(processed_samples) != len(samples)
-        and not Confirm.ask("Continue with these samples?")
+        and not term.ask("Continue with these samples?")
     ):
         sys.exit()
 
@@ -144,12 +138,12 @@ def print_params(ctx):
     for key, value in params.items():
         grid.add_row(key, ": ", str(value))
 
-    console.print(
+    term.print(
         Panel.fit(grid, title=f"{ctx.info_name.capitalize()} Parameters", padding=1)
     )
     if not ctx.info_name == "combine":
         if params["threads"] == 1 and params["threads"] <= SYS_THREADS / 4:
-            console.print(
+            term.print(
                 f"[dim]Using {params['threads']} of {SYS_THREADS} available threads.\n"
                 "[i]HINT[/]: use `--threads` to increase"
             )

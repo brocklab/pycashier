@@ -1,7 +1,7 @@
 from .extract import extract_all
 from .merge import merge_all
 from .single_cell import single_cell
-from .term import console
+from .term import term
 from .termui import print_params, sample_check
 from .utils import combine_outs, get_fastqs, save_params, validate_filter_args
 
@@ -48,7 +48,7 @@ class Pycashier:
         # validate that filter count and filter percent aren't both defined
         filter = validate_filter_args(ctx)
 
-        console.print(("[b]\n[cyan]PYCASHIER:[/cyan] Starting Extraction\n"))
+        term.print(("[b]\n[cyan]PYCASHIER:[/cyan] Starting Extraction\n"))
 
         fastqs = get_fastqs(input)
 
@@ -95,7 +95,7 @@ class Pycashier:
         \n\n\n
         """
 
-        console.print(("[b]\n[cyan]PYCASHIER:[/cyan] Starting Merge\n"))
+        term.print(("[b]\n[cyan]PYCASHIER:[/cyan] Starting Merge\n"))
 
         merge_all(
             [f for f in input.iterdir()],
@@ -133,9 +133,7 @@ class Pycashier:
         [i]NOTE[/]: You can speed this up by providing a sam file with only
         the unmapped reads.
         """
-        console.print(
-            ("[b]\n[cyan]PYCASHIER:[/cyan] Starting Single Cell Extraction\n")
-        )
+        term.print(("[b]\n[cyan]PYCASHIER:[/cyan] Starting Single Cell Extraction\n"))
 
         single_cell(
             input,

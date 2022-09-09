@@ -1,6 +1,6 @@
 from .cluster import cluster
 from .read_filter import read_filter
-from .term import console
+from .term import term
 from .trim import trim
 
 
@@ -33,9 +33,9 @@ def extract_all(
         sample = fastq.name.split(".")[0]
 
         print()
-        console.print(f"──────────────── {sample} ───────────────────", style="dim")
+        term.print(f"──────────────── {sample} ───────────────────", style="dim")
 
-        with console.status(
+        with term.status(
             f"Processing sample: [green]{sample}[/green]", spinner="dots12"
         ):
 
@@ -71,6 +71,6 @@ def extract_all(
                 distance,
             )
 
-        console.print(f"[green]{sample}[/green]: processing completed")
+        term.print(f"[green]{sample}[/green]: processing completed")
 
-    console.print("\n[green]FINISHED!")
+    term.print("\n[green]FINISHED!")

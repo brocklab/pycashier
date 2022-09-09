@@ -10,9 +10,8 @@ except ImportError:
     pass
 
 from rich.progress import Progress
-from rich.prompt import Confirm
 
-from .term import console
+from .term import term
 
 
 def sam_to_name_labeled_fastq(sample, in_file, out_file):
@@ -24,7 +23,7 @@ def sam_to_name_labeled_fastq(sample, in_file, out_file):
             new_sam = True
 
     if new_sam:
-        console.print(f"[green]{sample}[/green]: sam is headerless, adding a fake one")
+        term.print(f"[green]{sample}[/green]: sam is headerless, adding a fake one")
         sam_file = fake_header_add(in_file)
     else:
         sam_file = in_file
@@ -211,18 +210,16 @@ def single_cell_process(
     tsv_out = output / f"{sample}.cell_record_labeled.barcode.tsv"
 
     if not fastq_out.is_file():
-        console.print(f"[green]{sample}[/green]: converting sam to labeled fastq")
+        term.print(f"[green]{sample}[/green]: converting sam to labeled fastq")
         status.stop()
         sam_to_name_labeled_fastq(sample, input_file, fastq_out)
         status.start()
     else:
-        console.print(
-            f"[green]{sample}[/green]: skipping sam to labeled fastq conversion"
-        )
+        term.print(f"[green]{sample}[/green]: skipping sam to labeled fastq conversion")
 
     if not output_file.is_file():
 
-        console.print(f"[green]{sample}[/green]: extracting barcodes")
+        term.print(f"[green]{sample}[/green]: extracting barcodes")
 
         command = f"cutadapt \
             -e {error} \
@@ -244,17 +241,15 @@ def single_cell_process(
         )
 
         if verbose:
-            console.print("[yellow]CUTADAPT OUTPUT:")
-            console.print(p.stdout)
+            term.print("[yellow]CUTADAPT OUTPUT:")
+            term.print(p.stdout)
 
     if not tsv_out.is_file():
-        console.print(f"[green]{sample}[/green]: converting labeled fastq to tsv")
+        term.print(f"[green]{sample}[/green]: converting labeled fastq to tsv")
         labeled_fastq_to_tsv(output_file, tsv_out)
 
     else:
-        console.print(
-            f"[green]{sample}[/green]: skipping labeled fastq to tsv conversion"
-        )
+        term.print(f"[green]{sample}[/green]: skipping labeled fastq to tsv conversion")
 
 
 def single_cell(
@@ -286,17 +281,17 @@ def single_cell(
             )
             sys.exit(1)
 
-    console.print(f"[b cyan]Samples[/]: {', '.join(sorted(sam_files.keys()))}\n")
+    term.print(f"[b cyan]Samples[/]: {', '.join(sorted(sam_files.keys()))}\n")
 
-    if not yes and not Confirm.ask("Continue with these samples?"):
+    if not yes and not term.ask("Continue with these samples?"):
         sys.exit()
 
     for sample, f in sam_files.items():
 
         print()
-        console.print(f"──────────────── {sample} ───────────────────", style="dim")
+        term.print(f"──────────────── {sample} ───────────────────", style="dim")
 
-        with console.status(
+        with term.status(
             f"Processing sample: [green]{sample}[/green]\r\n",
             spinner="dots12",
         ) as status:
@@ -314,7 +309,7 @@ def single_cell(
                 verbose,
                 status,
             )
-        console.print(f"[green]{sample}[/green]: processing completed")
+        term.print(f"[green]{sample}[/green]: processing completed")
 
-    console.print("\n[green]FINISHED!")
+    term.print("\n[green]FINISHED!")
     sys.exit()

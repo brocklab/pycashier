@@ -3,7 +3,7 @@ import shutil
 import subprocess
 import sys
 
-from .term import console
+from .term import term
 from .utils import fastq_to_csv
 
 
@@ -40,7 +40,7 @@ def trim(
 
     if not filtered_fastq.is_file():
 
-        console.print(f"[green]{sample}[/green]: quality filtering illumina reads")
+        term.print(f"[green]{sample}[/green]: quality filtering illumina reads")
         command = f"fastp \
             -i {input_file} \
             -o {filtered_fastq} \
@@ -62,21 +62,21 @@ def trim(
         )
 
         if p.returncode != 0:
-            console.print("[yellow]FASTP OUTPUT:")
-            console.print(f"[green]{sample}[/green]: fastp failed")
-            console.print(p.stdout)
+            term.print("[yellow]FASTP OUTPUT:")
+            term.print(f"[green]{sample}[/green]: fastp failed")
+            term.print(p.stdout)
             sys.exit(1)
 
         elif verbose:
-            console.print("[yellow]FASTP OUTPUT:")
-            console.print(p.stdout)
+            term.print("[yellow]FASTP OUTPUT:")
+            term.print(p.stdout)
 
     if skip_trimming:
         shutil.copy(filtered_fastq, filtered_barcode_fastq)
 
     if not filtered_barcode_fastq.is_file():
 
-        console.print(f"[green]{sample}[/green]: extracting barcodes")
+        term.print(f"[green]{sample}[/green]: extracting barcodes")
 
         command = f"cutadapt \
             -e {error} \
@@ -99,27 +99,25 @@ def trim(
         )
 
         if p.returncode != 0 or filtered_barcode_fastq.stat().st_size == 0:
-            console.print("[yellow]CUTADAPT OUTPUT:")
-            console.print(p.stdout)
-            console.print(
-                f"[green]{sample}[/green]: Failed to extract reads for sample"
-            )
-            console.print("see above for cutadapt output")
+            term.print("[yellow]CUTADAPT OUTPUT:")
+            term.print(p.stdout)
+            term.print(f"[green]{sample}[/green]: Failed to extract reads for sample")
+            term.print("see above for cutadapt output")
             sys.exit()
 
         elif verbose:
-            console.print("[yellow]CUTADAPT OUTPUT:")
-            console.print(p.stdout)
+            term.print("[yellow]CUTADAPT OUTPUT:")
+            term.print(p.stdout)
 
-        console.print(f"[green]{sample}[/green]: extraction and filtering complete")
+        term.print(f"[green]{sample}[/green]: extraction and filtering complete")
 
     else:
-        console.print(f"[green]{sample}[/green]: skipping extraction")
+        term.print(f"[green]{sample}[/green]: skipping extraction")
 
     barcodes_out = pipeline / f"{sample}.q{quality}.barcodes.tsv"
 
     if not barcodes_out.is_file():
-        console.print(f"[green]{sample}[/green]: converting fastq to tsv")
+        term.print(f"[green]{sample}[/green]: converting fastq to tsv")
         fastq_to_csv(filtered_barcode_fastq, barcodes_out)
     else:
-        console.print(f"[green]{sample}[/green]: skipping fastq to tsv conversion")
+        term.print(f"[green]{sample}[/green]: skipping fastq to tsv conversion")

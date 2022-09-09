@@ -5,14 +5,14 @@ from pathlib import Path
 import click
 import tomlkit
 
-from .term import console
+from .term import term
 
 
 def get_fastqs(src):
     fastqs = [f for f in src.iterdir() if not f.name.startswith(".")]
     if not fastqs:
-        console.print(f"Source dir: {src}, appears to be empty...")
-        console.print("Exiting.")
+        term.print(f"Source dir: {src}, appears to be empty...")
+        term.print("Exiting.")
         sys.exit(1)
 
     for f in fastqs:
@@ -62,7 +62,7 @@ def combine_outs(input, output):
 
     files = {f.name.split(".")[0]: f for f in input.iterdir()}
 
-    console.print(f"Combing output files for {len(files)} samples.")
+    term.print(f"Combing output files for {len(files)} samples.")
 
     with output.open("w") as csv_out:
         csv_out.write("sample\tsequence\tcount\n")
@@ -111,11 +111,11 @@ def save_params(ctx):
         raise click.BadParameter("use `--save-config` with a specified `--config`")
 
     if config_file.is_file():
-        console.print(f"Updating current config file at [b cyan]{config_file}")
+        term.print(f"Updating current config file at [b cyan]{config_file}")
         with config_file.open("r") as f:
             config = tomlkit.load(f)
     else:
-        console.print(f"Staring a config file at [b cyan]{config_file}")
+        term.print(f"Staring a config file at [b cyan]{config_file}")
         config = tomlkit.document()
 
     if save_type == "explicit":
@@ -139,7 +139,7 @@ def save_params(ctx):
     with config_file.open("w") as f:
         f.write(tomlkit.dumps(config))
 
-    console.print("Exiting...")
+    term.print("Exiting...")
     ctx.exit()
 
 
@@ -149,13 +149,13 @@ def load_params(ctx, param, filename):
 
     ctx.default_map = {}
     if Path(filename).is_file():
-        console.print(f"Using config file at [b cyan]{filename}")
+        term.print(f"Using config file at [b cyan]{filename}")
         with Path(filename).open("r") as f:
             params = tomlkit.load(f)
         if params:
             ctx.default_map = params.get(ctx.info_name, {})
     elif Path(filename) != Path("pycashier.toml"):
-        console.print(f"ERROR. Specified config file ({filename}) does not exist.")
+        term.print(f"ERROR. Specified config file ({filename}) does not exist.")
         sys.exit(1)
 
     ctx.obj = {"config_file": filename}

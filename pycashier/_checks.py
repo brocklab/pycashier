@@ -5,7 +5,7 @@ from rich import box
 from rich.panel import Panel
 from rich.table import Table
 
-from .term import console
+from .term import term
 
 PACKAGES = ["cutadapt", "fastp", "starcode", "pysam"]
 CMD_PACKAGES = {
@@ -44,7 +44,7 @@ def pre_run_check(command):
                 style="bold" if not exists and name in CMD_PACKAGES[command] else "dim",
             )
 
-        console.print(
+        term.print(
             f"\n[red bold] FAILED PRE-RUN CHECKS for [b cyan]pycashier {command}[/b cyan]!!\n",
             Panel.fit(
                 table,
