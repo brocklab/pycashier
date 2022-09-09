@@ -267,7 +267,7 @@ options = {
     "combine": [
         Option(
             ["-i", "--input"],
-            help="source directory containing output files from [b cyan]pycashier extract[/]",
+            help="source directory containing output files from [hl]pycashier extract[/]",
             default="./outs",
             show_default=True,
             type=click.Path(exists=True, file_okay=False, path_type=Path),
@@ -332,7 +332,7 @@ CONTEXT_SETTINGS = dict(
 def cli():
     """Cash in on DNA Barcode Tags
     \n\n\n
-    See `[b cyan]pycashier COMMAND -h[/]` for more information.
+    See `[hl]pycashier COMMAND -h[/]` for more information.
     """
     pass
 

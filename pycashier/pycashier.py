@@ -39,10 +39,10 @@ class Pycashier:
         extract DNA barcodes from a directory of fastq files
 
         \b
-        Sample names should be delimited with a ".", such as `[b cyan][yellow]<sample>[/yellow].raw.fastq[/]`,
-        anything succeeding the first period will be ignored by `[b cyan]pycashier[/]`.
+        Sample names should be delimited with a ".", such as `[hl][yellow]<sample>[/yellow].raw.fastq[/]`,
+        anything succeeding the first period will be ignored by `[hl]pycashier[/]`.
 
-        If your data is paired-end with overlapping barcodes, see `[b cyan]pycashier merge[/]`.
+        If your data is paired-end with overlapping barcodes, see `[hl]pycashier merge[/]`.
         """
 
         # validate that filter count and filter percent aren't both defined
@@ -91,7 +91,7 @@ class Pycashier:
         """
         merge overlapping paired-end reads using fastp
         \n\n\n
-        Simple wrapper over `[b cyan]fastp[/]` to combine R1 and R2 from PE fastq files.
+        Simple wrapper over `[hl]fastp[/]` to combine R1 and R2 from PE fastq files.
         \n\n\n
         """
 
@@ -127,8 +127,8 @@ class Pycashier:
         \n
         \b
         Designed for interoperability with 10X scRNA-seq workflow.
-        After processing samples with `[b cyan]cellranger[/]` resulting
-        bam files should be converted to sam files using `[b cyan]samtools[/]`.
+        After processing samples with `[hl]cellranger[/]` resulting
+        bam files should be converted to sam files using `[hl]samtools[/]`.
         \n
         [i]NOTE[/]: You can speed this up by providing a sam file with only
         the unmapped reads.
@@ -155,7 +155,7 @@ class Pycashier:
         output,
     ):
         """
-        combine resulting output of [b cyan]extract[/]
+        combine resulting output of [hl]extract[/]
         """
 
         combine_outs(input, output)

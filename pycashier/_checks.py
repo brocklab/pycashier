@@ -45,7 +45,7 @@ def pre_run_check(command):
             )
 
         term.print(
-            f"\n[red bold] FAILED PRE-RUN CHECKS for [b cyan]pycashier {command}[/b cyan]!!\n",
+            f"\n[red bold] FAILED PRE-RUN CHECKS for [hl]pycashier {command}[/hl]!!\n",
             Panel.fit(
                 table,
                 title="Dependencies",

@@ -21,7 +21,9 @@ class Term:
     """rich-based ui"""
 
     def __init__(self, width=None):
-        self._console = Console(highlight=False, width=width)
+        self._console = Console(
+            highlight=False, theme=Theme({"hl": "bold cyan"}, inherit=True), width=width
+        )
         self._err_console = Console(
             theme=Theme({"error": "bold red"}, inherit=True),
             stderr=True,

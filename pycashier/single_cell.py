@@ -289,7 +289,7 @@ def single_cell(
             )
             sys.exit(1)
 
-    term.print(f"[b cyan]Samples[/]: {', '.join(sorted(sam_files.keys()))}\n")
+    term.print(f"[hl]Samples[/]: {', '.join(sorted(sam_files.keys()))}\n")
 
     if not yes and not term.confirm("Continue with these samples?"):
         sys.exit()

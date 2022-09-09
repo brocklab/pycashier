@@ -111,11 +111,11 @@ def save_params(ctx):
         raise click.BadParameter("use `--save-config` with a specified `--config`")
 
     if config_file.is_file():
-        term.print(f"Updating current config file at [b cyan]{config_file}")
+        term.print(f"Updating current config file at [hl]{config_file}")
         with config_file.open("r") as f:
             config = tomlkit.load(f)
     else:
-        term.print(f"Staring a config file at [b cyan]{config_file}")
+        term.print(f"Staring a config file at [hl]{config_file}")
         config = tomlkit.document()
 
     if save_type == "explicit":
@@ -149,7 +149,7 @@ def load_params(ctx, param, filename):
 
     ctx.default_map = {}
     if Path(filename).is_file():
-        term.print(f"Using config file at [b cyan]{filename}")
+        term.print(f"Using config file at [hl]{filename}")
         with Path(filename).open("r") as f:
             params = tomlkit.load(f)
         if params:
