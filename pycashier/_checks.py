@@ -7,46 +7,65 @@ from rich.table import Table
 
 from .term import console
 
-PACKAGES = ["cutadapt", "fastp", "pysam", "starcode"]
+PACKAGES = ["cutadapt", "fastp", "starcode", "pysam"]
+CMD_PACKAGES = {
+    "combine": [],
+    "merge": ["fastp"],
+    "extract": ["fastp", "cutadapt", "starcode"],
+    "scrna": ["pysam", "cutadapt"],
+}
 
 
-def pre_run_check():
+def yes_no(condition):
+    """colored yes/no output for table"""
 
+    return "[green]yes[/green]" if condition else "[red]no[/red]"
+
+
+def pre_run_check(command):
+    """Check for runtime dependencies
+
+    Args:
+        command(str): name of pycashier subcommand
+    """
     pkgs_exist = {name: is_tool(name) for name in PACKAGES}
     if False in pkgs_exist.values():
-        console.print("\n[red bold] FAILED PRE-RUN CHECKS!!\n")
 
         table = Table(box=box.SIMPLE, header_style="bold cyan", collapse_padding=True)
+        table.add_column("package", justify="center")
+        table.add_column("installed", justify="center")
+        table.add_column("needed")
 
-        table.add_column("package", justify="right")
-        table.add_column("found?", justify="left")
         for name, exists in pkgs_exist.items():
-            if exists:
-                found = "[green] yes"
-            else:
-                found = "[red] no"
-            table.add_row(name, found)
+            table.add_row(
+                name,
+                yes_no(exists),
+                yes_no(name in CMD_PACKAGES[command]),
+                style="bold" if not exists and name in CMD_PACKAGES[command] else "dim",
+            )
 
         console.print(
+            f"\n[red bold] FAILED PRE-RUN CHECKS for [b cyan]pycashier {command}[/b cyan]!!\n",
             Panel.fit(
                 table,
                 title="Dependencies",
-            )
-        )
-
-        console.print(
-            "It's recommended to install pycashier within a conda environment."
-        )
-        console.print(
-            "See README on github for details: [link]https://github.com/brocklab/pycashier[/link]"
+            ),
+            "It's recommended to install pycashier within a conda environment.\n"
+            "See the repo for details: [link]https://github.com/brocklab/pycashier[/link]",
         )
         sys.exit(1)
 
 
 def is_tool(name):
-    """Check whether `name` is on PATH and marked as executable."""
+    """Check whether `name` is on PATH and marked as executable.
+
+    Args:
+        name (str): executable/dependency
+        command(str): name of pycashier subcommand
+    """
     if name == "pysam":
         try:
+            # replace with importlib?
             import pysam  # noqa
 
             return True

@@ -13,7 +13,7 @@ from .utils import load_params
 
 def init_check(ctx, param, check):
     if not check:
-        pre_run_check()
+        pre_run_check(command=ctx.to_info_dict()["command"]["name"])
 
 
 def add_options(options):

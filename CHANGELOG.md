@@ -6,6 +6,10 @@ and this project adheres to a type of [CalVer](https://calver.org).
 
 version -> vYY.MM.PATCH
 
+## Unreleased
+### Changed
+- made init check dependent on command run (fixes #10)
+
 ## [22.6.2] - 2022-06-30
 ### Added
 - new `-y/--yes` flag to skip prompts
