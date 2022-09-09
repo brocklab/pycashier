@@ -149,9 +149,13 @@ def load_params(ctx, param, filename):
 
     ctx.default_map = {}
     if Path(filename).is_file():
+        console.print(f"Using config file at [b cyan]{filename}")
         with Path(filename).open("r") as f:
             params = tomlkit.load(f)
         if params:
             ctx.default_map = params.get(ctx.info_name, {})
+    elif Path(filename) != Path("pycashier.toml"):
+        console.print(f"ERROR. Specified config file ({filename}) does not exist.")
+        sys.exit(1)
 
     ctx.obj = {"config_file": filename}
