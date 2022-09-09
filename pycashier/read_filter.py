@@ -47,7 +47,7 @@ def read_filter(
     if "filter_count" in filter.keys():
         term.print(
             f"[green]{sample}[/green]: removing "
-            f"sequences with less than {filter['filter_count']} reads"
+            f"sequences with less than [hl]{filter['filter_count']}[/hl] reads"
         )
 
         filter_by_count(file_in, filter["filter_count"], length, offset, output)
@@ -55,7 +55,7 @@ def read_filter(
     else:
         term.print(
             f"[green]{sample}[/green]: removing"
-            f" sequences with less than {filter['filter_percent']}% of total reads"
+            f" sequences with less than [hl]{filter['filter_percent']}%[/hl] of total reads"
         )
 
         filter_by_percent(file_in, filter["filter_percent"], length, offset, output)

@@ -118,7 +118,7 @@ def sample_check(
 
     if not yes and (
         len(processed_samples) != len(samples)
-        and not term.ask("Continue with these samples?")
+        and not term.confirm("Continue with these samples?")
     ):
         sys.exit()
 

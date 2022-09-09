@@ -159,3 +159,7 @@ def load_params(ctx, param, filename):
         sys.exit(1)
 
     ctx.obj = {"config_file": filename}
+
+
+def exit_status(p, file):
+    return True if p.returncode != 0 or file.stat().st_size == 0 else False

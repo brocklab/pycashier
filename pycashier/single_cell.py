@@ -12,6 +12,7 @@ except ImportError:
 from rich.progress import Progress
 
 from .term import term
+from .utils import exit_status
 
 
 def sam_to_name_labeled_fastq(sample, in_file, out_file):
@@ -240,9 +241,16 @@ def single_cell_process(
             universal_newlines=True,
         )
 
-        if verbose:
-            term.print("[yellow]CUTADAPT OUTPUT:")
-            term.print(p.stdout)
+        if verbose or exit_status(p, output_file):
+            term.subcommand(sample, "cutadapt", " ".join(args), p.stdout)
+
+        if exit_status(p, output_file):
+            term.print(
+                f"[CutadaptError]: Failed to extract reads for sample: [green]{sample}[/green]\n"
+                "see above for cutadapt output",
+                err=True,
+            )
+            sys.exit(1)
 
     if not tsv_out.is_file():
         term.print(f"[green]{sample}[/green]: converting labeled fastq to tsv")
@@ -283,7 +291,7 @@ def single_cell(
 
     term.print(f"[b cyan]Samples[/]: {', '.join(sorted(sam_files.keys()))}\n")
 
-    if not yes and not term.ask("Continue with these samples?"):
+    if not yes and not term.confirm("Continue with these samples?"):
         sys.exit()
 
     for sample, f in sam_files.items():
@@ -293,8 +301,9 @@ def single_cell(
 
         with term.status(
             f"Processing sample: [green]{sample}[/green]\r\n",
-            spinner="dots12",
+            spinner="dots2",
         ) as status:
+
             single_cell_process(
                 sample,
                 f,
@@ -309,6 +318,7 @@ def single_cell(
                 verbose,
                 status,
             )
+
         term.print(f"[green]{sample}[/green]: processing completed")
 
     term.print("\n[green]FINISHED!")

@@ -4,9 +4,12 @@ import subprocess
 import sys
 
 from .term import term
+from .utils import exit_status
 
 
-def merge_single(sample, fastqs, input, pipeline, output, threads, verbose, fastp_args):
+def merge_single(
+    sample, fastqs, input, pipeline, output, threads, verbose, fastp_args, status
+):
     (pipeline / "merge_qc").mkdir(exist_ok=True)
 
     # TODO: refactor for clarity and memory usage
@@ -52,15 +55,17 @@ def merge_single(sample, fastqs, input, pipeline, output, threads, verbose, fast
             universal_newlines=True,
         )
 
-        if p.returncode != 0 or merged_barcode_fastq.stat().st_size == 0:
-            term.print("[red]FASTP FAILED!")
-            term.print("[yellow]FASTP OUTPUT:")
-            term.print(p.stdout)
-            sys.exit()
+        if verbose or exit_status(p, merged_barcode_fastq):
+            term.subcommand(sample, "fastp", " ".join(args), p.stdout)
 
-        if verbose:
-            term.print("[yellow]FASTP OUTPUT:")
-            term.print(p.stdout)
+        if exit_status(p, merged_barcode_fastq):
+            status.stop()
+            term.print(
+                f"[FastpError]: fastp failed for sample: [green]{sample}[/green]\n"
+                "see above for output",
+                err=True,
+            )
+            sys.exit(1)
 
     else:
         term.print(f"[green]{sample}[/green]: Found merged barcode fastq")
@@ -85,7 +90,7 @@ def merge_all(fastqs, input, pipeline, output, threads, verbose, fastp_args, yes
 
     term.print(f"[b cyan]Samples[/]: {', '.join(sorted(set(samples)))}\n")
 
-    if not yes and not term.ask("Continue with these samples?"):
+    if not yes and not term.confirm("Continue with these samples?"):
         sys.exit()
 
     if len(samples) / len(set(samples)) != 2:
@@ -98,11 +103,19 @@ def merge_all(fastqs, input, pipeline, output, threads, verbose, fastp_args, yes
         term.print(f"──────────────── {sample} ───────────────────", style="dim")
 
         with term.status(
-            f"Processing sample: [green]{sample}[/green]", spinner="dots12"
-        ):
+            f"Processing sample: [green]{sample}[/green]", spinner="dots2"
+        ) as status:
 
             merge_single(
-                sample, fastqs, input, pipeline, output, threads, verbose, fastp_args
+                sample,
+                fastqs,
+                input,
+                pipeline,
+                output,
+                threads,
+                verbose,
+                fastp_args,
+                status,
             )
 
         term.print(f"[green]{sample}[/green]: processing completed")

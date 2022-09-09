@@ -4,7 +4,7 @@ import subprocess
 import sys
 
 from .term import term
-from .utils import fastq_to_csv
+from .utils import exit_status, fastq_to_csv
 
 
 def trim(
@@ -23,11 +23,11 @@ def trim(
     unlinked_adapters,
     skip_trimming,
     verbose,
+    status,
 ):
 
     json_qc = pipeline / "qc" / f"{sample}.json"
     html_qc = pipeline / "qc" / f"{sample}.html"
-    input_file = fastq
     filtered_fastq = pipeline / f"{sample}.q{quality}.fastq"
     filtered_barcode_fastq = pipeline / f"{sample}.q{quality}.barcode.fastq"
 
@@ -42,7 +42,7 @@ def trim(
 
         term.print(f"[green]{sample}[/green]: quality filtering illumina reads")
         command = f"fastp \
-            -i {input_file} \
+            -i {fastq} \
             -o {filtered_fastq} \
             -q {quality} \
             -u {unqualified_percent} \
@@ -61,15 +61,17 @@ def trim(
             universal_newlines=True,
         )
 
-        if p.returncode != 0:
-            term.print("[yellow]FASTP OUTPUT:")
-            term.print(f"[green]{sample}[/green]: fastp failed")
-            term.print(p.stdout)
-            sys.exit(1)
+        if verbose or exit_status(p, filtered_fastq):
+            term.subcommand(sample, "fastp", " ".join(args), p.stdout)
 
-        elif verbose:
-            term.print("[yellow]FASTP OUTPUT:")
-            term.print(p.stdout)
+        if exit_status(p, filtered_fastq):
+            status.stop()
+            term.print(
+                f"[FastpError]: fastp failed for sample: [green]{sample}[/green]\n"
+                "see above for output",
+                err=True,
+            )
+            sys.exit(1)
 
     if skip_trimming:
         shutil.copy(filtered_fastq, filtered_barcode_fastq)
@@ -98,16 +100,16 @@ def trim(
             universal_newlines=True,
         )
 
-        if p.returncode != 0 or filtered_barcode_fastq.stat().st_size == 0:
-            term.print("[yellow]CUTADAPT OUTPUT:")
-            term.print(p.stdout)
-            term.print(f"[green]{sample}[/green]: Failed to extract reads for sample")
-            term.print("see above for cutadapt output")
-            sys.exit()
+        if verbose or exit_status(p, filtered_barcode_fastq):
+            term.subcommand(sample, "cutadapt", " ".join(args), p.stdout)
 
-        elif verbose:
-            term.print("[yellow]CUTADAPT OUTPUT:")
-            term.print(p.stdout)
+        if exit_status(p, filtered_barcode_fastq):
+            term.print(
+                f"[CutadaptError]: Failed to extract reads for sample: [green]{sample}[/green]\n"
+                "see above for cutadapt output",
+                err=True,
+            )
+            sys.exit(1)
 
         term.print(f"[green]{sample}[/green]: extraction and filtering complete")
 

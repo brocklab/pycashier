@@ -36,8 +36,8 @@ def extract_all(
         term.print(f"──────────────── {sample} ───────────────────", style="dim")
 
         with term.status(
-            f"Processing sample: [green]{sample}[/green]", spinner="dots12"
-        ):
+            f"Processing sample: [green]{sample}[/green]", spinner="dots2"
+        ) as status:
 
             trim(
                 sample,
@@ -55,9 +55,12 @@ def extract_all(
                 unlinked_adapters,
                 skip_trimming,
                 verbose,
+                status,
             )
 
-            cluster(sample, pipeline, ratio, distance, quality, threads, verbose)
+            cluster(
+                sample, pipeline, ratio, distance, quality, threads, verbose, status
+            )
 
             read_filter(
                 sample,
