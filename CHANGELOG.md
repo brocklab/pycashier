@@ -9,6 +9,7 @@ version -> vYY.MM.PATCH
 ## Unreleased
 ### Changed
 - made init check dependent on command run (fixes #10)
+- ignore hidden files in input directory (fixes #9)
 
 ## [22.6.2] - 2022-06-30
 ### Added

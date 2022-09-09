@@ -274,14 +274,17 @@ def single_cell(
         d.mkdir(exist_ok=True)
 
     # TODO: raise error if can't get sample name
-    sam_files = {f.name.split(".")[0]: f for f in input.iterdir()}
+    sam_files = {
+        f.name.split(".")[0]: f for f in input.iterdir() if not f.name.startswith(".")
+    }
 
     for f in sam_files.values():
 
-        ext = f.suffix
-
-        if ext != ".sam":
-            raise ValueError("There is a non sam file in the provided input directory:")
+        if f.suffix != ".sam":
+            print(
+                f"ERROR: There is a non sam file in the provided input directory: {f}"
+            )
+            sys.exit(1)
 
     console.print(f"[b cyan]Samples[/]: {', '.join(sorted(sam_files.keys()))}\n")
 

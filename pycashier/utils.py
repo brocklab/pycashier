@@ -9,7 +9,7 @@ from .term import console
 
 
 def get_fastqs(src):
-    fastqs = [f for f in src.iterdir()]
+    fastqs = [f for f in src.iterdir() if not f.name.startswith(".")]
     if not fastqs:
         console.print(f"Source dir: {src}, appears to be empty...")
         console.print("Exiting.")
