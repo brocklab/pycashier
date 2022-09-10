@@ -23,15 +23,17 @@ def trim(
     status,
 ):
 
-    json_qc = pipeline / "qc" / f"{sample}.json"
-    html_qc = pipeline / "qc" / f"{sample}.html"
-    filtered_fastq = pipeline / f"{sample}.q{quality}.fastq"
-    filtered_barcode_fastq = pipeline / f"{sample}.q{quality}.barcode.fastq"
+    json, html = (pipeline / "qc" / f"{sample}.{ext}" for ext in ("json", "html"))
+    filtered_fastq, filtered_barcode_fastq = (
+        pipeline / "qc" / f"{sample}.q{quality}.{ext}"
+        for ext in ("fastq", "barcode.fastq")
+    )
 
-    if unlinked_adapters:
-        adapter_string = f"-g {upstream_adapter} -a {downstream_adapter}"
-    else:
-        adapter_string = f"-g {upstream_adapter}...{downstream_adapter}"
+    adapter_string = (
+        f"-g {upstream_adapter} -a {downstream_adapter}"
+        if unlinked_adapters
+        else f"-g {upstream_adapter}...{downstream_adapter}"
+    )
 
     (pipeline / "qc").mkdir(exist_ok=True)
 
@@ -45,8 +47,8 @@ def trim(
             f"-q {quality} "
             f"-u {unqualified_percent} "
             f"-w {threads} "
-            f"-h {html_qc} "
-            f"-j {json_qc} "
+            f"-h {html} "
+            f"-j {json} "
             "--dont_eval_duplication "
             f"{fastp_args or ''}"
         )

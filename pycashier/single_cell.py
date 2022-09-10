@@ -189,7 +189,7 @@ def fake_header_add(in_file):
 
 def single_cell_process(
     sample,
-    f,
+    samfile,
     pipeline,
     output,
     error,
@@ -203,20 +203,21 @@ def single_cell_process(
 ):
 
     adapter_string = f"-g {upstream_adapter} -a {downstream_adapter}"
-    input_file = f
-    fastq_out = pipeline / f"{sample}.cell_record_labeled.fastq"
-    output_file = pipeline / f"{sample}.cell_record_labeled.barcode.fastq"
+    fastq, barcode_fastq = (
+        pipeline / f"{sample}.cell_record_labeled.{ext}"
+        for ext in ("fastq", "barcode.fastq")
+    )
     tsv_out = output / f"{sample}.cell_record_labeled.barcode.tsv"
 
-    if not fastq_out.is_file():
+    if not fastq.is_file():
         term.print(f"[green]{sample}[/green]: converting sam to labeled fastq")
         status.stop()
-        sam_to_name_labeled_fastq(sample, input_file, fastq_out)
+        sam_to_name_labeled_fastq(sample, samfile, fastq)
         status.start()
     else:
         term.print(f"[green]{sample}[/green]: skipping sam to labeled fastq conversion")
 
-    if not output_file.is_file():
+    if not barcode_fastq.is_file():
 
         term.print(f"[green]{sample}[/green]: extracting barcodes")
 
@@ -229,14 +230,14 @@ def single_cell_process(
             "--max-n=0 "
             f"--trimmed-only {adapter_string} "
             "-n 2 "
-            f"-o {output_file} {fastq_out}"
+            f"-o {barcode_fastq} {fastq}"
         )
 
-        run_cmd(command, sample, output_file, verbose, status)
+        run_cmd(command, sample, barcode_fastq, verbose, status)
 
     if not tsv_out.is_file():
         term.print(f"[green]{sample}[/green]: converting labeled fastq to tsv")
-        labeled_fastq_to_tsv(output_file, tsv_out)
+        labeled_fastq_to_tsv(barcode_fastq, tsv_out)
 
     else:
         term.print(f"[green]{sample}[/green]: skipping labeled fastq to tsv conversion")
@@ -259,11 +260,11 @@ def single_cell(
         d.mkdir(exist_ok=True)
 
     # TODO: raise error if can't get sample name
-    sam_files = {
+    samfiles = {
         f.name.split(".")[0]: f for f in input.iterdir() if not f.name.startswith(".")
     }
 
-    for f in sam_files.values():
+    for f in samfiles.values():
 
         if f.suffix != ".sam":
             print(
@@ -272,12 +273,12 @@ def single_cell(
             )
             sys.exit(1)
 
-    term.print(f"[hl]Samples[/]: {', '.join(sorted(sam_files.keys()))}\n")
+    term.print(f"[hl]Samples[/]: {', '.join(sorted(samfiles.keys()))}\n")
 
     if not yes and not term.confirm("Continue with these samples?"):
         sys.exit()
 
-    for sample, f in sam_files.items():
+    for sample, samfile in samfiles.items():
 
         print()
         term.print(f"──────────────── {sample} ───────────────────", style="dim")
@@ -289,7 +290,7 @@ def single_cell(
 
             single_cell_process(
                 sample,
-                f,
+                samfile,
                 pipeline,
                 output,
                 error,
