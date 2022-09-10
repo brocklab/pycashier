@@ -1,5 +1,3 @@
-import shlex
-import subprocess
 import sys
 import tempfile
 from pathlib import Path
@@ -12,7 +10,7 @@ except ImportError:
 from rich.progress import Progress
 
 from .term import term
-from .utils import exit_status
+from .utils import run_cmd
 
 
 def sam_to_name_labeled_fastq(sample, in_file, out_file):
@@ -222,35 +220,19 @@ def single_cell_process(
 
         term.print(f"[green]{sample}[/green]: extracting barcodes")
 
-        command = f"cutadapt \
-            -e {error} \
-            -j {threads} \
-            --minimum-length={minimum_length} \
-            --maximum-length={length} \
-            --max-n=0 \
-            --trimmed-only {adapter_string} \
-            -n 2 \
-            -o {output_file} {fastq_out}"
-
-        args = shlex.split(command)
-
-        p = subprocess.run(
-            args,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            universal_newlines=True,
+        command = (
+            "cutadapt "
+            f"-e {error} "
+            f"-j {threads} "
+            f"--minimum-length={minimum_length} "
+            f"--maximum-length={length} "
+            "--max-n=0 "
+            f"--trimmed-only {adapter_string} "
+            "-n 2 "
+            f"-o {output_file} {fastq_out}"
         )
 
-        if verbose or exit_status(p, output_file):
-            term.subcommand(sample, "cutadapt", " ".join(args), p.stdout)
-
-        if exit_status(p, output_file):
-            term.print(
-                f"[CutadaptError]: Failed to extract reads for sample: [green]{sample}[/green]\n"
-                "see above for cutadapt output",
-                err=True,
-            )
-            sys.exit(1)
+        run_cmd(command, sample, output_file, verbose, status)
 
     if not tsv_out.is_file():
         term.print(f"[green]{sample}[/green]: converting labeled fastq to tsv")

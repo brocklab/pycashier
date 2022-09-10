@@ -1,9 +1,5 @@
-import shlex
-import subprocess
-import sys
-
 from .term import term
-from .utils import exit_status, extract_csv_column
+from .utils import extract_csv_column, run_cmd
 
 
 def cluster(sample, pipeline, ratio, distance, quality, threads, verbose, status):
@@ -19,36 +15,7 @@ def cluster(sample, pipeline, ratio, distance, quality, threads, verbose, status
         term.print(f"[green]{sample}[/green]: clustering barcodes")
         command = f"starcode -d {distance} -r {ratio} -t {threads} -i {input_file} -o {output_file}"
 
-        p = subprocess.run(
-            shlex.split(command),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            universal_newlines=True,
-        )
-
-        if verbose or exit_status(p, output_file):
-            term.subcommand(
-                sample,
-                "starcode",
-                command,
-                # TODO: is stderr causing this?
-                "\n".join(
-                    [
-                        line
-                        for line in p.stdout.splitlines()
-                        if not line.startswith("progress")
-                    ]
-                ),
-            )
-
-        if exit_status(p, output_file):
-            status.stop()
-            term.print(
-                f"[StarcodeError]: starcode failed to cluster sample: [green]{sample}[/green]\n"
-                "see above for output",
-                err=True,
-            )
-            sys.exit(1)
+        run_cmd(command, sample, output_file, verbose, status)
 
         input_file.unlink()
 

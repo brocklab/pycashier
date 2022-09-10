@@ -1,4 +1,6 @@
 import csv
+import shlex
+import subprocess
 import sys
 from pathlib import Path
 
@@ -163,3 +165,35 @@ def load_params(ctx, param, filename):
 
 def exit_status(p, file):
     return True if p.returncode != 0 or file.stat().st_size == 0 else False
+
+
+def run_cmd(command, sample, output, verbose, status):
+    """run a subcommand"""
+    cmd_name = command.split()[0]
+
+    p = subprocess.run(
+        shlex.split(command),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        universal_newlines=True,
+    )
+    # remove 'progress: ##%' output from starcode
+    stdout = (
+        p.stdout
+        if not cmd_name == "startcode"
+        else "\n".join(
+            [line for line in p.stdout.splitlines() if not line.startswith("progress")]
+        )
+    )
+
+    if verbose or exit_status(p, output):
+        term.subcommand(sample, cmd_name, command, stdout)
+
+    if exit_status(p, output):
+        status.stop()
+        term.print(
+            f"[{cmd_name.capitalizer()}Error]: Failed to extract reads for sample: [green]{sample}[/green]\n"
+            "see above for cutadapt output",
+            err=True,
+        )
+        sys.exit(1)

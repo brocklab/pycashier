@@ -1,10 +1,7 @@
-import shlex
 import shutil
-import subprocess
-import sys
 
 from .term import term
-from .utils import exit_status, fastq_to_csv
+from .utils import fastq_to_csv, run_cmd
 
 
 def trim(
@@ -41,37 +38,20 @@ def trim(
     if not filtered_fastq.is_file():
 
         term.print(f"[green]{sample}[/green]: quality filtering illumina reads")
-        command = f"fastp \
-            -i {fastq} \
-            -o {filtered_fastq} \
-            -q {quality} \
-            -u {unqualified_percent} \
-            -w {threads} \
-            -h {html_qc} \
-            -j {json_qc} \
-            --dont_eval_duplication \
-            {fastp_args or ''}"
-
-        args = shlex.split(command)
-
-        p = subprocess.run(
-            args,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            universal_newlines=True,
+        command = (
+            f"fastp "
+            f"-i {fastq} "
+            f"-o {filtered_fastq} "
+            f"-q {quality} "
+            f"-u {unqualified_percent} "
+            f"-w {threads} "
+            f"-h {html_qc} "
+            f"-j {json_qc} "
+            "--dont_eval_duplication "
+            f"{fastp_args or ''}"
         )
 
-        if verbose or exit_status(p, filtered_fastq):
-            term.subcommand(sample, "fastp", " ".join(args), p.stdout)
-
-        if exit_status(p, filtered_fastq):
-            status.stop()
-            term.print(
-                f"[FastpError]: fastp failed for sample: [green]{sample}[/green]\n"
-                "see above for output",
-                err=True,
-            )
-            sys.exit(1)
+        run_cmd(command, sample, filtered_fastq, verbose, status)
 
     if skip_trimming:
         shutil.copy(filtered_fastq, filtered_barcode_fastq)
@@ -80,36 +60,20 @@ def trim(
 
         term.print(f"[green]{sample}[/green]: extracting barcodes")
 
-        command = f"cutadapt \
-            -e {error} \
-            -j {threads} \
-            --minimum-length={length - distance} \
-            --maximum-length={length + distance} \
-            --max-n=0 \
-            --trimmed-only \
-            {adapter_string} \
-            -n 2 \
-            -o {filtered_barcode_fastq} {filtered_fastq}"
-
-        args = shlex.split(command)
-
-        p = subprocess.run(
-            args,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            universal_newlines=True,
+        command = (
+            f"cutadapt "
+            f"-e {error} "
+            f"-j {threads} "
+            f"--minimum-length={length - distance} "
+            f"--maximum-length={length + distance} "
+            f"--max-n=0 "
+            f"--trimmed-only "
+            f"{adapter_string} "
+            f"-n 2 "
+            f"-o {filtered_barcode_fastq} {filtered_fastq}"
         )
 
-        if verbose or exit_status(p, filtered_barcode_fastq):
-            term.subcommand(sample, "cutadapt", " ".join(args), p.stdout)
-
-        if exit_status(p, filtered_barcode_fastq):
-            term.print(
-                f"[CutadaptError]: Failed to extract reads for sample: [green]{sample}[/green]\n"
-                "see above for cutadapt output",
-                err=True,
-            )
-            sys.exit(1)
+        run_cmd(command, sample, filtered_barcode_fastq, verbose, status)
 
         term.print(f"[green]{sample}[/green]: extraction and filtering complete")
 

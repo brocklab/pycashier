@@ -1,10 +1,8 @@
 import re
-import shlex
-import subprocess
 import sys
 
 from .term import term
-from .utils import exit_status
+from .utils import run_cmd
 
 
 def merge_single(
@@ -26,7 +24,7 @@ def merge_single(
             R2_file = m.group(0)
 
     if R1_file is None or R2_file is None:
-        print("oops I didn't find an R1 or R2 file")
+        term.print("[MergeError]: I didn't find an R1 or R2 file", err=True)
         sys.exit(1)
 
     merged_barcode_fastq = output / f"{sample}.merged.raw.fastq"
@@ -37,35 +35,19 @@ def merge_single(
         path_to_r2 = input / R2_file
 
         term.print(f"[green]{sample}[/green]: starting fastq merge")
-        command = f"fastp \
-                -i {path_to_r1}  \
-                -I {path_to_r2} \
-                -w {threads} \
-                -m -c -G -Q -L \
-                -j {pipeline}/merge_qc/{sample}.json \
-                -h {pipeline}/merge_qc/{sample}.html \
-                --merged_out {merged_barcode_fastq} \
-                {fastp_args or ''}"
-
-        args = shlex.split(command)
-        p = subprocess.run(
-            args,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            universal_newlines=True,
+        command = (
+            "fastp "
+            f"-i {path_to_r1}  "
+            f"-I {path_to_r2} "
+            f"-w {threads} "
+            "-m -c -G -Q -L "
+            f"-j {pipeline}/merge_qc/{sample}.json "
+            f"-h {pipeline}/merge_qc/{sample}.html "
+            f"--merged_out {merged_barcode_fastq} "
+            f"{fastp_args or ''}"
         )
 
-        if verbose or exit_status(p, merged_barcode_fastq):
-            term.subcommand(sample, "fastp", " ".join(args), p.stdout)
-
-        if exit_status(p, merged_barcode_fastq):
-            status.stop()
-            term.print(
-                f"[FastpError]: fastp failed for sample: [green]{sample}[/green]\n"
-                "see above for output",
-                err=True,
-            )
-            sys.exit(1)
+        run_cmd(command, sample, merged_barcode_fastq, verbose, status)
 
     else:
         term.print(f"[green]{sample}[/green]: Found merged barcode fastq")
@@ -88,7 +70,7 @@ def merge_all(fastqs, input, pipeline, output, threads, verbose, fastp_args, yes
             print("Merge mode expects fastqs with R1 or R2 in the name. Exiting.")
             sys.exit(1)
 
-    term.print(f"[b cyan]Samples[/]: {', '.join(sorted(set(samples)))}\n")
+    term.print(f"[hl]Samples[/]: {', '.join(sorted(set(samples)))}\n")
 
     if not yes and not term.confirm("Continue with these samples?"):
         sys.exit()
