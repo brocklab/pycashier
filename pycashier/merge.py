@@ -4,41 +4,55 @@ import sys
 from .term import term
 from .utils import run_cmd
 
+# TODO: make a file collextion to generate a dict wtih two files for each sample
 
-def merge_single(
-    sample, fastqs, input, pipeline, output, threads, verbose, fastp_args, status
-):
-    (pipeline / "merge_qc").mkdir(exist_ok=True)
 
-    # TODO: refactor for clarity and memory usage
+def get_pefastqs(fastqs):
+
+    pefastqs = {}
+
     for f in fastqs:
 
-        R1_regex = r"" + re.escape(sample) + r"\..*R1.*\.fastq.*"  # \.gz"
-        m = re.search(R1_regex, f.name)
+        m = re.search(r"(?P<sample>.+?)\..*(?P<read>R[1-2])\..*\.fastq.*", f.name)
         if m:
-            R1_file = m.group(0)
+            sample, read = m.groups()
+            pefastqs.setdefault(sample, {})
 
-        R2_regex = r"" + re.escape(sample) + r"\..*R2.*\.fastq.*"  # \.gz"
-        m = re.search(R2_regex, f.name)
-        if m:
-            R2_file = m.group(0)
+            if read not in pefastqs[sample]:
+                pefastqs[sample][read] = f
+            else:
+                term.print(
+                    f"[MergeError]: detected multiple [hl]{read}[/] files for [hl]{sample}[/]",
+                    err=True,
+                )
+                term.print(f"files: [b]{f}[/] and [b]{pefastqs[sample][read]}[/]")
+                sys.exit(1)
+        else:
+            term.print(
+                f"[MergeError]: failed to obtain sample/read info from [b]{f}[/]",
+                err=True,
+            )
+            term.print(
+                "Merge mode expects fastq(.gz) files with R1 or R2 in the name. Exiting."
+            )
+            sys.exit(1)
 
-    if R1_file is None or R2_file is None:
-        term.print("[MergeError]: I didn't find an R1 or R2 file", err=True)
-        sys.exit(1)
+    return pefastqs
+
+
+def merge_single(
+    sample, pefastqs, pipeline, output, threads, verbose, fastp_args, status
+):
 
     merged_barcode_fastq = output / f"{sample}.merged.raw.fastq"
 
     if not merged_barcode_fastq.is_file():
 
-        path_to_r1 = input / R1_file
-        path_to_r2 = input / R2_file
-
         term.print(f"[green]{sample}[/green]: starting fastq merge")
         command = (
             "fastp "
-            f"-i {path_to_r1}  "
-            f"-I {path_to_r2} "
+            f"-i {pefastqs['R1']}  "
+            f"-I {pefastqs['R2']}  "
             f"-w {threads} "
             "-m -c -G -Q -L "
             f"-j {pipeline}/merge_qc/{sample}.json "
@@ -58,31 +72,15 @@ def merge_all(fastqs, input, pipeline, output, threads, verbose, fastp_args, yes
     for d in [pipeline, output]:
         d.mkdir(exist_ok=True)
 
-    samples = []
+    pefastqs = get_pefastqs(fastqs)
 
-    for f in fastqs:
-
-        m = re.search(r"(.+?)\..*R.*\.fastq.*", f.name)
-        if m:
-            samples.append(m.group(1))
-        else:
-            print(f"Failed to obtain sample name from {f}")
-            print("Merge mode expects fastqs with R1 or R2 in the name. Exiting.")
-            sys.exit(1)
-
-    term.print(f"[hl]Samples[/]: {', '.join(sorted(set(samples)))}\n")
+    term.print(f"[hl]Samples[/]: {', '.join(sorted(pefastqs))}\n")
 
     if not yes and not term.confirm("Continue with these samples?"):
         sys.exit()
 
-    if len(samples) / len(set(samples)) != 2:
-        print("There should be an R1 and R2 fastq file for each sample.")
-        sys.exit(1)
-
-    for sample in sorted(set(samples)):
-
-        print()
-        term.print(f"──────────────── {sample} ───────────────────", style="dim")
+    for sample in sorted(pefastqs):
+        term.print(f"\n──────────────── {sample} ───────────────────", style="dim")
 
         with term.status(
             f"Processing sample: [green]{sample}[/green]", spinner="dots2"
@@ -90,8 +88,7 @@ def merge_all(fastqs, input, pipeline, output, threads, verbose, fastp_args, yes
 
             merge_single(
                 sample,
-                fastqs,
-                input,
+                pefastqs[sample],
                 pipeline,
                 output,
                 threads,
