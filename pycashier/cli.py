@@ -8,6 +8,7 @@ from click_rich_help import StyledGroup
 
 from ._checks import pre_run_check
 from .pycashier import Pycashier
+from .term import theme
 from .utils import load_params
 
 
@@ -326,6 +327,7 @@ CONTEXT_SETTINGS = dict(
 
 @click.group(
     cls=StyledGroup,
+    theme=theme,
     context_settings=CONTEXT_SETTINGS,
 )
 @click.version_option(package_name="pycashier", prog_name="pycashier")

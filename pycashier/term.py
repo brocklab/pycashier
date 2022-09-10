@@ -10,6 +10,19 @@ from rich.theme import Theme
 
 MAX_WIDTH = 110
 
+theme = Theme(
+    {
+        "hl": "bold cyan",
+        # click-rich-help defaults
+        "header": "bold italic cyan",
+        "option": "bold yellow",
+        "metavar": "green",
+        "default": "dim",
+        "required": "dim red",
+    },
+    inherit=True,
+)
+
 
 class ErrorHighlighter(RegexHighlighter):
     """Apply style to anything that looks like an error."""
@@ -21,11 +34,9 @@ class Term:
     """rich-based ui"""
 
     def __init__(self, width=None):
-        self._console = Console(
-            highlight=False, theme=Theme({"hl": "bold cyan"}, inherit=True), width=width
-        )
+        self._console = Console(highlight=False, theme=theme, width=width)
         self._err_console = Console(
-            theme=Theme({"error": "bold red"}, inherit=True),
+            theme=Theme({"hl": "bold cyan", "error": "bold red"}, inherit=True),
             stderr=True,
             highlighter=ErrorHighlighter(),
             width=width,
