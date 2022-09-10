@@ -152,7 +152,6 @@ def load_params(ctx, param, filename):
 
     ctx.default_map = {}
     if Path(filename).is_file():
-        term.print(f"Using config file at [hl]{filename}")
         with Path(filename).open("r") as f:
             params = tomlkit.load(f)
         if params:
@@ -201,3 +200,13 @@ def run_cmd(command, sample, output, verbose, status):
             err=True,
         )
         sys.exit(1)
+
+
+def confirm_samples(samples, yes):
+    """display and confirm samples"""
+
+    term.print(f"[hl]Samples[/]: {', '.join(sorted(samples))}\n")
+    if not yes and not term.confirm("Continue with these samples?"):
+        sys.exit()
+    if not yes:
+        term.print()

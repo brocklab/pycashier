@@ -2,6 +2,8 @@ import multiprocessing
 import sys
 
 from rich import box
+from rich.align import Align
+from rich.console import Group
 from rich.panel import Panel
 from rich.table import Table
 
@@ -121,6 +123,8 @@ def sample_check(
         and not term.confirm("Continue with these samples?")
     ):
         sys.exit()
+    if not yes:
+        term.print()
 
     return [f for sample, f in samples.items() if sample in processed_samples]
 
@@ -138,12 +142,24 @@ def print_params(ctx):
     for key, value in params.items():
         grid.add_row(key, ": ", str(value))
 
-    term.print(
-        Panel.fit(grid, title=f"{ctx.info_name.capitalize()} Parameters", padding=1)
+    group = (
+        Group(grid, Align(f"[dim]including {ctx.obj['config_file']}", align="center"))
+        if "config_file" in ctx.obj
+        else grid
     )
+
+    term.print(
+        Panel.fit(
+            group,
+            title=f"{ctx.info_name.capitalize()} Parameters",
+        )
+    )
+
+    if "config_file" in ctx.obj:
+        grid.add_row("loaded config", ": ", str(ctx.obj["config_file"]))
+
     if not ctx.info_name == "combine":
         if params["threads"] == 1 and params["threads"] <= SYS_THREADS / 4:
             term.print(
-                f"[dim]Using {params['threads']} of {SYS_THREADS} available threads.\n"
-                "[i]HINT[/]: use `--threads` to increase"
+                f"[dim]Only using {params['threads']} of {SYS_THREADS} available threads..."
             )

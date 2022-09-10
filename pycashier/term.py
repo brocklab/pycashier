@@ -46,8 +46,10 @@ class Term:
         console = self._err_console if err else self._console
         console.print(*args, **kwargs)
 
-    def status(self, *args, **kwargs):
-        return self._console.status(*args, **kwargs)
+    def cash_in(self):
+        return self._console.status(
+            "cashing in...", spinner="pipe", spinner_style="bright_magenta"
+        )
 
     def confirm(self, *args, **kwargs):
         return Confirm.ask(*args, console=self._console, **kwargs)
@@ -69,6 +71,18 @@ class Term:
         self.textbox(command, title=f"{pkg.upper()} COMMAND | [green]{sample}[/green]")
         self.textbox(output, title=f"{pkg.upper()} OUTPUT | [green]{sample}[/green]")
 
+    def process(self, text=None, status=None):
+        color = "bright_magenta"
+        if status == "start":
+            self.print(f"[{color}]╭── [/]\[{text}]")
+        elif status == "end":
+            self.print(f"[{color}]╰──> [/][green]:heavy_check_mark:[/]")
+        else:
+            self.print(f"[{color}]├ [/]{text}")
+
 
 cols = shutil.get_terminal_size().columns
 term = Term(width=MAX_WIDTH if cols > MAX_WIDTH else cols)
+
+# indent=f"[{colour}]│[/] ",
+# prefix=f"[{colour}]╰─>[/] ",

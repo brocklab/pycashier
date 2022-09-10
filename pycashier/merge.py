@@ -2,15 +2,12 @@ import re
 import sys
 
 from .term import term
-from .utils import run_cmd
-
-# TODO: make a file collextion to generate a dict wtih two files for each sample
+from .utils import confirm_samples, run_cmd
 
 
 def get_pefastqs(fastqs):
 
     pefastqs = {}
-
     for f in fastqs:
 
         m = re.search(r"(?P<sample>.+?)\..*(?P<read>R[1-2])\..*\.fastq.*", f.name)
@@ -22,18 +19,17 @@ def get_pefastqs(fastqs):
                 pefastqs[sample][read] = f
             else:
                 term.print(
-                    f"[MergeError]: detected multiple [hl]{read}[/] files for [hl]{sample}[/]",
+                    f"[MergeError]: detected multiple [hl]{read}[/] files for [hl]{sample}[/]\n"
+                    f"files: [b]{f}[/] and [b]{pefastqs[sample][read]}[/]",
                     err=True,
                 )
-                term.print(f"files: [b]{f}[/] and [b]{pefastqs[sample][read]}[/]")
                 sys.exit(1)
+
         else:
             term.print(
-                f"[MergeError]: failed to obtain sample/read info from [b]{f}[/]",
+                f"[MergeError]: failed to obtain sample/read info from [b]{f}[/]\n",
+                "Merge mode expects fastq(.gz) files with R1 or R2 in the name. Exiting.",
                 err=True,
-            )
-            term.print(
-                "Merge mode expects fastq(.gz) files with R1 or R2 in the name. Exiting."
             )
             sys.exit(1)
 
@@ -48,7 +44,7 @@ def merge_single(
 
     if not merged_barcode_fastq.is_file():
 
-        term.print(f"[green]{sample}[/green]: starting fastq merge")
+        term.process("merging paired end reads w/ [b]fastp[/]")
         command = (
             "fastp "
             f"-i {pefastqs['R1']}  "
@@ -64,8 +60,9 @@ def merge_single(
         run_cmd(command, sample, merged_barcode_fastq, verbose, status)
 
     else:
-        term.print(f"[green]{sample}[/green]: Found merged barcode fastq")
-        term.print(f"[green]{sample}[/green]: skipping fastq merge")
+
+        term.process("found merged barcode fastq")
+        term.process("skipping fastq merge")
 
 
 def merge_all(fastqs, input, pipeline, output, threads, verbose, fastp_args, yes):
@@ -74,18 +71,12 @@ def merge_all(fastqs, input, pipeline, output, threads, verbose, fastp_args, yes
 
     pefastqs = get_pefastqs(fastqs)
 
-    term.print(f"[hl]Samples[/]: {', '.join(sorted(pefastqs))}\n")
-
-    if not yes and not term.confirm("Continue with these samples?"):
-        sys.exit()
+    confirm_samples(pefastqs.keys(), yes)
 
     for sample in sorted(pefastqs):
-        term.print(f"\n──────────────── {sample} ───────────────────", style="dim")
+        term.process(f"[hl]{sample}[/]", status="start")
 
-        with term.status(
-            f"Processing sample: [green]{sample}[/green]", spinner="dots2"
-        ) as status:
-
+        with term.cash_in() as status:
             merge_single(
                 sample,
                 pefastqs[sample],
@@ -97,7 +88,8 @@ def merge_all(fastqs, input, pipeline, output, threads, verbose, fastp_args, yes
                 status,
             )
 
-        term.print(f"[green]{sample}[/green]: processing completed")
+        term.process("fastqs sucessfully merged")
+        term.process(status="end")
 
     term.print("\n[green]FINISHED!")
     sys.exit()

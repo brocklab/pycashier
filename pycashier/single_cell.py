@@ -7,10 +7,10 @@ try:
 except ImportError:
     pass
 
-from rich.progress import Progress
+from rich.progress import Progress, SpinnerColumn, TimeElapsedColumn
 
 from .term import term
-from .utils import run_cmd
+from .utils import confirm_samples, run_cmd
 
 
 def sam_to_name_labeled_fastq(sample, in_file, out_file):
@@ -22,7 +22,7 @@ def sam_to_name_labeled_fastq(sample, in_file, out_file):
             new_sam = True
 
     if new_sam:
-        term.print(f"[green]{sample}[/green]: sam is headerless, adding a fake one")
+        term.process("sam is headerless, adding a fake one")
         sam_file = fake_header_add(in_file)
     else:
         sam_file = in_file
@@ -32,8 +32,14 @@ def sam_to_name_labeled_fastq(sample, in_file, out_file):
 
     with open(out_file, "w") as f_out:
 
-        with Progress() as progress:
-            task = progress.add_task("[red] Converting sam to fastq", total=sam_length)
+        with Progress(
+            SpinnerColumn("pipe", style="yellow"),
+            *Progress.get_default_columns(),
+            "Elapsed:",
+            TimeElapsedColumn(),
+            transient=True,
+        ) as progress:
+            task = progress.add_task("[red]sam -> fastq", total=sam_length)
 
             for record in sam:
 
@@ -210,16 +216,16 @@ def single_cell_process(
     tsv_out = output / f"{sample}.cell_record_labeled.barcode.tsv"
 
     if not fastq.is_file():
-        term.print(f"[green]{sample}[/green]: converting sam to labeled fastq")
+        term.process("converting sam to labeled fastq")
         status.stop()
         sam_to_name_labeled_fastq(sample, samfile, fastq)
         status.start()
     else:
-        term.print(f"[green]{sample}[/green]: skipping sam to labeled fastq conversion")
+        term.process("skipping sam to labeled fastq conversion")
 
     if not barcode_fastq.is_file():
 
-        term.print(f"[green]{sample}[/green]: extracting barcodes")
+        term.process("extracting barcodes w/ [b]cutadapt[/]")
 
         command = (
             "cutadapt "
@@ -236,11 +242,10 @@ def single_cell_process(
         run_cmd(command, sample, barcode_fastq, verbose, status)
 
     if not tsv_out.is_file():
-        term.print(f"[green]{sample}[/green]: converting labeled fastq to tsv")
+        term.process("converting labeled fastq to tsv")
         labeled_fastq_to_tsv(barcode_fastq, tsv_out)
-
     else:
-        term.print(f"[green]{sample}[/green]: skipping labeled fastq to tsv conversion")
+        term.process("skipping labeled fastq to tsv conversion")
 
 
 def single_cell(
@@ -273,20 +278,13 @@ def single_cell(
             )
             sys.exit(1)
 
-    term.print(f"[hl]Samples[/]: {', '.join(sorted(samfiles.keys()))}\n")
-
-    if not yes and not term.confirm("Continue with these samples?"):
-        sys.exit()
+    confirm_samples(samfiles.keys(), yes)
 
     for sample, samfile in samfiles.items():
 
-        print()
-        term.print(f"──────────────── {sample} ───────────────────", style="dim")
+        term.process(f"[hl]{sample}[/]", status="start")
 
-        with term.status(
-            f"Processing sample: [green]{sample}[/green]\r\n",
-            spinner="dots2",
-        ) as status:
+        with term.cash_in() as status:
 
             single_cell_process(
                 sample,
@@ -303,7 +301,7 @@ def single_cell(
                 status,
             )
 
-        term.print(f"[green]{sample}[/green]: processing completed")
+        term.process(status="end")
 
     term.print("\n[green]FINISHED!")
     sys.exit()

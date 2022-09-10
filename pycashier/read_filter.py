@@ -45,17 +45,15 @@ def read_filter(
     file_in = pipeline / f"{sample}.q{quality}.barcodes.r{ratio}d{distance}.tsv"
 
     if "filter_count" in filter.keys():
-        term.print(
-            f"[green]{sample}[/green]: removing "
-            f"sequences with less than [hl]{filter['filter_count']}[/hl] reads"
+        term.process(
+            f"post-clustering filtering w/ [hl]{filter['filter_count']}[/hl] read cutoff"
         )
 
         filter_by_count(file_in, filter["filter_count"], length, offset, output)
 
     else:
-        term.print(
-            f"[green]{sample}[/green]: removing"
-            f" sequences with less than [hl]{filter['filter_percent']}%[/hl] of total reads"
+        term.process(
+            f"post-clustering filtering w/ [hl]{filter['filter_percent']}[/hl] % cutoff"
         )
 
         filter_by_percent(file_in, filter["filter_percent"], length, offset, output)

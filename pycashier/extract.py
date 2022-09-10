@@ -32,12 +32,9 @@ def extract_all(
 
         sample = fastq.name.split(".")[0]
 
-        print()
-        term.print(f"──────────────── {sample} ───────────────────", style="dim")
+        term.process(f"[hl]{sample}[/]", status="start")
 
-        with term.status(
-            f"Processing sample: [green]{sample}[/green]", spinner="dots2"
-        ) as status:
+        with term.cash_in() as status:
 
             trim(
                 sample,
@@ -74,6 +71,6 @@ def extract_all(
                 distance,
             )
 
-        term.print(f"[green]{sample}[/green]: processing completed")
+        term.process(status="end")
 
     term.print("\n[green]FINISHED!")

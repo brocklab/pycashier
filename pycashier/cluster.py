@@ -12,15 +12,15 @@ def cluster(sample, pipeline, ratio, distance, quality, threads, verbose, status
             # ? if this file exists this wont be reached and pycashier won't know what the "input_file" is
             input_file = extract_csv_column(extracted_csv, 2)
 
-        term.print(f"[green]{sample}[/green]: clustering barcodes")
+        term.process("clustering barcodes w/ [b]starcode[/]")
         command = f"starcode -d {distance} -r {ratio} -t {threads} -i {input_file} -o {output_file}"
 
         run_cmd(command, sample, output_file, verbose, status)
 
         input_file.unlink()
 
-        term.print(f"[green]{sample}[/green]: clustering complete")
+        term.process("clustering complete")
 
     else:
 
-        term.print(f"[green]{sample}[/green]: skipping clustering")
+        term.process("skipping clustering")

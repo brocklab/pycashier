@@ -39,9 +39,9 @@ def trim(
 
     if not filtered_fastq.is_file():
 
-        term.print(f"[green]{sample}[/green]: quality filtering illumina reads")
+        term.process("quality filtering reads w/ [b]fastp[/]")
         command = (
-            f"fastp "
+            "fastp "
             f"-i {fastq} "
             f"-o {filtered_fastq} "
             f"-q {quality} "
@@ -60,10 +60,10 @@ def trim(
 
     if not filtered_barcode_fastq.is_file():
 
-        term.print(f"[green]{sample}[/green]: extracting barcodes")
+        term.process("extracting barcodes w/ [b]cutadapt[/]")
 
         command = (
-            f"cutadapt "
+            "cutadapt "
             f"-e {error} "
             f"-j {threads} "
             f"--minimum-length={length - distance} "
@@ -76,16 +76,15 @@ def trim(
         )
 
         run_cmd(command, sample, filtered_barcode_fastq, verbose, status)
-
-        term.print(f"[green]{sample}[/green]: extraction and filtering complete")
+        term.process("filtering and extraction complete")
 
     else:
-        term.print(f"[green]{sample}[/green]: skipping extraction")
+        term.process("skipping extraction")
 
     barcodes_out = pipeline / f"{sample}.q{quality}.barcodes.tsv"
 
     if not barcodes_out.is_file():
-        term.print(f"[green]{sample}[/green]: converting fastq to tsv")
+        term.process("converting fastq to tsv")
         fastq_to_csv(filtered_barcode_fastq, barcodes_out)
     else:
-        term.print(f"[green]{sample}[/green]: skipping fastq to tsv conversion")
+        term.process("skipping fastq to tsv conversion")
