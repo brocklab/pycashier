@@ -267,7 +267,8 @@ def single_cell(
 
         if f.suffix != ".sam":
             print(
-                f"ERROR: There is a non sam file in the provided input directory: {f}"
+                f"[ScrnaError]: There is a non sam file in the provided input directory: {f}",
+                err=True,
             )
             sys.exit(1)
 

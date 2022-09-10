@@ -21,7 +21,8 @@ def get_fastqs(src):
 
         if not any(f.name.endswith(suffix) for suffix in [".fastq", ".fastq.gz"]):
             print(
-                f"ERROR! There is a non fastq file in the provided fastq directory: {f}"
+                f"[InputError]: There is a non fastq file in the provided fastq directory: {f}",
+                err=True,
             )
             print("Exiting.")
             sys.exit(1)
@@ -157,7 +158,10 @@ def load_params(ctx, param, filename):
         if params:
             ctx.default_map = params.get(ctx.info_name, {})
     elif Path(filename) != Path("pycashier.toml"):
-        term.print(f"ERROR. Specified config file ({filename}) does not exist.")
+        term.print(
+            f"[InputError]: Specified config file ({filename}) does not exist.",
+            err=True,
+        )
         sys.exit(1)
 
     ctx.obj = {"config_file": filename}
@@ -180,7 +184,7 @@ def run_cmd(command, sample, output, verbose, status):
     # remove 'progress: ##%' output from starcode
     stdout = (
         p.stdout
-        if not cmd_name == "startcode"
+        if not cmd_name == "starcode"
         else "\n".join(
             [line for line in p.stdout.splitlines() if not line.startswith("progress")]
         )
@@ -192,8 +196,8 @@ def run_cmd(command, sample, output, verbose, status):
     if exit_status(p, output):
         status.stop()
         term.print(
-            f"[{cmd_name.capitalizer()}Error]: Failed to extract reads for sample: [green]{sample}[/green]\n"
-            "see above for cutadapt output",
+            f"[{cmd_name.capitalize()}Error]: Failed to extract reads for sample: [green]{sample}[/green]\n"
+            f"see above for {cmd_name} output",
             err=True,
         )
         sys.exit(1)
