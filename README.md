@@ -4,7 +4,7 @@
 [![MIT License][license-shield]][license-url]
 [![PYPI][pypi-shield]][pypi-url]
 [![Conda][conda-shield]][conda-url]
-[![Docker][docker-shield]][docker-url]
+[![ghcr.io][ghcrio-shield]][ghcrio-url]
 
 # Pycashier
 
@@ -220,8 +220,8 @@ This version like it's predecessor wraps around several command line bioinformat
 [conda-url]: https://anaconda.org/conda-forge/pycashier
 [pypi-shield]: https://img.shields.io/pypi/v/pycashier
 [pypi-url]: https://pypi.org/project/pycashier/
-[docker-shield]: https://img.shields.io/docker/v/daylinmorgan/pycashier?label=docker
-[docker-url]: https://hub.docker.com/repository/docker/daylinmorgan/pycashier
+[ghcrio-shield]: https://img.shields.io/badge/ghcr.io-24292f?&logo=github&logoColor=white.svg
+[ghcrio-url]: https://github.com/brocklab/pycashier/pkgs/container/pycashier
 [forks-shield]: https://img.shields.io/github/forks/brocklab/pycashier.svg
 [forks-url]: https://github.com/brocklab/pycashier/network/members
 [stars-shield]: https://img.shields.io/github/stars/brocklab/pycashier.svg
