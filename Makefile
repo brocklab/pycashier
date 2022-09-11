@@ -6,21 +6,6 @@ VERSION := $(shell git describe --tags --dirty | sed -e 's/dirty/dev/g')
 lint:
 	pre-commit run --all
 
-# target-check:
-# 	@[ "${TARGET}" ] || \
-# 		( echo ">> TARGET is not set";\
-# 		  echo ">> options: all,wheel,docker";\
-# 		  exit 1 )
-
-# build: target-check
-# 	$(MAKE) build-$(TARGET)
-
-.PHONY: version-check
-version-check:
-	@if [[ "$(VERSION)" == *'-'* ]]; then\
-		echo ">> version is invalid: $(VERSION)"; exit 1;\
-	fi
-
 ## build | build-{dist,docker}
 .PHONY: build
 build:
@@ -40,7 +25,7 @@ build-docker: docker/prod.lock
 
 ## push-docker | push docker tagged and latest docker image
 .PHONY: push-docker
-push-docker: version-check docker-build
+push-docker: version-check build-docker
 	docker push daylinmorgan/pycashier:$(VERSION)
 	docker push daylinmorgan/pycashier:latest
 
@@ -59,6 +44,15 @@ conda-env: env-dev.yml
 setup-env:
 	mamba run -p ./env pdm install
 	mamba run -p ./env pre-commit install
+
+.PHONY: version-check
+version-check:
+	@if [[ "$(VERSION)" == *'-'* ]]; then\
+		echo ">> version is invalid: $(VERSION)"; exit 1;\
+	fi
+
+
+
 
 define USAGE ?=
 ==> {a.b_green}Pycashier Development Tasks{a.end} <==
