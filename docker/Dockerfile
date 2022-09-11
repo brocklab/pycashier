@@ -28,6 +28,7 @@ RUN python -m \
 
 FROM mambaorg/micromamba:0.24.0 as prod
 
+
 COPY docker/prod.lock tmp/prod.lock
 
 RUN micromamba \

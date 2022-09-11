@@ -27,7 +27,8 @@ Default parameters are designed for use by the [Brock Lab](https://github.com/br
 - [tomlkit](https://github.com/sdispater/tomlkit)
 
 ## Installation
-It's recommended to use [conda](https://docs.conda.io/en/latest/)/[mamba](https://github.com/mamba-org/mamba) to install and manage the dependencies for this package.
+### Conda
+You may use [conda](https://docs.conda.io/en/latest/)/[mamba](https://github.com/mamba-org/mamba) to install and manage the dependencies for this package.
 
 ```bash
 conda install -c conda-forge -c bioconda cutadapt fastp pysam starcode pycashier
@@ -40,20 +41,22 @@ conda env create -f https://raw.githubusercontent.com/brocklab/pycashier/main/en
 conda activate cashierenv
 ```
 
-Additionally you may install with pip. Though it will be up to you to ensure all the
+### Docker
+
+If you prefer to use use `docker` you can use the below command.
+
+```bash
+docker run --rm -it -v $PWD:/data -u $(id -u):$(id -g) ghcr.io/brocklab/pycashier
+```
+
+### Pip (Not Recommended)
+
+You may install with pip. Though it will be up to you to ensure all the
 dependencies you would install from bioconda are on your path and installed correctly.
 `Pycashier` will check for them before running.
 
 ```bash
 pip install pycashier
-```
-
-### Docker
-
-If you prefer not to install `pycashier` locally you can also use `docker`.
-
-```bash
-docker run --rm -it -v $PWD:/data -u $(id -u):$(id -g) daylinmorgan/pycashier
 ```
 
 ## Usage

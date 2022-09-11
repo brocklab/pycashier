@@ -16,6 +16,7 @@ version -> vYY.MM.PATCH
 ### Added
 - check for config file and exit if it doesn't exist
 - separate `rich.console.Console` for stderr outputs
+- automated docker build and switched to ghcr.io
 
 ## [22.6.2] - 2022-06-30
 ### Added

@@ -20,14 +20,8 @@ build-dist:
 ## build-docker | build and tag docker image with version
 .PHONY: build-docker
 build-docker: docker/prod.lock
-	docker build --tag daylinmorgan/pycashier:$(VERSION) -f docker/Dockerfile .
-	docker tag daylinmorgan/pycashier:$(VERSION) daylinmorgan/pycashier:latest
-
-## push-docker | push docker tagged and latest docker image
-.PHONY: push-docker
-push-docker: version-check build-docker
-	docker push daylinmorgan/pycashier:$(VERSION)
-	docker push daylinmorgan/pycashier:latest
+	docker build --tag brocklab/pycashier:$(VERSION) -f docker/Dockerfile .
+	docker tag brocklab/pycashier:$(VERSION) brocklab/pycashier:latest
 
 docker/%.lock: docker/%.yml
 	docker run -it --rm -v $$(pwd):/tmp -u $$(id -u):$$(id -g) mambaorg/micromamba:0.24.0 \
