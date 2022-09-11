@@ -7,6 +7,8 @@ and this project adheres to a type of [CalVer](https://calver.org).
 version -> vYY.MM.PATCH
 
 ## Unreleased
+
+## [22.9.1] - 2022-09-11
 ### Changed
 - made init check dependent on command run (fixes #10)
 - ignore hidden files in input directory (fixes #9)
@@ -87,7 +89,8 @@ version -> vYY.MM.PATCH
 - Dropped regex in "extract" in favor of simple string matching
 - Merge can take unzipped fastqs now
 
-[Unreleased]: https://github.com/brocklab/pycashier/compare/v22.6.2...HEAD
+[Unreleased]: https://github.com/brocklab/pycashier/compare/v22.9.1...HEAD
+[22.9.1]: https://github.com/brocklab/pycashier/compare/v22.6.2...v22.9.1
 [22.6.2]: https://github.com/brocklab/pycashier/compare/v22.6.1...v22.6.2
 [22.6.1]: https://github.com/brocklab/pycashier/compare/v0.3.5...v22.6.1
 [0.3.5]: https://github.com/brocklab/pycashier/compare/v0.3.4...v0.3.5
