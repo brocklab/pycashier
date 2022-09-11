@@ -13,6 +13,8 @@ MAX_WIDTH = 110
 theme = Theme(
     {
         "hl": "bold cyan",
+        "line": "bright_magenta",
+        "border": "red",
         # click-rich-help defaults
         "header": "bold italic cyan",
         "option": "bold yellow",
@@ -72,17 +74,15 @@ class Term:
         self.textbox(output, title=f"{pkg.upper()} OUTPUT | [green]{sample}[/green]")
 
     def process(self, text=None, status=None):
-        color = "bright_magenta"
         if status == "start":
-            self.print(f"[{color}]╭── [/]\[{text}]")
+            self.print(f"[line]╭── [/]\[{text}]")
         elif status == "end":
-            self.print(f"[{color}]╰──> [/][green]:heavy_check_mark:[/]")
+            self.print("[line]╰────> [/][green]:heavy_check_mark:[/]")
+        elif status == "skip":
+            self.print(f"[line]├ [/][dim strike]{Text.from_markup(text)}[/] skipped")
         else:
-            self.print(f"[{color}]├ [/]{text}")
+            self.print(f"[line]├ [/]{text}")
 
 
 cols = shutil.get_terminal_size().columns
 term = Term(width=MAX_WIDTH if cols > MAX_WIDTH else cols)
-
-# indent=f"[{colour}]│[/] ",
-# prefix=f"[{colour}]╰─>[/] ",

@@ -1,26 +1,25 @@
 from .term import term
-from .utils import extract_csv_column, run_cmd
+from .utils import check_output, extract_csv_column, run_cmd
 
 
 def cluster(sample, pipeline, ratio, distance, quality, threads, verbose, status):
 
     extracted_csv = pipeline / f"{sample}.q{quality}.barcodes.tsv"
-    output_file = pipeline / f"{sample}.q{quality}.barcodes.r{ratio}d{distance}.tsv"
+    clustered = pipeline / f"{sample}.q{quality}.barcodes.r{ratio}d{distance}.tsv"
 
-    if not output_file.is_file():
+    if check_output(
+        clustered,
+        "clustering barcodes w/ [b]starcode[/]",
+    ):
+
         if not extracted_csv.with_suffix(".c2.tsv").is_file():
             # ? if this file exists this wont be reached and pycashier won't know what the "input_file" is
             input_file = extract_csv_column(extracted_csv, 2)
 
-        term.process("clustering barcodes w/ [b]starcode[/]")
-        command = f"starcode -d {distance} -r {ratio} -t {threads} -i {input_file} -o {output_file}"
+        command = f"starcode -d {distance} -r {ratio} -t {threads} -i {input_file} -o {clustered}"
 
-        run_cmd(command, sample, output_file, verbose, status)
+        run_cmd(command, sample, clustered, verbose, status)
 
         input_file.unlink()
 
         term.process("clustering complete")
-
-    else:
-
-        term.process("skipping clustering")

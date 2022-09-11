@@ -2,7 +2,7 @@ import re
 import sys
 
 from .term import term
-from .utils import confirm_samples, run_cmd
+from .utils import check_output, confirm_samples, run_cmd
 
 
 def get_pefastqs(fastqs):
@@ -42,9 +42,8 @@ def merge_single(
 
     merged_barcode_fastq = output / f"{sample}.merged.raw.fastq"
 
-    if not merged_barcode_fastq.is_file():
+    if check_output(merged_barcode_fastq, "merging paired end reads w/ [b]fastp[/]"):
 
-        term.process("merging paired end reads w/ [b]fastp[/]")
         command = (
             "fastp "
             f"-i {pefastqs['R1']}  "
@@ -58,11 +57,6 @@ def merge_single(
         )
 
         run_cmd(command, sample, merged_barcode_fastq, verbose, status)
-
-    else:
-
-        term.process("found merged barcode fastq")
-        term.process("skipping fastq merge")
 
 
 def merge_all(fastqs, input, pipeline, output, threads, verbose, fastp_args, yes):

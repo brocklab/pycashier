@@ -10,7 +10,7 @@ except ImportError:
 from rich.progress import Progress, SpinnerColumn, TimeElapsedColumn
 
 from .term import term
-from .utils import confirm_samples, run_cmd
+from .utils import check_output, confirm_samples, run_cmd
 
 
 def sam_to_name_labeled_fastq(sample, in_file, out_file):
@@ -33,11 +33,12 @@ def sam_to_name_labeled_fastq(sample, in_file, out_file):
     with open(out_file, "w") as f_out:
 
         with Progress(
-            SpinnerColumn("pipe", style="yellow"),
+            SpinnerColumn("pipe", style="line"),
             *Progress.get_default_columns(),
             "Elapsed:",
             TimeElapsedColumn(),
             transient=True,
+            console=term._console,
         ) as progress:
             task = progress.add_task("[red]sam -> fastq", total=sam_length)
 
@@ -215,17 +216,14 @@ def single_cell_process(
     )
     tsv_out = output / f"{sample}.cell_record_labeled.barcode.tsv"
 
-    if not fastq.is_file():
-        term.process("converting sam to labeled fastq")
+    if check_output(fastq, "converting sam to labeled fastq"):
         status.stop()
         sam_to_name_labeled_fastq(sample, samfile, fastq)
         status.start()
     else:
         term.process("skipping sam to labeled fastq conversion")
 
-    if not barcode_fastq.is_file():
-
-        term.process("extracting barcodes w/ [b]cutadapt[/]")
+    if check_output(barcode_fastq, "extracting barcodes w/ [b]cutadapt[/]"):
 
         command = (
             "cutadapt "
@@ -241,11 +239,8 @@ def single_cell_process(
 
         run_cmd(command, sample, barcode_fastq, verbose, status)
 
-    if not tsv_out.is_file():
-        term.process("converting labeled fastq to tsv")
+    if check_output(tsv_out, "converting labeled fastq to tsv"):
         labeled_fastq_to_tsv(barcode_fastq, tsv_out)
-    else:
-        term.process("skipping labeled fastq to tsv conversion")
 
 
 def single_cell(

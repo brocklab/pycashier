@@ -210,3 +210,21 @@ def confirm_samples(samples, yes):
         sys.exit()
     if not yes:
         term.print()
+
+
+def check_output(file, message):
+    """check for output file and print message
+
+    Args:
+        file (path.Pathlib): resulting file of step
+        message (str): text to display related to step
+    Returns:
+        bool
+    """
+
+    if not file.is_file():
+        term.process(message)
+        return True
+    else:
+        term.process(message, status="skip")
+        return False

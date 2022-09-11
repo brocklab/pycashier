@@ -1,7 +1,7 @@
 import shutil
 
 from .term import term
-from .utils import fastq_to_csv, run_cmd
+from .utils import check_output, fastq_to_csv, run_cmd
 
 
 def trim(
@@ -25,8 +25,7 @@ def trim(
 
     json, html = (pipeline / "qc" / f"{sample}.{ext}" for ext in ("json", "html"))
     filtered_fastq, filtered_barcode_fastq = (
-        pipeline / "qc" / f"{sample}.q{quality}.{ext}"
-        for ext in ("fastq", "barcode.fastq")
+        pipeline / f"{sample}.q{quality}.{ext}" for ext in ("fastq", "barcode.fastq")
     )
 
     adapter_string = (
@@ -37,9 +36,8 @@ def trim(
 
     (pipeline / "qc").mkdir(exist_ok=True)
 
-    if not filtered_fastq.is_file():
+    if check_output(filtered_fastq, "quality filtering reads w/ [b]fastp[/]"):
 
-        term.process("quality filtering reads w/ [b]fastp[/]")
         command = (
             "fastp "
             f"-i {fastq} "
@@ -58,9 +56,7 @@ def trim(
     if skip_trimming:
         shutil.copy(filtered_fastq, filtered_barcode_fastq)
 
-    if not filtered_barcode_fastq.is_file():
-
-        term.process("extracting barcodes w/ [b]cutadapt[/]")
+    if check_output(filtered_barcode_fastq, "extracting barcodes w/ [b]cutadapt[/]"):
 
         command = (
             "cutadapt "
@@ -78,13 +74,7 @@ def trim(
         run_cmd(command, sample, filtered_barcode_fastq, verbose, status)
         term.process("filtering and extraction complete")
 
-    else:
-        term.process("skipping extraction")
-
     barcodes_out = pipeline / f"{sample}.q{quality}.barcodes.tsv"
 
-    if not barcodes_out.is_file():
-        term.process("converting fastq to tsv")
+    if check_output(barcodes_out, "converting fastq to tsv"):
         fastq_to_csv(filtered_barcode_fastq, barcodes_out)
-    else:
-        term.process("skipping fastq to tsv conversion")

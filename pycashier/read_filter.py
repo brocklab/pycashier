@@ -46,14 +46,14 @@ def read_filter(
 
     if "filter_count" in filter.keys():
         term.process(
-            f"post-clustering filtering w/ [hl]{filter['filter_count']}[/hl] read cutoff"
+            f"post-clustering filtering w/ [b]{filter['filter_count']}[/] read cutoff"
         )
 
         filter_by_count(file_in, filter["filter_count"], length, offset, output)
 
     else:
         term.process(
-            f"post-clustering filtering w/ [hl]{filter['filter_percent']}[/hl] % cutoff"
+            f"post-clustering filtering w/ [b]{filter['filter_percent']}[/] % cutoff"
         )
 
         filter_by_percent(file_in, filter["filter_percent"], length, offset, output)

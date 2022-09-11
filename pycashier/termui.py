@@ -49,10 +49,7 @@ def make_sample_check_table(
         table.add_row(*row)
 
     term.print(
-        Panel.fit(
-            table,
-            title="Queue",
-        ),
+        Panel.fit(table, title=term.style_title("Queue"), border_style="border"),
         f"\nThere are {len(samples)-len(processed_samples)} samples to finish processing.\n",
     )
 
@@ -123,7 +120,7 @@ def sample_check(
         and not term.confirm("Continue with these samples?")
     ):
         sys.exit()
-    if not yes:
+    if not yes and len(processed_samples) != len(samples):
         term.print()
 
     return [f for sample, f in samples.items() if sample in processed_samples]
@@ -151,7 +148,8 @@ def print_params(ctx):
     term.print(
         Panel.fit(
             group,
-            title=f"{ctx.info_name.capitalize()} Parameters",
+            title=term.style_title(f"{ctx.info_name.capitalize()} Parameters"),
+            border_style="border",
         )
     )
 
