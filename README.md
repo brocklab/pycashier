@@ -11,7 +11,7 @@
 Tool for extracting and processing DNA barcode tags from Illumina sequencing.
 
 Default parameters are designed for use by the [Brock Lab](https://github.com/brocklab) to process data generated from
-ClonMapper lineage tracing experiments, but is extensible to other similarly designed tools.
+[ClonMapper](https://docs.brocklab.com/clonmapper) lineage tracing experiments, but is extensible to other similarly designed tools.
 
 
 ### Bioconda Dependencies
