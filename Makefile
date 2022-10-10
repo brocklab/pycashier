@@ -46,15 +46,6 @@ version-check:
 	fi
 
 
-
-
-define USAGE ?=
-==> {a.b_green}Pycashier Development Tasks{a.end} <==
-
-{ansi.$(HEADER_COLOR)}usage{ansi.end}:
-  make <recipe>
-
-endef
-
+USAGE = ==> {a.b_green}Pycashier Development Tasks{a.end} <==\n\n
 -include .task.mk
-$(if $(wildcard .task.mk),,.task.mk: ; curl -fsSL https://raw.githubusercontent.com/daylinmorgan/task.mk/v22.9.7/task.mk -o .task.mk)
+$(if $(filter help,$(MAKECMDGOALS)),$(if $(wildcard .task.mk),,.task.mk: ; curl -fsSL https://raw.githubusercontent.com/daylinmorgan/task.mk/v22.9.28/task.mk -o .task.mk))
