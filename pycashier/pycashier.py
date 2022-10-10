@@ -1,3 +1,8 @@
+from pathlib import Path
+from typing import Any, Dict
+
+import click
+
 from .extract import extract_all
 from .merge import merge_all
 from .single_cell import single_cell
@@ -7,34 +12,34 @@ from .utils import combine_outs, get_fastqs, save_params, validate_filter_args
 
 
 class Pycashier:
-    def __init__(self, ctx, save_config):
+    def __init__(self, ctx: click.Context, save_config: bool) -> None:
         if save_config:
             save_params(ctx)
         print_params(ctx)
 
     def extract(
         self,
-        ctx,
-        input,
-        output,
-        pipeline,
-        quality,
-        unqualified_percent,
-        fastp_args,
-        skip_trimming,
-        error,
-        length,
-        upstream_adapter,
-        downstream_adapter,
-        unlinked_adapters,
-        ratio,
-        distance,
-        offset,
-        verbose,
-        threads,
-        yes,
-        **kwargs,
-    ):
+        ctx: click.Context,
+        input: Path,
+        output: Path,
+        pipeline: Path,
+        quality: int,
+        unqualified_percent: float,
+        fastp_args: Dict[str, str],
+        skip_trimming: bool,
+        error: float,
+        length: int,
+        upstream_adapter: str,
+        downstream_adapter: str,
+        unlinked_adapters: bool,
+        ratio: int,
+        distance: int,
+        offset: int,
+        verbose: bool,
+        threads: int,
+        yes: bool,
+        **kwargs: Any,
+    ) -> None:
         """
         extract DNA barcodes from a directory of fastq files
 
@@ -87,7 +92,16 @@ class Pycashier:
             threads,
         )
 
-    def merge(self, input, output, pipeline, fastp_args, threads, verbose, yes):
+    def merge(
+        self,
+        input: Path,
+        output: Path,
+        pipeline: Path,
+        fastp_args: Dict[str, str],
+        threads: int,
+        verbose: bool,
+        yes: bool,
+    ) -> None:
         """
         merge overlapping paired-end reads using fastp
         \n\n\n
@@ -99,7 +113,6 @@ class Pycashier:
 
         merge_all(
             [f for f in input.iterdir()],
-            input,
             pipeline,
             output,
             threads,
@@ -110,18 +123,18 @@ class Pycashier:
 
     def scrna(
         self,
-        input,
-        output,
-        pipeline,
-        minimum_length,
-        length,
-        error,
-        upstream_adapter,
-        downstream_adapter,
-        threads,
-        verbose,
-        yes,
-    ):
+        input: Path,
+        output: Path,
+        pipeline: Path,
+        minimum_length: int,
+        length: int,
+        error: float,
+        upstream_adapter: str,
+        downstream_adapter: str,
+        threads: int,
+        verbose: bool,
+        yes: bool,
+    ) -> None:
         """
         extract expressed DNA barcodes from scRNA-seq
         \n
@@ -151,9 +164,9 @@ class Pycashier:
 
     def combine(
         self,
-        input,
-        output,
-    ):
+        input: Path,
+        output: Path,
+    ) -> None:
         """
         combine resulting output of [hl]extract[/]
         """

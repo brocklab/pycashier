@@ -1,13 +1,23 @@
 import re
 import sys
+from pathlib import Path
+from typing import Dict, List
+
+from rich.status import Status
 
 from .term import term
 from .utils import check_output, confirm_samples, run_cmd
 
 
-def get_pefastqs(fastqs):
+def get_pefastqs(fastqs: List[Path]) -> Dict[str, Dict[str, Path]]:
+    """parse input files for paired-end sequences
 
-    pefastqs = {}
+    Args:
+        fastqs: list of fastq files from input directory
+    Returns:
+        dictionary of sample and paired-end fastq files
+    """
+    pefastqs: Dict[str, Dict[str, Path]] = {}
     for f in fastqs:
 
         m = re.search(r"(?P<sample>.+?)\..*(?P<read>R[1-2])\..*\.fastq.*", f.name)
@@ -37,8 +47,28 @@ def get_pefastqs(fastqs):
 
 
 def merge_single(
-    sample, pefastqs, pipeline, output, threads, verbose, fastp_args, status
-):
+    sample: str,
+    pefastqs: Dict[str, Path],
+    pipeline: Path,
+    output: Path,
+    threads: int,
+    verbose: bool,
+    fastp_args: Dict[str, str],
+    status: Status,
+) -> None:
+    """merge a single sample with fastp
+
+    Args:
+        sample: Name of the sample.
+        pefasts: Dictionary of paired-end reads and paths.
+        pipeline: Directory for all intermediary files.
+        output: Directory for final merged fastq files.
+        threads: Number of threads for starcode to use.
+        verbose: If true, show subcommand output.
+        fastp_args: Extra arguments passed to fastp.
+        status: Rich.console status to suspend for stderr printing.
+
+    """
 
     merged_barcode_fastq = output / f"{sample}.merged.raw.fastq"
 
@@ -59,13 +89,33 @@ def merge_single(
         run_cmd(command, sample, merged_barcode_fastq, verbose, status)
 
 
-def merge_all(fastqs, input, pipeline, output, threads, verbose, fastp_args, yes):
+def merge_all(
+    fastqs: List[Path],
+    pipeline: Path,
+    output: Path,
+    threads: int,
+    verbose: bool,
+    fastp_args: Dict[str, str],
+    yes: bool,
+) -> None:
+    """iterate over and merge all samples
+
+    Args:
+        fastqs: List of all fastq files.
+        pipeline: Directory for all intermediary files.
+        output: Directory for final merged fastq files.
+        threads: Number of threads for starcode to use.
+        verbose: If true, show subcommand output.
+        fastp_args: Extra arguments passed to fastp.
+        yes: If true, skip confirmation check.
+    """
+
     for d in [pipeline, output]:
         d.mkdir(exist_ok=True)
 
     pefastqs = get_pefastqs(fastqs)
 
-    confirm_samples(pefastqs.keys(), yes)
+    confirm_samples(list(pefastqs), yes)
 
     for sample in sorted(pefastqs):
         term.process(f"[hl]{sample}[/]", status="start")

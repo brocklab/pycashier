@@ -1,6 +1,9 @@
 import multiprocessing
 import sys
+from pathlib import Path
+from typing import List, Mapping, Union
 
+import click
 from rich import box
 from rich.align import Align
 from rich.console import Group
@@ -14,8 +17,31 @@ SYS_THREADS = multiprocessing.cpu_count()
 
 
 def make_sample_check_table(
-    samples, pipeline, output, quality, ratio, distance, filter, offset, queue_all
-):
+    samples: List[str],
+    pipeline: Path,
+    output: Path,
+    quality: int,
+    ratio: int,
+    distance: int,
+    filter: Mapping[str, Union[int, float]],
+    offset: int,
+    queue_all: bool,
+) -> List[str]:
+    """print formatted table for sample queue
+
+    Args:
+        samples: Names of the samples.
+        pipeline: Directory for all intermediary files.
+        output: Directory for final tsv files.
+        quality: PHred quality cutoff for filenames.
+        ratio: Clustering ratio for starcode.
+        distance: Levenstein distance for starcode.
+        filter: Dictionary defining how to filter final clustered barcodes.
+        offset: Acceptable insertion or deletion from expected length in final sequences.
+        queue_all: If true, skip output check and queue all samples.
+
+    """
+
     processed_samples = []
     table = Table(box=box.SIMPLE, header_style="bold cyan", collapse_padding=True)
     table.add_column(
@@ -53,10 +79,20 @@ def make_sample_check_table(
         f"\nThere are {len(samples)-len(processed_samples)} samples to finish processing.\n",
     )
 
+    # TODO: seperate table generation from sample checks.
     return processed_samples
 
 
-def check_in_dir(sample, suffix, directory):
+def check_in_dir(sample: str, suffix: str, directory: Path) -> str:
+    """check the directory for expected file
+
+    Args:
+        sample: Name of sample.
+        suffix: File name contents following sample.
+        directory: Place to look for file.
+    Returns:
+        Green check if true. Yellow 'Queued' if false.
+    """
     filepath = f"{sample}{suffix}"
     if directory / filepath in directory.glob(f"*{suffix}"):
         return "[bold green]\u2713"
@@ -64,7 +100,28 @@ def check_in_dir(sample, suffix, directory):
         return "[yellow]Queued"
 
 
-def make_row(sample, pipeline, output, quality, ratio, distance, filter, offset):
+def make_row(
+    sample: str,
+    pipeline: Path,
+    output: Path,
+    quality: int,
+    ratio: int,
+    distance: int,
+    filter: Mapping[str, Union[int, float]],
+    offset: int,
+) -> List[str]:
+    """generate row for sample queue
+
+    Args:
+        sample: Name of the sample.
+        pipeline: Directory for all intermediary files.
+        output: Directory for final tsv files.
+        quality: PHred quality cutoff for filenames.
+        ratio: Clustering ratio for starcode.
+        distance: Levenstein distance for starcode.
+        filter: Dictionary defining how to filter final clustered barcodes.
+        offset: Acceptable insertion or deletion from expected length in final sequences.
+    """
 
     # start the table row
     row = []
@@ -74,13 +131,13 @@ def make_row(sample, pipeline, output, quality, ratio, distance, filter, offset)
         check_in_dir(sample, f".q{quality}.barcodes.r{ratio}d{distance}.tsv", pipeline)
     )
     if row[-1] == "[bold green]\u2713":
-        if "filter_percent" in filter.keys():
+        if "filter_percent" in filter:
             filter_count = get_filter_count(
                 pipeline / f"{sample}.q{quality}.barcodes.r{ratio}d{distance}.tsv",
-                filter["filter_percent"],
+                float(filter["filter_percent"]),
             )
         else:
-            filter_count = filter["filter_count"]
+            filter_count = int(filter["filter_count"])
         row.append(
             check_in_dir(
                 sample,
@@ -99,8 +156,32 @@ def make_row(sample, pipeline, output, quality, ratio, distance, filter, offset)
 
 
 def sample_check(
-    fastqs, pipeline, output, quality, ratio, distance, filter, offset, yes
-):
+    fastqs: List[Path],
+    pipeline: Path,
+    output: Path,
+    quality: int,
+    ratio: int,
+    distance: int,
+    filter: Mapping[str, Union[int, float]],
+    offset: int,
+    yes: bool,
+) -> List[Path]:
+    """check for existence of file outputs for a set of samples
+
+    Args:
+        fastqs: List of fastq files.
+        pipeline: Directory for all intermediary files.
+        output: Directory for final tsv files.
+        quality: PHred quality cutoff for filenames.
+        ratio: Clustering ratio for starcode.
+        distance: Levenstein distance for starcode.
+        filter: Dictionary defining how to filter final clustered barcodes.
+        offset: Acceptable insertion or deletion from expected length in final sequences.
+        yes: If true, skip confirmation check.
+    Returns:
+        List of fastq files for samples not finished processing.
+    """
+
     samples = {f.name.split(".")[0]: f for f in fastqs}
     queue_all = not pipeline.is_dir()
     processed_samples = make_sample_check_table(
@@ -126,7 +207,9 @@ def sample_check(
     return [f for sample, f in samples.items() if sample in processed_samples]
 
 
-def print_params(ctx):
+def print_params(ctx: click.Context) -> None:
+    """show all parameters prior to run"""
+
     params = ctx.params
     params.pop("save_config")
     params = {k: v for k, v in params.items() if v is not None}
@@ -139,7 +222,7 @@ def print_params(ctx):
     for key, value in params.items():
         grid.add_row(key, ": ", str(value))
 
-    group = (
+    group: Union[Group, Table] = (
         Group(grid, Align(f"[dim]including {ctx.obj['config_file']}", align="center"))
         if "config_file" in ctx.obj
         else grid
@@ -148,7 +231,7 @@ def print_params(ctx):
     term.print(
         Panel.fit(
             group,
-            title=term.style_title(f"{ctx.info_name.capitalize()} Parameters"),
+            title=term.style_title(f"{ctx.info_name.capitalize()} Parameters"),  # type: ignore
             border_style="border",
         )
     )

@@ -1,11 +1,20 @@
 VERSION := $(shell git describe --tags --dirty | sed -e 's/dirty/dev/g')
 
+## checks | run lint,types
+.PHONY: checks
+checks: lint types
 
 ## lint | run pre-commit (black,isort,flake8)
 .PHONY: lint
 lint:
-	pre-commit run --all
+	$(call msg,Linting w/ Pre-commit)
+	@pre-commit run --all
 
+## types | typecheck with mypy
+.PHONY: types
+types:
+	$(call msg,Typechecking w/ Mypy)
+	@mypy pycashier
 ## build | build-{dist,docker}
 .PHONY: build
 build:
@@ -46,6 +55,7 @@ version-check:
 	fi
 
 
-USAGE = ==> {a.b_green}Pycashier Development Tasks{a.end} <==\n\n
+USAGE = ==> {a.b_green}Pycashier Development Tasks{a.end} <==\n
+msg = $(if $(tprint),$(call tprint,{a.bold}==>{a.cyan} $(1){a.end}),@echo '==> $(1)')
 -include .task.mk
 $(if $(filter help,$(MAKECMDGOALS)),$(if $(wildcard .task.mk),,.task.mk: ; curl -fsSL https://raw.githubusercontent.com/daylinmorgan/task.mk/v22.9.28/task.mk -o .task.mk))

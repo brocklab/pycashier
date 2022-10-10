@@ -1,6 +1,9 @@
 import sys
 import tempfile
 from pathlib import Path
+from typing import Union
+
+from rich.status import Status
 
 try:
     import pysam
@@ -13,7 +16,14 @@ from .term import term
 from .utils import check_output, confirm_samples, run_cmd
 
 
-def sam_to_name_labeled_fastq(sample, in_file, out_file):
+def sam_to_name_labeled_fastq(sample: str, in_file: Path, out_file: Path) -> None:
+    """convert sam file to metadata labeled fastq
+
+    Args:
+        sample: Name of sample.
+        in_file: Sam file to convert.
+        out_file: Converted fastq file.
+    """
 
     new_sam = False
 
@@ -21,14 +31,15 @@ def sam_to_name_labeled_fastq(sample, in_file, out_file):
         if f_in.readline()[0:3] != "@HD":
             new_sam = True
 
+    sam_file: Union[str, Path]
     if new_sam:
         term.process("sam is headerless, adding a fake one")
         sam_file = fake_header_add(in_file)
     else:
         sam_file = in_file
 
-    sam_length = pysam.AlignmentFile(sam_file, "r", check_sq=False).count()
-    sam = pysam.AlignmentFile(sam_file, "r", check_sq=False)
+    sam_length = pysam.AlignmentFile(str(sam_file), "r", check_sq=False).count()
+    sam = pysam.AlignmentFile(str(sam_file), "r", check_sq=False)
 
     with open(out_file, "w") as f_out:
 
@@ -72,7 +83,13 @@ def sam_to_name_labeled_fastq(sample, in_file, out_file):
         Path(sam_file).unlink()
 
 
-def labeled_fastq_to_tsv(in_file, out_file):
+def labeled_fastq_to_tsv(in_file: Path, out_file: Path) -> None:
+    """convert labeled fastq to tsv
+
+    Args:
+        in_file: Fastq to convert to tsv.
+        out_file: Converted tsv file.
+    """
 
     with open(in_file) as f_in:
 
@@ -93,7 +110,7 @@ def labeled_fastq_to_tsv(in_file, out_file):
                     read_lines = []
 
 
-def fake_header_add(in_file):
+def fake_header_add(in_file: Path) -> str:
 
     fake_header = """@HD\tVN:1.6\tSO:coordinate
 @SQ\tSN:1\tLN:1000
@@ -115,8 +132,7 @@ def fake_header_add(in_file):
 @SQ\tSN:17\tLN:1000
 @SQ\tSN:18\tLN:1000
 @SQ\tSN:19\tLN:1000
-@SQ\tSN:20\tLN:1000
-@SQ\tSN:21\tLN:1000
+@SQ\tSN:20\tLN:1000 @SQ\tSN:21\tLN:1000
 @SQ\tSN:22\tLN:1000
 @SQ\tSN:23\tLN:1000
 @SQ\tSN:X\tLN:1000
@@ -181,7 +197,9 @@ def fake_header_add(in_file):
 @SQ\tSN:GL000229.1\tLN:1000
 @SQ\tSN:GL000226.1\tLN:1000
 """
+
     # TODO: change to with statement
+    # possible to make this whole function based on decorator maybe?
     f = tempfile.NamedTemporaryFile(delete=False, dir=Path.cwd())
     f.write((bytes(fake_header, encoding="utf-8")))
     f.flush()
@@ -195,19 +213,37 @@ def fake_header_add(in_file):
 
 
 def single_cell_process(
-    sample,
-    samfile,
-    pipeline,
-    output,
-    error,
-    minimum_length,
-    length,
-    upstream_adapter,
-    downstream_adapter,
-    threads,
-    verbose,
-    status,
-):
+    sample: str,
+    samfile: Path,
+    pipeline: Path,
+    output: Path,
+    error: float,
+    minimum_length: int,
+    length: int,
+    upstream_adapter: str,
+    downstream_adapter: str,
+    threads: int,
+    verbose: bool,
+    status: Status,
+) -> None:
+    """extract barcodes from single cell data
+
+    Args:
+
+        sample: Name of the sample.
+        samfile: Path to sam file.
+        pipeline: Directory for all intermediary files.
+        output: Directory for final tsv files.
+        error: Error rate used by cutadapt.
+        minimum_length: Minimum barcode length.
+        length: Expected lenth of barcode.
+        upstream_adapter: 5' barcode flanking sequence.
+        downstream_adapter: 3' barcode flanking sequence.
+        ratio: Clustering ratio for starcode.
+        threads: Number of threads for starcode to use.
+        verbose: If true, show subcommand output.
+        status: Rich.console status to suspend for stderr printing.
+    """
 
     adapter_string = f"-g {upstream_adapter} -a {downstream_adapter}"
     fastq, barcode_fastq = (
@@ -244,18 +280,35 @@ def single_cell_process(
 
 
 def single_cell(
-    input,
-    pipeline,
-    output,
-    error,
-    minimum_length,
-    length,
-    upstream_adapter,
-    downstream_adapter,
-    threads,
-    verbose,
-    yes,
-):
+    input: Path,
+    pipeline: Path,
+    output: Path,
+    error: float,
+    minimum_length: int,
+    length: int,
+    upstream_adapter: str,
+    downstream_adapter: str,
+    threads: int,
+    verbose: bool,
+    yes: bool,
+) -> None:
+    """extract barcodes from set of single cell samples
+
+    Args:
+
+        input: Directory of sam files.
+        pipeline: Directory for all intermediary files.
+        output: Directory for final tsv files.
+        error: Error rate used by cutadapt.
+        minimum_length: Minimum barcode length.
+        length: Expected lenth of barcode.
+        upstream_adapter: 5' barcode flanking sequence.
+        downstream_adapter: 3' barcode flanking sequence.
+        threads: Number of threads for starcode to use.
+        verbose: If true, show subcommand output.
+        yes: If true, skip sample confirmation.
+    """
+
     for d in [pipeline, output]:
         d.mkdir(exist_ok=True)
 
@@ -267,13 +320,13 @@ def single_cell(
     for f in samfiles.values():
 
         if f.suffix != ".sam":
-            print(
+            term.print(
                 f"[ScrnaError]: There is a non sam file in the provided input directory: {f}",
                 err=True,
             )
             sys.exit(1)
 
-    confirm_samples(samfiles.keys(), yes)
+    confirm_samples(list(samfiles), yes)
 
     for sample, samfile in samfiles.items():
 

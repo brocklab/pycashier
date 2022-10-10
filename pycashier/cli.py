@@ -1,7 +1,7 @@
 import shutil
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, Optional, Sequence
+from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 
 import click
 from click_rich_help import StyledGroup
@@ -12,13 +12,15 @@ from .term import theme
 from .utils import load_params
 
 
-def init_check(ctx, param, check):
+def init_check(ctx: click.Context, param: str, check: bool) -> None:
     if not check:
         pre_run_check(command=ctx.to_info_dict()["command"]["name"])
 
 
-def add_options(options):
-    def _add_options(func):
+def add_options(
+    options: List[Callable],
+) -> Callable[[click.decorators.FC], click.decorators.FC]:
+    def _add_options(func: click.decorators.FC) -> click.decorators.FC:
         for option in reversed(options):
             func = option(func)
         return func
@@ -30,16 +32,16 @@ def add_options(options):
 class Option:
     """custom options class to wrap click.option"""
 
-    param_decls: Optional[Sequence[str]] = None
-    help: str = None
-    default: str = None
+    param_decls: Sequence[str]
+    help: str = ""
+    default: Optional[Union[str, int, float, Path]] = None
     show_default: bool = False
     is_flag: bool = False
     type: Any = None
     required: bool = False
     params: Dict[str, Any] = field(default_factory=dict)
 
-    def get_click_option(self):
+    def get_click_option(self) -> Callable[[click.decorators.FC], click.decorators.FC]:
         return click.option(
             *self.param_decls,
             help=self.help,
@@ -51,11 +53,11 @@ class Option:
             **self.params,
         )
 
-    def get_click_option_decorator(self, func):
-        func = self.get_click_option()(func)
-        return func
+    # def get_click_option_decorator(self, func: click.decorators.FC) ->click.decorators.FC:
+    #     func = self.get_click_option()(func)
+    #     return func
 
-    def long(self):
+    def long(self) -> str:
         """return longest param declaration"""
         return max(self.param_decls, key=len)
 
@@ -285,7 +287,9 @@ options = {
 }
 
 
-def get_shared_flags(category, start=0, end=None):
+def get_shared_flags(
+    category: str, start: int = 0, end: Optional[int] = None
+) -> List[str]:
     end = len(shared_options[category]) if end is None else end
     return [option.long() for option in shared_options[category][start:end]]
 
@@ -303,12 +307,12 @@ _help_groups_ref = {
 
 
 def get_help_groups(
-    options,
-    extra_groups=[],
-):
+    options: List[Option],
+    extra_groups: List[str] = [],
+) -> Dict[str, List[str]]:
     flags = [option.long() for option in options] + ["--help"]
     groups = ["Input/Output Options", *extra_groups, "General Options"]
-    help_groups = {group: [] for group in groups}
+    help_groups: Dict[str, List[str]] = {group: [] for group in groups}
     for group in groups:
         for flag in flags:
             if flag in _help_groups_ref["hidden"]:
@@ -331,7 +335,7 @@ CONTEXT_SETTINGS = dict(
     context_settings=CONTEXT_SETTINGS,
 )
 @click.version_option(package_name="pycashier", prog_name="pycashier")
-def cli():
+def cli() -> None:
     """Cash in on DNA Barcode Tags
     \n\n\n
     See `[hl]pycashier COMMAND -h[/]` for more information.
@@ -353,7 +357,7 @@ def cli():
 )
 @add_options([option.get_click_option() for option in options["extract"]])
 @click.pass_context
-def extract(ctx, save_config, **kwargs):
+def extract(ctx: click.Context, save_config: bool, **kwargs: Any) -> None:
     pycashier = Pycashier(ctx, save_config)
     pycashier.extract(ctx, **kwargs)
 
@@ -370,7 +374,7 @@ def extract(ctx, save_config, **kwargs):
 )
 @add_options([option.get_click_option() for option in options["merge"]])
 @click.pass_context
-def merge(ctx, save_config, **kwargs):
+def merge(ctx: click.Context, save_config: bool, **kwargs: Any) -> None:
     pycashier = Pycashier(ctx, save_config)
     pycashier.merge(**kwargs)
 
@@ -386,7 +390,7 @@ def merge(ctx, save_config, **kwargs):
 )
 @add_options([option.get_click_option() for option in options["scrna"]])
 @click.pass_context
-def scrna(ctx, save_config, **kwargs):
+def scrna(ctx: click.Context, save_config: bool, **kwargs: Any) -> None:
     pycashier = Pycashier(ctx, save_config)
     pycashier.scrna(**kwargs)
 
@@ -397,12 +401,12 @@ def scrna(ctx, save_config, **kwargs):
 )
 @add_options([option.get_click_option() for option in options["combine"]])
 @click.pass_context
-def combine(ctx, save_config, **kwargs):
+def combine(ctx: click.Context, save_config: bool, **kwargs: Any) -> None:
     pycashier = Pycashier(ctx, save_config)
     pycashier.combine(**kwargs)
 
 
-def main():
+def main() -> None:
     cli(prog_name="pycashier")
 
 

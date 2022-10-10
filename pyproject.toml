@@ -19,11 +19,15 @@ repository = "https://github.com/brocklab/pycashier/"
 [project.scripts]
 pycashier = "pycashier.cli:main"
 
+[project.optional-dependencies]
 [tool.pdm]
 version = { use_scm = true }
 
 [tool.pdm.dev-dependencies]
-dev = ["pre-commit<3.0.0,>=2.15.0"]
+dev = [
+    "pre-commit<3.0.0,>=2.15.0",
+    "mypy>=0.982",
+]
 
 [build-system]
 requires = ["pdm-pep517"]
@@ -32,3 +36,14 @@ build-backend = "pdm.pep517.api"
 [tool.isort]
 profile = "black"
 multi_line_output = 3
+
+[tool.mypy]
+check_untyped_defs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_untyped_decorators = true
+disallow_any_unimported = true
+no_implicit_optional =true
+warn_return_any = true
+warn_unused_ignores = true
+show_error_codes = true

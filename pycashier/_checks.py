@@ -1,5 +1,6 @@
 import sys
 from shutil import which
+from typing import Dict, List
 
 from rich import box
 from rich.panel import Panel
@@ -8,7 +9,7 @@ from rich.table import Table
 from .term import term
 
 PACKAGES = ["cutadapt", "fastp", "starcode", "pysam"]
-CMD_PACKAGES = {
+CMD_PACKAGES: Dict[str, List[str]] = {
     "combine": [],
     "merge": ["fastp"],
     "extract": ["fastp", "cutadapt", "starcode"],
@@ -16,17 +17,23 @@ CMD_PACKAGES = {
 }
 
 
-def yes_no(condition):
-    """colored yes/no output for table"""
+def yes_no(condition: bool) -> str:
+    """colored yes/no output for table
+
+    Args:
+        condition: bool
+    Returns:
+        Formatted boolean text.
+    """
 
     return "[green]yes[/green]" if condition else "[red]no[/red]"
 
 
-def pre_run_check(command):
+def pre_run_check(command: str) -> None:
     """Check for runtime dependencies
 
     Args:
-        command(str): name of pycashier subcommand
+        command: Name of pycashier subcommand.
     """
     pkgs_exist = {name: is_tool(name) for name in PACKAGES}
     if False in pkgs_exist.values():
@@ -56,12 +63,13 @@ def pre_run_check(command):
         sys.exit(1)
 
 
-def is_tool(name):
+def is_tool(name: str) -> bool:
     """Check whether `name` is on PATH and marked as executable.
 
     Args:
-        name (str): executable/dependency
-        command(str): name of pycashier subcommand
+        name: Executable/dependency.
+    Returns:
+        True for success, False otherwise
     """
     if name == "pysam":
         try:
