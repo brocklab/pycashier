@@ -38,10 +38,11 @@ RUN micromamba \
   && \
   micromamba clean --all --force-pkgs-dirs --yes
 
+# clean up some stuff we dont't need for space
 RUN find -name '*.a' -delete && \
   rm -rf /opt/conda/conda-meta && \
   rm -rf /opt/conda/include && \
-  rm /opt/conda/lib/libpython3.9.so.1.0 && \
+  rm -rf /opt/conda/lib/libpython3.9.so.1.0 && \
   find -name '__pycache__' -type d -exec rm -rf '{}' '+' && \
   rm -rf /opt/conda/lib/python3.9/idlelib /opt/conda/lib/python3.9/ensurepip \
     /opt/conda/lib/libasan.so.5.0.0 \
