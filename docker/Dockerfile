@@ -26,8 +26,7 @@ RUN python -m \
   --wheel \
   --outdir dist/
 
-FROM mambaorg/micromamba:0.24.0 as prod
-
+FROM mambaorg/micromamba:git-08fc3c0-bullseye as prod
 
 COPY docker/prod.lock tmp/prod.lock
 
