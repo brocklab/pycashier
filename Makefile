@@ -15,6 +15,7 @@ lint:
 types:
 	$(call msg,Typechecking w/ Mypy)
 	@mypy pycashier
+
 ## build | build-{dist,docker}
 .PHONY: build
 build:
