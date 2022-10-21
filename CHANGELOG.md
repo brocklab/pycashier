@@ -8,6 +8,12 @@ version -> vYY.MM.PATCH
 
 ## Unreleased
 
+## [22.10.1] - 2022-10-21
+### Added
+- typechecking w/Mypy
+### Changed
+- pinned docker image base to stable tag
+
 ## [22.9.1] - 2022-09-11
 ### Changed
 - made init check dependent on command run (fixes #10)
@@ -89,7 +95,8 @@ version -> vYY.MM.PATCH
 - Dropped regex in "extract" in favor of simple string matching
 - Merge can take unzipped fastqs now
 
-[Unreleased]: https://github.com/brocklab/pycashier/compare/v22.9.1...HEAD
+[Unreleased]: https://github.com/brocklab/pycashier/compare/v22.10.1...HEAD
+[22.10.1]: https://github.com/brocklab/pycashier/compare/v22.9.1...v22.10.1
 [22.9.1]: https://github.com/brocklab/pycashier/compare/v22.6.2...v22.9.1
 [22.6.2]: https://github.com/brocklab/pycashier/compare/v22.6.1...v22.6.2
 [22.6.1]: https://github.com/brocklab/pycashier/compare/v0.3.5...v22.6.1
