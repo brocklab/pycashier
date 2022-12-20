@@ -280,7 +280,7 @@ def single_cell_process(
 
 
 def single_cell(
-    input: Path,
+    input_: Path,
     pipeline: Path,
     output: Path,
     error: float,
@@ -296,7 +296,7 @@ def single_cell(
 
     Args:
 
-        input: Directory of sam files.
+        input_: Directory of sam files.
         pipeline: Directory for all intermediary files.
         output: Directory for final tsv files.
         error: Error rate used by cutadapt.
@@ -314,14 +314,14 @@ def single_cell(
 
     # TODO: raise error if can't get sample name
     samfiles = {
-        f.name.split(".")[0]: f for f in input.iterdir() if not f.name.startswith(".")
+        f.name.split(".")[0]: f for f in input_.iterdir() if not f.name.startswith(".")
     }
 
     for f in samfiles.values():
 
         if f.suffix != ".sam":
             term.print(
-                f"[ScrnaError]: There is a non sam file in the provided input directory: {f}",
+                f"[ScrnaError]: There is a non sam file in the provided input_ directory: {f}",
                 err=True,
             )
             sys.exit(1)

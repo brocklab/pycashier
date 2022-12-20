@@ -20,7 +20,7 @@ class Pycashier:
     def extract(
         self,
         ctx: click.Context,
-        input: Path,
+        input_: Path,
         output: Path,
         pipeline: Path,
         quality: int,
@@ -55,7 +55,7 @@ class Pycashier:
 
         term.print(("[b]\n[cyan]PYCASHIER:[/cyan] Starting Extraction\n"))
 
-        fastqs = get_fastqs(input)
+        fastqs = get_fastqs(input_)
 
         processed_fastqs = sample_check(
             fastqs,
@@ -94,7 +94,7 @@ class Pycashier:
 
     def merge(
         self,
-        input: Path,
+        input_: Path,
         output: Path,
         pipeline: Path,
         fastp_args: Dict[str, str],
@@ -112,7 +112,7 @@ class Pycashier:
         term.print(("[b]\n[cyan]PYCASHIER:[/cyan] Starting Merge\n"))
 
         merge_all(
-            [f for f in input.iterdir()],
+            [f for f in input_.iterdir()],
             pipeline,
             output,
             threads,
@@ -123,7 +123,7 @@ class Pycashier:
 
     def scrna(
         self,
-        input: Path,
+        input_: Path,
         output: Path,
         pipeline: Path,
         minimum_length: int,
@@ -149,7 +149,7 @@ class Pycashier:
         term.print(("[b]\n[cyan]PYCASHIER:[/cyan] Starting Single Cell Extraction\n"))
 
         single_cell(
-            input,
+            input_,
             pipeline,
             output,
             error,
@@ -164,11 +164,12 @@ class Pycashier:
 
     def combine(
         self,
-        input: Path,
+        input_: Path,
         output: Path,
+        columns: str,
     ) -> None:
         """
         combine resulting output of [hl]extract[/]
         """
 
-        combine_outs(input, output)
+        combine_outs(input_, output, str)
