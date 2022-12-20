@@ -8,7 +8,7 @@ dependencies = [
   "click-rich-help>=22.1.0",
   "click>=8.1.0",
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.8,<3.11" # cutadapt requires <3.11
 readme = "README.md"
 license = { text = "MIT" }
 dynamic = ["version"]

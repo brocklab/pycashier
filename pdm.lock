@@ -187,8 +187,8 @@ requires_python = ">=3.7"
 summary = "Backport of pathlib-compatible object wrapper for zip files"
 
 [metadata]
-lock_version = "4.0"
-content_hash = "sha256:24076fe0bd09be25bf789278aff506fecaf8e32de398f58cc72fd855fa82a586"
+lock_version = "4.1"
+content_hash = "sha256:9c2f1faaf722613ce3661f0a58958364a9dba850f2dcfe0cee61acc4ccfb834a"
 
 [metadata.files]
 "cfgv 3.3.1" = [
