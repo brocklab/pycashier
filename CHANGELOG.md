@@ -7,6 +7,8 @@ and this project adheres to a type of [CalVer](https://calver.org).
 version -> vYY.MM.PATCH
 
 ## Unreleased
+### Changed
+- update python version requirements to >=3.8,<3.11
 
 ## [22.10.1] - 2022-10-21
 ### Added
