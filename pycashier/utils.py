@@ -2,6 +2,7 @@ import csv
 import shlex
 import subprocess
 import sys
+from itertools import zip_longest
 from pathlib import Path
 from typing import Dict, List
 
@@ -39,6 +40,13 @@ def get_fastqs(src: Path) -> List[Path]:
     return fastqs
 
 
+def grouper(iterable, n):
+    "Collect data into non-overlapping fixed-length chunks or blocks"
+    args = [iter(iterable)] * n
+
+    return zip_longest(*args, fillvalue="_")
+
+
 def fastq_to_tsv(in_file: Path, out_file: Path) -> None:
     """convert fastq file to tsv
 
@@ -46,17 +54,21 @@ def fastq_to_tsv(in_file: Path, out_file: Path) -> None:
         in_file: Fastq file to convert.
         out_file: TSV file to write to.
     """
-
+    warn = False
     with open(in_file) as f_in:
         with open(out_file, "w") as f_out:
-            lines = f_in.readlines()
-            for i, line in enumerate(lines):
-
-                if not line.startswith("@") or lines[i - 1].strip() == "+":
-                    continue
-                seq_id = line.strip()
-                sequence = lines[i + 1].strip()
+            for read in grouper(
+                f_in,
+                4,
+            ):
+                if "_" in read:
+                    warn = True
+                seq_id, sequence = read[0].strip(), read[1].strip()
                 f_out.write(f"{seq_id}\t{sequence}\n")
+
+    if warn:
+        term.print("some of the read data was incomplete")
+        term.print("verify {in_file.name} was not corrupted")
 
 
 def extract_csv_column(csv_file: Path, column: int) -> Path:
