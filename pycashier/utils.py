@@ -178,6 +178,10 @@ def save_params(ctx: click.Context) -> None:
     if save_type == "explicit":
         params = {k: v for k, v in params.items() if ctx.get_parameter_source(k).value != 3}  # type: ignore
 
+    # use readable name for input
+    if "input_" in params:
+        params["input"] = params.pop("input_")
+
     # sanitize the path's for writing to toml
     for k in ["input", "pipeline", "output"]:
         if k in params.keys():
@@ -216,6 +220,11 @@ def load_params(ctx: click.Context, param: str, filename: Path) -> None:
             params = tomlkit.load(f)
         if params:
             ctx.default_map = params.get(ctx.info_name, {})
+
+            # use not shadowing name for input
+            if "input" in ctx.default_map:
+                ctx.default_map["input_"] = ctx.default_map.pop("input")
+
     elif Path(filename) != Path("pycashier.toml"):
         term.print(
             f"[InputError]: Specified config file ({filename}) does not exist.",

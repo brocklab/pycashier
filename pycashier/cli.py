@@ -216,7 +216,7 @@ shared_options = {
 options = {
     "merge": [
         Option(
-            ["-i", "--input"],
+            ["-i", "--input", "input_"],
             help="source directory containing gzipped R1 and R2 fastq files",
             required=True,
             type=click.Path(exists=True, file_okay=False, path_type=Path),
@@ -238,7 +238,7 @@ options = {
     ],
     "extract": [
         Option(
-            ["-i", "--input"],
+            ["-i", "--input", "input_"],
             help="source directory containing fastq files",
             required=True,
             type=click.Path(exists=True, file_okay=False, path_type=Path),
@@ -247,7 +247,7 @@ options = {
     ],
     "scrna": [
         Option(
-            ["-i", "--input"],
+            ["-i", "--input", "input_"],
             help="source directory containing sam files from scRNA-seq",
             required=True,
             type=click.Path(exists=True, file_okay=False, path_type=Path),
@@ -269,7 +269,7 @@ options = {
     ],
     "combine": [
         Option(
-            ["-i", "--input"],
+            ["-i", "--input", "input_"],
             help="source directory containing output files from [hl]pycashier extract[/]",
             default="./outs",
             show_default=True,
