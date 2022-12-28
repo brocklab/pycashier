@@ -39,7 +39,6 @@ def make_sample_check_table(
         filter: Dictionary defining how to filter final clustered barcodes.
         offset: Acceptable insertion or deletion from expected length in final sequences.
         queue_all: If true, skip output check and queue all samples.
-
     """
 
     processed_samples = []
@@ -121,6 +120,8 @@ def make_row(
         distance: Levenstein distance for starcode.
         filter: Dictionary defining how to filter final clustered barcodes.
         offset: Acceptable insertion or deletion from expected length in final sequences.
+    Returns:
+        List of fastq files for samples not finished processing.
     """
 
     # start the table row
@@ -213,6 +214,11 @@ def print_params(ctx: click.Context) -> None:
     params = ctx.params
     params.pop("save_config")
     params = {k: v for k, v in params.items() if v is not None}
+
+    # TODO: until a refactor of params/config we'll just hard code a new dictionary
+    # we want input to still be at the top of the list of parameters...
+    # we could instead hard code a priority list of the parameters then insertion order is irrelevant
+    params = {(k if k != "input_" else "input"): v for k, v in params.items()}
 
     grid = Table.grid(expand=True)
     grid.add_column(justify="right", style="bold cyan")

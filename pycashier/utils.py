@@ -13,22 +13,88 @@ from rich.status import Status
 from .term import term
 
 
-def get_fastqs(src: Path) -> List[Path]:
+# TODO: generalize sample filter to any input type
+def filter_input_by_sample(
+    candidate_files: List[Path], samples: List[str]
+) -> List[Path]:
+    """filter candidate fastqs based on user provided samples
+    Args:
+        candidate_fastqs: all fastq files found in input direcotry
+        samples: user provided list of samples
+    Returns:
+        returns list of accepted fastqs
+    """
+
+    found, files, ignored = [], [], []
+    for f in candidate_files:
+        name, *_ = f.name.split(".")
+        if name in samples:
+            found.append(name)
+            files.append(f)
+        else:
+            ignored.append(name)
+
+    not_found = set(samples).difference(found)
+    if not_found:
+        term.print(f"[InputError]: Unknown sample(s) -> {not_found}", err=True)
+        sys.exit(1)
+
+    if ignored:
+        term.print(f"[dim]ignoring {len(set(ignored))} samples")
+
+    return files
+
+
+def get_input_files(
+    src: Path, samples: List[str] | None, exts: List[str]
+) -> List[Path]:
+    """determine input files
+    Args:
+        src: Input directory that contains fastq/sam files.
+        samples: List of allowed samples.
+        exts: Acceptable file extensions.
+    Returns:
+        List of fastq/sam files (may be gzipped).
+    """
+
+    candidate_files = [f for f in src.iterdir() if not f.name.startswith(".")]
+
+    if not candidate_files:
+        term.print(f"[InputError]: Source dir: {src}, appears to be empty...", err=True)
+        term.print("Exiting.", err=True)
+        sys.exit(1)
+
+    for f in candidate_files:
+        if not any(f.name.endswith(suffix) for suffix in exts):
+            term.print(
+                f"[InputError]: There is a non {exts} file in the provided input directory: {f}",
+                err=True,
+            )
+            term.print("Exiting.")
+            sys.exit(1)
+
+    files = (
+        filter_input_by_sample(candidate_files, samples) if samples else candidate_files
+    )
+    return files
+
+
+def get_fastqs(src: Path, samples: List[str] | None) -> List[Path]:
     """determine fastq files
     Args:
         src: Input directory that contains fastq files.
+        samples: list of allowed samples
     Returns:
         List of fastq files (may be gzipped).
     """
+    candidate_fastqs = [f for f in src.iterdir() if not f.name.startswith(".")]
 
-    fastqs = [f for f in src.iterdir() if not f.name.startswith(".")]
-    if not fastqs:
-        term.print(f"Source dir: {src}, appears to be empty...")
-        term.print("Exiting.")
+    if not candidate_fastqs:
+        term.print(f"[InputError]: Source dir: {src}, appears to be empty...", err=True)
+        term.print("Exiting.", err=True)
         sys.exit(1)
 
-    for f in fastqs:
-
+    for f in candidate_fastqs:
         if not any(f.name.endswith(suffix) for suffix in [".fastq", ".fastq.gz"]):
             term.print(
                 f"[InputError]: There is a non fastq file in the provided fastq directory: {f}",
@@ -37,6 +103,11 @@ def get_fastqs(src: Path) -> List[Path]:
             term.print("Exiting.")
             sys.exit(1)
 
+    fastqs = (
+        filter_input_by_sample(candidate_fastqs, samples)
+        if samples
+        else candidate_fastqs
+    )
     return fastqs
 
 
@@ -108,12 +179,16 @@ def get_filter_count(file_in: Path, filter_percent: float) -> int:
     return int(round(total_reads * filter_percent / 100, 0))
 
 
-def combine_outs(input_dir: Path, output: Path, columns: List[str]) -> None:
+def combine_outs(
+    input_dir: Path, samples: List[str], output: Path, columns: List[str]
+) -> None:
     """combine output tsvs into one file
 
     Args:
         input_dir: Directory containing csv files to combine.
+        samples: list of sample names to use
         output: TSV to save all data to.
+        columns: list of column names
     """
     if len(columns) != 3:
         term.print(
@@ -122,7 +197,10 @@ def combine_outs(input_dir: Path, output: Path, columns: List[str]) -> None:
         )
         sys.exit(1)
 
-    files = {f.name.split(".")[0]: f for f in input_dir.iterdir()}
+    files = {
+        f.name.split(".")[0]: f
+        for f in get_input_files(input_dir, samples, exts=[".tsv"])
+    }
     term.print(f"Combing output files for {len(files)} samples.")
 
     with output.open("w") as tsv_out:
@@ -258,7 +336,7 @@ def run_cmd(
     Args:
         command: Subcommand to be run in subprocess.
         sample: Name of sample.
-        output: Directory of immediate output.
+        output: file of immediate output.
         verbose: If true, print subcommand output.
         status: Status to pause if writing to stderr printing needed.
     """

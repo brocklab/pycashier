@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+from typing import List
 
 from rich.status import Status
 
@@ -11,7 +12,7 @@ except ImportError:
 from rich.progress import Progress, SpinnerColumn, TimeElapsedColumn
 
 from .term import term
-from .utils import check_output, confirm_samples, run_cmd
+from .utils import check_output, confirm_samples, filter_input_by_sample, run_cmd
 
 
 def sam_to_name_labeled_fastq(
@@ -77,6 +78,7 @@ def sam_to_name_labeled_fastq(
     status.start()
 
 
+# TODO: use grouper util function?
 def labeled_fastq_to_tsv(in_file: Path, out_file: Path) -> None:
     """convert labeled fastq to tsv
 
@@ -167,6 +169,7 @@ def single_cell_process(
 
 def single_cell(
     input_: Path,
+    samples: List[str],
     pipeline: Path,
     output: Path,
     error: float,
@@ -183,6 +186,7 @@ def single_cell(
     Args:
 
         input_: Directory of sam files.
+        samples: List of samples.
         pipeline: Directory for all intermediary files.
         output: Directory for final tsv files.
         error: Error rate used by cutadapt.
@@ -195,15 +199,12 @@ def single_cell(
         yes: If true, skip sample confirmation.
     """
 
+    # TODO: refactor get_fastq to take a list of extensions and peform this
     for d in [pipeline, output]:
         d.mkdir(exist_ok=True)
 
-    # TODO: raise error if can't get sample name
-    samfiles = {
-        f.name.split(".")[0]: f for f in input_.iterdir() if not f.name.startswith(".")
-    }
-
-    for f in samfiles.values():
+    candidate_samfiles = [f for f in input_.iterdir() if not f.name.startswith(".")]
+    for f in candidate_samfiles:
 
         if f.suffix != ".sam":
             term.print(
@@ -212,9 +213,17 @@ def single_cell(
             )
             sys.exit(1)
 
-    confirm_samples(list(samfiles), yes)
+    # TODO: remove this weird type change to dict
+    samfiles = (
+        filter_input_by_sample(candidate_samfiles, samples)
+        if samples
+        else candidate_samfiles
+    )
+    samfiles_dict = {f.name.split(".")[0]: f for f in samfiles}
 
-    for sample, samfile in samfiles.items():
+    confirm_samples(list(samfiles_dict), yes)
+
+    for sample, samfile in samfiles_dict.items():
 
         term.process(f"[hl]{sample}[/]", status="start")
 

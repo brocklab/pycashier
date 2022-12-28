@@ -8,7 +8,13 @@ from .merge import merge_all
 from .single_cell import single_cell
 from .term import term
 from .termui import print_params, sample_check
-from .utils import combine_outs, get_fastqs, save_params, validate_filter_args
+from .utils import (
+    combine_outs,
+    filter_input_by_sample,
+    get_fastqs,
+    save_params,
+    validate_filter_args,
+)
 
 
 class Pycashier:
@@ -21,6 +27,7 @@ class Pycashier:
         self,
         ctx: click.Context,
         input_: Path,
+        samples: str,
         output: Path,
         pipeline: Path,
         quality: int,
@@ -55,7 +62,7 @@ class Pycashier:
 
         term.print(("[b]\n[cyan]PYCASHIER:[/cyan] Starting Extraction\n"))
 
-        fastqs = get_fastqs(input_)
+        fastqs = get_fastqs(input_, samples.split(",") if samples else None)
 
         processed_fastqs = sample_check(
             fastqs,
@@ -95,6 +102,7 @@ class Pycashier:
     def merge(
         self,
         input_: Path,
+        samples: str,
         output: Path,
         pipeline: Path,
         fastp_args: Dict[str, str],
@@ -110,9 +118,9 @@ class Pycashier:
         """
 
         term.print(("[b]\n[cyan]PYCASHIER:[/cyan] Starting Merge\n"))
-
+        fastqs = [f for f in input_.iterdir()]
         merge_all(
-            [f for f in input_.iterdir()],
+            filter_input_by_sample(fastqs, samples.split(",")) if samples else fastqs,
             pipeline,
             output,
             threads,
@@ -124,6 +132,7 @@ class Pycashier:
     def scrna(
         self,
         input_: Path,
+        samples: str,
         output: Path,
         pipeline: Path,
         minimum_length: int,
@@ -150,6 +159,7 @@ class Pycashier:
 
         single_cell(
             input_,
+            samples.split(",") if samples else None,
             pipeline,
             output,
             error,
@@ -165,6 +175,7 @@ class Pycashier:
     def combine(
         self,
         input_: Path,
+        samples: str,
         output: Path,
         columns: str,
     ) -> None:
@@ -172,4 +183,6 @@ class Pycashier:
         combine resulting output of [hl]extract[/]
         """
 
-        combine_outs(input_, output, columns.split(","))
+        combine_outs(
+            input_, samples.split(",") if samples else None, output, columns.split(",")
+        )
