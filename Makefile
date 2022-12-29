@@ -8,7 +8,7 @@ checks: lint types
 .PHONY: lint
 lint:
 	$(call msg,Linting w/ Pre-commit)
-	@pre-commit run --all
+	@pre-commit run --all || pre-commit run --all
 
 ## types | typecheck with mypy
 .PHONY: types
