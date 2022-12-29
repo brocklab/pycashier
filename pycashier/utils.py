@@ -55,16 +55,15 @@ def fastq_to_tsv(in_file: Path, out_file: Path) -> None:
         out_file: TSV file to write to.
     """
     warn = False
-    with open(in_file) as f_in:
-        with open(out_file, "w") as f_out:
-            for read in grouper(
-                f_in,
-                4,
-            ):
-                if "_" in read:
-                    warn = True
-                seq_id, sequence = read[0].strip(), read[1].strip()
-                f_out.write(f"{seq_id}\t{sequence}\n")
+    with open(in_file) as f_in, open(out_file, "w") as f_out:
+        for read in grouper(
+            f_in,
+            4,
+        ):
+            if "_" in read:
+                warn = True
+            seq_id, sequence = read[0].strip(), read[1].strip()
+            f_out.write(f"{seq_id}\t{sequence}\n")
 
     if warn:
         term.print("some of the read data was incomplete")
@@ -82,11 +81,10 @@ def extract_csv_column(csv_file: Path, column: int) -> Path:
     """
     ext = csv_file.suffix
     tmp_out = csv_file.with_suffix(f".c{column}{ext}")
-    with open(csv_file, "r") as csv_in:
-        with open(tmp_out, "w") as csv_out:
-            for line in csv_in:
-                linesplit = line.split("\t")
-                csv_out.write(f"{linesplit[column-1]}")
+    with open(csv_file, "r") as csv_in, open(tmp_out, "w") as csv_out:
+        for line in csv_in:
+            linesplit = line.split("\t")
+            csv_out.write(f"{linesplit[column-1]}")
 
     return tmp_out
 

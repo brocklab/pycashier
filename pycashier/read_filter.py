@@ -40,15 +40,14 @@ def filter_by_count(
 
     final = output / f"{file_in.stem}.min{filter_count}_off{offset}{file_in.suffix}"
 
-    with open(file_in, "r") as csv_in:
-        with open(final, "w") as csv_out:
-            for line in csv_in:
-                linesplit = line.split("\t")
-                if (
-                    int(linesplit[1]) >= filter_count
-                    and abs(len(linesplit[0]) - length) <= offset
-                ):
-                    csv_out.write(f"{linesplit[0]}\t{linesplit[1]}")
+    with open(file_in, "r") as csv_in, open(final, "w") as csv_out:
+        for line in csv_in:
+            linesplit = line.split("\t")
+            if (
+                int(linesplit[1]) >= filter_count
+                and abs(len(linesplit[0]) - length) <= offset
+            ):
+                csv_out.write(f"{linesplit[0]}\t{linesplit[1]}")
 
     if final.stat().st_size == 0:
         term.print(

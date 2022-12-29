@@ -85,22 +85,21 @@ def labeled_fastq_to_tsv(in_file: Path, out_file: Path) -> None:
         out_file: Converted tsv file.
     """
 
-    with open(in_file) as f_in:
-        with open(out_file, "w") as f_out:
-            read_lines = []
-            # TODO: add progress bar
-            for line in f_in.readlines():
-                read_lines.append(line)
-                if len(read_lines) == 4:
+    with open(in_file) as f_in, open(out_file, "w") as f_out:
+        read_lines = []
+        # TODO: add progress bar
+        for line in f_in.readlines():
+            read_lines.append(line)
+            if len(read_lines) == 4:
 
-                    read_name, umi, cell_barcode = read_lines[0].rstrip("\n").split("_")
-                    lineage_barcode = read_lines[1].rstrip("\n")
+                read_name, umi, cell_barcode = read_lines[0].rstrip("\n").split("_")
+                lineage_barcode = read_lines[1].rstrip("\n")
 
-                    f_out.write(
-                        f"{read_name}\t{umi}\
-                            \t{cell_barcode}\t{lineage_barcode}\n"
-                    )
-                    read_lines = []
+                f_out.write(
+                    f"{read_name}\t{umi}\
+                        \t{cell_barcode}\t{lineage_barcode}\n"
+                )
+                read_lines = []
 
 
 def single_cell_process(
