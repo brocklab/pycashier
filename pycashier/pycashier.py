@@ -172,4 +172,4 @@ class Pycashier:
         combine resulting output of [hl]extract[/]
         """
 
-        combine_outs(input_, output, str)
+        combine_outs(input_, output, columns.split(","))

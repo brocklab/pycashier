@@ -110,20 +110,25 @@ def get_filter_count(file_in: Path, filter_percent: float) -> int:
     return int(round(total_reads * filter_percent / 100, 0))
 
 
-def combine_outs(input_dir: Path, output: Path) -> None:
+def combine_outs(input_dir: Path, output: Path, columns: List[str]) -> None:
     """combine output tsvs into one file
 
     Args:
         input_dir: Directory containing csv files to combine.
         output: TSV to save all data to.
     """
-    files = {f.name.split(".")[0]: f for f in input_dir.iterdir()}
+    if len(columns) != 3:
+        term.print(
+            f"[InputError]: Expected three comma seperated column names. \n  Recieved -> {columns}",
+            err=True,
+        )
+        sys.exit(1)
 
+    files = {f.name.split(".")[0]: f for f in input_dir.iterdir()}
     term.print(f"Combing output files for {len(files)} samples.")
 
     with output.open("w") as tsv_out:
-        # TODO: make columns configurable?
-        tsv_out.write("sample\tsequence\tcount\n")
+        tsv_out.write("\t".join(columns) + "\n")
         for sample, f in files.items():
             with f.open("r") as tsv_in:
                 for line in tsv_in:

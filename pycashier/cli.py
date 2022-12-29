@@ -282,6 +282,12 @@ options = {
             show_default=True,
             type=click.Path(exists=False, dir_okay=False, path_type=Path),
         ),
+        Option(
+            ["--columns"],
+            help="comma seperated list of three names for columns",
+            default="sample,sequence,count",
+            show_default=True,
+        ),
         *[option for option in shared_options["general"][2:-1]],
     ],
 }
