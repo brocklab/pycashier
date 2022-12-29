@@ -1,7 +1,5 @@
 import sys
-import tempfile
 from pathlib import Path
-from typing import Union
 
 from rich.status import Status
 
@@ -16,33 +14,31 @@ from .term import term
 from .utils import check_output, confirm_samples, run_cmd
 
 
-def sam_to_name_labeled_fastq(sample: str, in_file: Path, out_file: Path) -> None:
+def sam_to_name_labeled_fastq(
+    sample: str, in_file: Path, out_file: Path, status: Status
+) -> None:
     """convert sam file to metadata labeled fastq
 
     Args:
         sample: Name of sample.
         in_file: Sam file to convert.
         out_file: Converted fastq file.
+        status: Rich.console status to suspend for stderr printing.
     """
+    sam_file = in_file
 
-    new_sam = False
+    # if the file is a sam file this is the only way I can find in the pysam API to get the total number of reads
+    # we really only need this for the progess bar though
+    with pysam.AlignmentFile(
+        str(sam_file), "r", check_sq=False, check_header=False
+    ) as sam:
+        sam_length = sam.count()
 
-    with open(in_file, "r") as f_in:
-        if f_in.readline()[0:3] != "@HD":
-            new_sam = True
-
-    sam_file: Union[str, Path]
-    if new_sam:
-        term.process("sam is headerless, adding a fake one")
-        sam_file = fake_header_add(in_file)
-    else:
-        sam_file = in_file
-
-    sam_length = pysam.AlignmentFile(str(sam_file), "r", check_sq=False).count()
-    sam = pysam.AlignmentFile(str(sam_file), "r", check_sq=False)
-
-    with open(out_file, "w") as f_out:
-
+    # we don't care about indicies or genomes. since cutadapt will do the heavy lifting here
+    with open(out_file, "w") as f_out, pysam.AlignmentFile(
+        str(sam_file), "r", check_sq=False, check_header=False
+    ) as sam:
+        status.stop()
         with Progress(
             SpinnerColumn("pipe", style="line"),
             *Progress.get_default_columns(),
@@ -53,7 +49,7 @@ def sam_to_name_labeled_fastq(sample: str, in_file: Path, out_file: Path) -> Non
         ) as progress:
             task = progress.add_task("[red]sam -> fastq", total=sam_length)
 
-            for record in sam:
+            for record in sam.fetch(until_eof=True):
 
                 tagdict = dict(record.tags)
                 cell_barcode = None
@@ -78,9 +74,7 @@ def sam_to_name_labeled_fastq(sample: str, in_file: Path, out_file: Path) -> Non
 
                 progress.advance(task)
 
-    if new_sam:
-
-        Path(sam_file).unlink()
+    status.start()
 
 
 def labeled_fastq_to_tsv(in_file: Path, out_file: Path) -> None:
@@ -92,7 +86,6 @@ def labeled_fastq_to_tsv(in_file: Path, out_file: Path) -> None:
     """
 
     with open(in_file) as f_in:
-
         with open(out_file, "w") as f_out:
             read_lines = []
             # TODO: add progress bar
@@ -108,108 +101,6 @@ def labeled_fastq_to_tsv(in_file: Path, out_file: Path) -> None:
                             \t{cell_barcode}\t{lineage_barcode}\n"
                     )
                     read_lines = []
-
-
-def fake_header_add(in_file: Path) -> str:
-
-    fake_header = """@HD\tVN:1.6\tSO:coordinate
-@SQ\tSN:1\tLN:1000
-@SQ\tSN:2\tLN:1000
-@SQ\tSN:3\tLN:1000
-@SQ\tSN:4\tLN:1000
-@SQ\tSN:5\tLN:1000
-@SQ\tSN:6\tLN:1000
-@SQ\tSN:7\tLN:1000
-@SQ\tSN:8\tLN:1000
-@SQ\tSN:9\tLN:1000
-@SQ\tSN:10\tLN:1000
-@SQ\tSN:11\tLN:1000
-@SQ\tSN:12\tLN:1000
-@SQ\tSN:13\tLN:1000
-@SQ\tSN:14\tLN:1000
-@SQ\tSN:15\tLN:1000
-@SQ\tSN:16\tLN:1000
-@SQ\tSN:17\tLN:1000
-@SQ\tSN:18\tLN:1000
-@SQ\tSN:19\tLN:1000
-@SQ\tSN:20\tLN:1000 @SQ\tSN:21\tLN:1000
-@SQ\tSN:22\tLN:1000
-@SQ\tSN:23\tLN:1000
-@SQ\tSN:X\tLN:1000
-@SQ\tSN:Y\tLN:1000
-@SQ\tSN:MT\tLN:1000
-@SQ\tSN:GL000192.1\tLN:1000
-@SQ\tSN:GL000225.1\tLN:1000
-@SQ\tSN:GL000194.1\tLN:1000
-@SQ\tSN:GL000193.1\tLN:1000
-@SQ\tSN:GL000200.1\tLN:1000
-@SQ\tSN:GL000222.1\tLN:1000
-@SQ\tSN:GL000212.1\tLN:1000
-@SQ\tSN:GL000195.1\tLN:1000
-@SQ\tSN:GL000223.1\tLN:1000
-@SQ\tSN:GL000224.1\tLN:1000
-@SQ\tSN:GL000219.1\tLN:1000
-@SQ\tSN:GL000205.1\tLN:1000
-@SQ\tSN:GL000215.1\tLN:1000
-@SQ\tSN:GL000216.1\tLN:1000
-@SQ\tSN:GL000217.1\tLN:1000
-@SQ\tSN:GL000199.1\tLN:1000
-@SQ\tSN:GL000211.1\tLN:1000
-@SQ\tSN:GL000213.1\tLN:1000
-@SQ\tSN:GL000220.1\tLN:1000
-@SQ\tSN:GL000218.1\tLN:1000
-@SQ\tSN:GL000209.1\tLN:1000
-@SQ\tSN:GL000221.1\tLN:1000
-@SQ\tSN:GL000214.1\tLN:1000
-@SQ\tSN:GL000228.1\tLN:1000
-@SQ\tSN:GL000227.1\tLN:1000
-@SQ\tSN:GL000191.1\tLN:1000
-@SQ\tSN:GL000208.1\tLN:1000
-@SQ\tSN:GL000198.1\tLN:1000
-@SQ\tSN:GL000204.1\tLN:1000
-@SQ\tSN:GL000233.1\tLN:1000
-@SQ\tSN:GL000237.1\tLN:1000
-@SQ\tSN:GL000230.1\tLN:1000
-@SQ\tSN:GL000242.1\tLN:1000
-@SQ\tSN:GL000243.1\tLN:1000
-@SQ\tSN:GL000241.1\tLN:1000
-@SQ\tSN:GL000236.1\tLN:1000
-@SQ\tSN:GL000240.1\tLN:1000
-@SQ\tSN:GL000206.1\tLN:1000
-@SQ\tSN:GL000232.1\tLN:1000
-@SQ\tSN:GL000234.1\tLN:1000
-@SQ\tSN:GL000202.1\tLN:1000
-@SQ\tSN:GL000238.1\tLN:1000
-@SQ\tSN:GL000244.1\tLN:1000
-@SQ\tSN:GL000248.1\tLN:1000
-@SQ\tSN:GL000196.1\tLN:1000
-@SQ\tSN:GL000249.1\tLN:1000
-@SQ\tSN:GL000246.1\tLN:1000
-@SQ\tSN:GL000203.1\tLN:1000
-@SQ\tSN:GL000197.1\tLN:1000
-@SQ\tSN:GL000245.1\tLN:1000
-@SQ\tSN:GL000247.1\tLN:1000
-@SQ\tSN:GL000201.1\tLN:1000
-@SQ\tSN:GL000235.1\tLN:1000
-@SQ\tSN:GL000239.1\tLN:1000
-@SQ\tSN:GL000210.1\tLN:1000
-@SQ\tSN:GL000231.1\tLN:1000
-@SQ\tSN:GL000229.1\tLN:1000
-@SQ\tSN:GL000226.1\tLN:1000
-"""
-
-    # TODO: change to with statement
-    # possible to make this whole function based on decorator maybe?
-    f = tempfile.NamedTemporaryFile(delete=False, dir=Path.cwd())
-    f.write((bytes(fake_header, encoding="utf-8")))
-    f.flush()
-
-    with open(in_file, "r") as sam_file:
-        for line in sam_file:
-            f.write(bytes(line, encoding="utf-8"))
-
-    f.close()
-    return f.name
 
 
 def single_cell_process(
@@ -253,11 +144,7 @@ def single_cell_process(
     tsv_out = output / f"{sample}.cell_record_labeled.barcode.tsv"
 
     if check_output(fastq, "converting sam to labeled fastq"):
-        status.stop()
-        sam_to_name_labeled_fastq(sample, samfile, fastq)
-        status.start()
-    else:
-        term.process("skipping sam to labeled fastq conversion")
+        sam_to_name_labeled_fastq(sample, samfile, fastq, status)
 
     if check_output(barcode_fastq, "extracting barcodes w/ [b]cutadapt[/]"):
 
