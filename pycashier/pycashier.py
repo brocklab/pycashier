@@ -8,13 +8,7 @@ from .merge import merge_all
 from .single_cell import single_cell
 from .term import term
 from .termui import print_params, sample_check
-from .utils import (
-    combine_outs,
-    filter_input_by_sample,
-    get_fastqs,
-    save_params,
-    validate_filter_args,
-)
+from .utils import combine_outs, get_input_files, save_params, validate_filter_args
 
 
 class Pycashier:
@@ -62,7 +56,11 @@ class Pycashier:
 
         term.print(("[b]\n[cyan]PYCASHIER:[/cyan] Starting Extraction\n"))
 
-        fastqs = get_fastqs(input_, samples.split(",") if samples else None)
+        fastqs = get_input_files(
+            input_,
+            samples.split(",") if samples else None,
+            exts=[".fastq", ".fastq.gz"],
+        )
 
         processed_fastqs = sample_check(
             fastqs,
@@ -118,9 +116,13 @@ class Pycashier:
         """
 
         term.print(("[b]\n[cyan]PYCASHIER:[/cyan] Starting Merge\n"))
-        fastqs = [f for f in input_.iterdir()]
+
         merge_all(
-            filter_input_by_sample(fastqs, samples.split(",")) if samples else fastqs,
+            get_input_files(
+                input_,
+                samples.split(",") if samples else None,
+                exts=[".fastq", ".fastq.gz"],
+            ),
             pipeline,
             output,
             threads,

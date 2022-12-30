@@ -13,7 +13,6 @@ from rich.status import Status
 from .term import term
 
 
-# TODO: generalize sample filter to any input type
 def filter_input_by_sample(
     candidate_files: List[Path], samples: List[str]
 ) -> List[Path]:
@@ -79,40 +78,11 @@ def get_input_files(
     return files
 
 
-def get_fastqs(src: Path, samples: List[str] | None) -> List[Path]:
-    """determine fastq files
-    Args:
-        src: Input directory that contains fastq files.
-        samples: list of allowed samples
-    Returns:
-        List of fastq files (may be gzipped).
-    """
-    candidate_fastqs = [f for f in src.iterdir() if not f.name.startswith(".")]
-
-    if not candidate_fastqs:
-        term.print(f"[InputError]: Source dir: {src}, appears to be empty...", err=True)
-        term.print("Exiting.", err=True)
-        sys.exit(1)
-
-    for f in candidate_fastqs:
-        if not any(f.name.endswith(suffix) for suffix in [".fastq", ".fastq.gz"]):
-            term.print(
-                f"[InputError]: There is a non fastq file in the provided fastq directory: {f}",
-                err=True,
-            )
-            term.print("Exiting.")
-            sys.exit(1)
-
-    fastqs = (
-        filter_input_by_sample(candidate_fastqs, samples)
-        if samples
-        else candidate_fastqs
-    )
-    return fastqs
-
-
 def grouper(iterable, n):
-    "Collect data into non-overlapping fixed-length chunks or blocks"
+    """Collect data into non-overlapping fixed-length chunks or blocks
+
+    adds '_' as placeholder to fill iterable as necessary
+    """
     args = [iter(iterable)] * n
 
     return zip_longest(*args, fillvalue="_")
