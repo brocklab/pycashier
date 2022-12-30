@@ -2,9 +2,10 @@ import csv
 import shlex
 import subprocess
 import sys
+from collections.abc import Iterable
 from itertools import zip_longest
 from pathlib import Path
-from typing import Dict, List
+from typing import Any, Dict, List
 
 import click
 import tomlkit
@@ -78,7 +79,7 @@ def get_input_files(
     return files
 
 
-def grouper(iterable, n):
+def grouper(iterable: Iterable, n: int) -> "zip_longest[Any]":
     """Collect data into non-overlapping fixed-length chunks or blocks
 
     adds '_' as placeholder to fill iterable as necessary
@@ -150,7 +151,7 @@ def get_filter_count(file_in: Path, filter_percent: float) -> int:
 
 
 def combine_outs(
-    input_dir: Path, samples: List[str], output: Path, columns: List[str]
+    input_dir: Path, samples: List[str] | None, output: Path, columns: List[str]
 ) -> None:
     """combine output tsvs into one file
 
@@ -273,7 +274,7 @@ def load_params(ctx: click.Context, param: str, filename: Path) -> None:
             ctx.default_map = params.get(ctx.info_name, {})
 
             # use not shadowing name for input
-            if "input" in ctx.default_map:
+            if ctx.default_map and "input" in ctx.default_map:
                 ctx.default_map["input_"] = ctx.default_map.pop("input")
 
     elif Path(filename) != Path("pycashier.toml"):

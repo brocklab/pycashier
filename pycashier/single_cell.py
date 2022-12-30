@@ -31,13 +31,13 @@ def sam_to_name_labeled_fastq(
     # if the file is a sam file this is the only way I can find in the pysam API to get the total number of reads
     # we really only need this for the progess bar though
     with pysam.AlignmentFile(
-        str(sam_file), "r", check_sq=False, check_header=False
+        str(sam_file), "r", check_sq=False, check_header=False  # type: ignore
     ) as sam:
         sam_length = sam.count()
 
     # we don't care about indicies or genomes. since cutadapt will do the heavy lifting here
     with open(out_file, "w") as f_out, pysam.AlignmentFile(
-        str(sam_file), "r", check_sq=False, check_header=False
+        str(sam_file), "r", check_sq=False, check_header=False  # type: ignore
     ) as sam:
         status.stop()
         with Progress(
@@ -169,7 +169,7 @@ def single_cell_process(
 
 def single_cell(
     input_: Path,
-    samples: List[str],
+    samples: List[str] | None,
     pipeline: Path,
     output: Path,
     error: float,

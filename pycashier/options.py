@@ -1,6 +1,16 @@
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Generator,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+)
 
 import click
 
@@ -39,7 +49,7 @@ class Option:
     name: str = ""
     category: str | None = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if not self.name:
             self.name = max(self.param_decls, key=len).lstrip("-")
 
@@ -68,12 +78,14 @@ general_opts = ("verbose", "config", "save-config")
 
 
 class OptionMap:
-    def __init__(self, options: Tuple[Option], subcmd_ref: Dict[str, Tuple[str]]):
+    def __init__(
+        self, options: Tuple[Option, ...], subcmd_ref: Dict[str, Tuple[str, ...]]
+    ) -> None:
         self.opts = {opt.name: opt for opt in options}
         self.subcmds = {k: [self.opts[opt] for opt in v] for k, v in subcmd_ref.items()}
 
-    def long_by_category(self, category: str):
-        return [opt.long() for opt in self.opts.values() if opt.category == category]
+    def long_by_category(self, category: str) -> Generator[str, None, None]:
+        return (opt.long() for opt in self.opts.values() if opt.category == category)
 
 
 optmap = OptionMap(
