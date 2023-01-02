@@ -8,6 +8,9 @@
 
 # Pycashier
 
+<img src="https://raw.githubusercontent.com/brocklab/pycashier/main/docs/demo.gif" alt="demo">
+
+</br>
 Tool for extracting and processing DNA barcode tags from Illumina sequencing.
 
 Default parameters are designed for use by the [Brock Lab](https://github.com/brocklab) to process data generated from
