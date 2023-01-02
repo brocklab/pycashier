@@ -97,10 +97,7 @@ def labeled_fastq_to_tsv(in_file: Path, out_file: Path) -> None:
                 read_name, umi, cell_barcode = read_lines[0].rstrip("\n").split("_")
                 lineage_barcode = read_lines[1].rstrip("\n")
 
-                f_out.write(
-                    f"{read_name}\t{umi}\
-                        \t{cell_barcode}\t{lineage_barcode}\n"
-                )
+                f_out.write(f"{read_name}\t{umi}\t{cell_barcode}\t{lineage_barcode}\n")
                 read_lines = []
 
 
