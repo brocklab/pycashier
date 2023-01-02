@@ -14,7 +14,13 @@ lint:
 .PHONY: types
 types:
 	$(call msg,Typechecking w/ Mypy)
-	@mypy pycashier
+	@mypy pycashier/ tests/
+
+## test | run test w/ pytest
+.PHONY: test
+test:
+	$(call msg, Testing w/ Pytest)
+	@pytest tests/
 
 ## build | build-{dist,docker}
 .PHONY: build

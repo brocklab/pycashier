@@ -166,8 +166,10 @@ cython_debug/
 # End of https://www.toptal.com/developers/gitignore/api/python
 
 
-test/
 .vscode/
 tmp/
 .pdm.toml
 .task.mk
+
+/tests/data/*
+!/tests/data/reference
