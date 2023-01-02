@@ -43,6 +43,15 @@ def get_pefastqs(fastqs: List[Path]) -> Dict[str, Dict[str, Path]]:
             )
             sys.exit(1)
 
+    for sample, reads in pefastqs.items():
+        if len(reads) != 2:
+            term.print(
+                "[MergeError]: please ensure there is and R1 and R2 for all samples"
+            )
+            term.print("[MergeError]: detected the following samples")
+            term.print(pefastqs)
+            sys.exit(1)
+
     return pefastqs
 
 
