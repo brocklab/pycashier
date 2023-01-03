@@ -15,7 +15,7 @@ from typing import (
 import click
 
 from ._checks import pre_run_check
-from .utils import load_params
+from .config import load_params
 
 
 def init_check(ctx: click.Context, param: str, check: bool) -> None:

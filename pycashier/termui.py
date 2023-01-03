@@ -229,8 +229,8 @@ def print_params(ctx: click.Context) -> None:
         grid.add_row(key, ": ", str(value))
 
     group: Union[Group, Table] = (
-        Group(grid, Align(f"[dim]including {ctx.obj['config_file']}", align="center"))
-        if "config_file" in ctx.obj
+        Group(grid, Align(f"[dim]including {ctx.obj['configfile']}", align="center"))
+        if "config-loaded" in ctx.obj
         else grid
     )
 
@@ -242,8 +242,8 @@ def print_params(ctx: click.Context) -> None:
         )
     )
 
-    if "config_file" in ctx.obj:
-        grid.add_row("loaded config", ": ", str(ctx.obj["config_file"]))
+    # if "config_file" in ctx.obj:
+    #     grid.add_row("loaded config", ": ", str(ctx.obj["config_file"]))
 
     if not ctx.info_name == "combine":
         if params["threads"] == 1 and params["threads"] <= SYS_THREADS / 4:

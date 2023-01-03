@@ -3,12 +3,13 @@ from typing import Any, Dict
 
 import click
 
+from .config import save_params
 from .extract import extract_all
 from .merge import merge_all
 from .single_cell import single_cell
 from .term import term
 from .termui import print_params, sample_check
-from .utils import combine_outs, get_input_files, save_params, validate_filter_args
+from .utils import combine_outs, get_input_files, validate_filter_args
 
 
 class Pycashier:
