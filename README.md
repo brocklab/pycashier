@@ -225,7 +225,7 @@ This version like it's predecessor wraps around several command line bioinformat
 [pypi-shield]: https://img.shields.io/pypi/v/pycashier
 [pypi-url]: https://pypi.org/project/pycashier/
 [pyversion-url]: https://pypi.org/project/pycashier/
-[pyversion-shield]: https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10-blue.svg
+[pyversion-shield]: https://img.shields.io/badge/dynamic/json?query=info.requires_python&label=python&url=https%3A%2F%2Fpypi.org%2Fpypi%2Fpycashier%2Fjson
 [ghcrio-shield]: https://img.shields.io/badge/ghcr.io-24292f?&logo=github&logoColor=white.svg
 [ghcrio-url]: https://github.com/brocklab/pycashier/pkgs/container/pycashier
 [forks-shield]: https://img.shields.io/github/forks/brocklab/pycashier.svg
