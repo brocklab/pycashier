@@ -181,6 +181,7 @@ class Pycashier:
         samples: str,
         output: Path,
         columns: str,
+        verbose: bool,
     ) -> None:
         """
         combine resulting output of [hl]extract[/]
