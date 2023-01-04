@@ -1,4 +1,5 @@
-FROM python:3.9.13-slim-bullseye as builder
+# FROM python:3.10.9-slim-bullseye as builder
+FROM python@sha256:6862d8ed663a47f649ba5aababed01e44741a032e80d5800db619f5113f65434 as builder
 
 RUN apt-get update \
   && apt-get install \
@@ -26,9 +27,10 @@ RUN python -m \
   --wheel \
   --outdir dist/
 
-FROM mambaorg/micromamba:git-08fc3c0-bullseye as prod
+# FROM mambaorg/micromamba:git-4427b19-bullseye as prod
+FROM mambaorg/micromamba@sha256:53697a4bae2d9a4407463b8f314d370e201c58f6b5e5ff7c1f24699ed7e37a41 as prod
 
-COPY docker/prod.lock tmp/prod.lock
+COPY --chown=$MAMBA_USER:$MAMBA_USER docker/prod.lock tmp/prod.lock
 
 RUN micromamba \
   install --name base \
@@ -41,9 +43,9 @@ RUN micromamba \
 RUN find -name '*.a' -delete && \
   rm -rf /opt/conda/conda-meta && \
   rm -rf /opt/conda/include && \
-  rm -rf /opt/conda/lib/libpython3.9.so.1.0 && \
+  rm -rf /opt/conda/lib/libpython3*.so.1.0 && \
   find -name '__pycache__' -type d -exec rm -rf '{}' '+' && \
-  rm -rf /opt/conda/lib/python3.9/idlelib /opt/conda/lib/python3.9/ensurepip \
+  rm -rf /opt/conda/lib/python3*/idlelib /opt/conda/lib/python3*/ensurepip \
     /opt/conda/lib/libasan.so.5.0.0 \
     /opt/conda/lib/libtsan.so.0.0.0 \
     /opt/conda/lib/liblsan.so.0.0.0 \
@@ -52,9 +54,9 @@ RUN find -name '*.a' -delete && \
     /opt/conda/bin/sqlite3 \
     /opt/conda/bin/openssl \
     /opt/conda/share/terminfo && \
-  find /opt/conda/lib/python3.9/site-packages/ -name 'tests' -type d -exec rm -rf '{}' '+' && \
-  find /opt/conda/lib/python3.9/site-packages -name '*.pyx' -delete && \
-  rm -rf /opt/conda/lib/python3.9/site-packages/uvloop/loop.c
+  find /opt/conda/lib/python3.10/site-packages/ -name 'tests' -type d -exec rm -rf '{}' '+' && \
+  find /opt/conda/lib/python3.10/site-packages -name '*.pyx' -delete && \
+  rm -rf /opt/conda/lib/python3.10/site-packages/uvloop/loop.c
 
 ARG MAMBA_DOCKERFILE_ACTIVATE=1  # (otherwise python will not be found)
 

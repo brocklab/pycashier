@@ -36,8 +36,8 @@ build-dist:
 ## build-docker | build and tag docker image with version
 .PHONY: build-docker
 build-docker: docker/prod.lock
-	docker build --tag brocklab/pycashier:$(VERSION) -f docker/Dockerfile .
-	docker tag brocklab/pycashier:$(VERSION) brocklab/pycashier:latest
+	docker build --tag ghcr.io/brocklab/pycashier:$(VERSION) -f docker/Dockerfile .
+	docker tag ghcr.io/brocklab/pycashier:$(VERSION) pycashier:latest
 
 docker/%.lock: docker/%.yml
 	docker run -it --rm -v $$(pwd):/tmp -u $$(id -u):$$(id -g) mambaorg/micromamba:0.24.0 \
