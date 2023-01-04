@@ -7,8 +7,17 @@ and this project adheres to a type of [CalVer](https://calver.org).
 version -> vYY.MM.PATCH
 
 ## Unreleased
+### Added
+- sample parameter for all subcommands
+- added some broad input/output tests
+- global parameters (i.e. threads or samples to fallback on)
 ### Changed
 - update python version requirements to >=3.8,<3.11
+- updated conda lock file for docker and pinned based images to sha256 for reproducibility
+### Fixed
+- stop merge if both R1 and R2 not found
+- removed extra whitespace in single cell output tsv
+- added warning about broken symlinks (especially for docker) (#12)
 
 ## [22.10.1] - 2022-10-21
 ### Added

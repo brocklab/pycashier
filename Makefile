@@ -1,4 +1,4 @@
-VERSION := $(shell git describe --tags --dirty | sed -e 's/dirty/dev/g')
+VERSION := $(shell git describe --tags --dirty='-dev')
 
 ## checks | run lint,types
 .PHONY: checks
