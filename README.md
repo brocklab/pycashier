@@ -3,6 +3,7 @@
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
 [![PYPI][pypi-shield]][pypi-url]
+[![PyVersion][pyversion-shield]][pyversion-url]
 [![Conda][conda-shield]][conda-url]
 [![ghcr.io][ghcrio-shield]][ghcrio-url]
 
@@ -223,6 +224,8 @@ This version like it's predecessor wraps around several command line bioinformat
 [conda-url]: https://anaconda.org/conda-forge/pycashier
 [pypi-shield]: https://img.shields.io/pypi/v/pycashier
 [pypi-url]: https://pypi.org/project/pycashier/
+[pyversion-url]: https://pypi.org/project/pycashier/
+[pyversion-shield]: https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10-blue.svg
 [ghcrio-shield]: https://img.shields.io/badge/ghcr.io-24292f?&logo=github&logoColor=white.svg
 [ghcrio-url]: https://github.com/brocklab/pycashier/pkgs/container/pycashier
 [forks-shield]: https://img.shields.io/github/forks/brocklab/pycashier.svg
