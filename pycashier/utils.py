@@ -45,13 +45,16 @@ def filter_input_by_sample(
 
 
 def get_input_files(
-    src: Path, samples: List[str] | None, exts: List[str]
+    src: Path,
+    samples: List[str] | None,
+    exts: List[str],
 ) -> List[Path]:
     """determine input files
     Args:
         src: Input directory that contains fastq/sam files.
         samples: List of allowed samples.
         exts: Acceptable file extensions.
+
     Returns:
         List of fastq/sam files (may be gzipped).
     """
@@ -67,6 +70,15 @@ def get_input_files(
         if not any(f.name.endswith(suffix) for suffix in exts):
             term.print(
                 f"[InputError]: There is a non {exts} file in the provided input directory: {f}",
+                err=True,
+            )
+            term.print("Exiting.")
+            sys.exit(1)
+        if f.is_symlink() and not f.exists():
+            term.print(
+                f"[InputError]: There is a symlink in the provided input directory: {f} \n"
+                "If using docker: Ensure that symlinks are resolved within the mounted volume "
+                "in '/data' or pycashier within docker won't find them.",
                 err=True,
             )
             term.print("Exiting.")

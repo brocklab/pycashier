@@ -12,32 +12,32 @@ except ImportError:
 from rich.progress import Progress, SpinnerColumn, TimeElapsedColumn
 
 from .term import term
-from .utils import check_output, confirm_samples, filter_input_by_sample, run_cmd
+from .utils import check_output, confirm_samples, get_input_files, run_cmd
 
 
 def sam_to_name_labeled_fastq(
-    sample: str, in_file: Path, out_file: Path, status: Status
+    sample: str, sam_file: Path, out_file: Path, status: Status
 ) -> None:
     """convert sam file to metadata labeled fastq
 
     Args:
         sample: Name of sample.
-        in_file: Sam file to convert.
+        sam_file: Sam file to convert.
         out_file: Converted fastq file.
         status: Rich.console status to suspend for stderr printing.
     """
-    sam_file = in_file
+    sam_file
 
     # if the file is a sam file this is the only way I can find in the pysam API to get the total number of reads
     # we really only need this for the progess bar though
     with pysam.AlignmentFile(
-        str(sam_file), "r", check_sq=False, check_header=False  # type: ignore
+        str(sam_file.absolute()), "r", check_sq=False, check_header=False  # type: ignore
     ) as sam:
         sam_length = sam.count()
 
     # we don't care about indicies or genomes. since cutadapt will do the heavy lifting here
     with open(out_file, "w") as f_out, pysam.AlignmentFile(
-        str(sam_file), "r", check_sq=False, check_header=False  # type: ignore
+        str(sam_file.absolute()), "r", check_sq=False, check_header=False  # type: ignore
     ) as sam:
         status.stop()
         with Progress(
@@ -209,13 +209,8 @@ def single_cell(
                 err=True,
             )
             sys.exit(1)
-
     # TODO: remove this weird type change to dict
-    samfiles = (
-        filter_input_by_sample(candidate_samfiles, samples)
-        if samples
-        else candidate_samfiles
-    )
+    samfiles = get_input_files(input_, samples, [".sam"])
     samfiles_dict = {f.name.split(".")[0]: f for f in samfiles}
 
     confirm_samples(list(samfiles_dict), yes)
