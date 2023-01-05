@@ -96,6 +96,7 @@ def merge_single(
         )
 
         run_cmd(command, sample, merged_barcode_fastq, verbose, status)
+        term.process("fastqs sucessfully merged")
 
 
 def merge_all(
@@ -141,7 +142,6 @@ def merge_all(
                 status,
             )
 
-        term.process("fastqs sucessfully merged")
         term.process(status="end")
 
     term.print("\n[green]FINISHED!")
