@@ -6,7 +6,9 @@ and this project adheres to a type of [CalVer](https://calver.org).
 
 version -> vYY.MM.PATCH
 
-## Unreleased
+## [Unreleased]
+
+## [23.1.1] - 2023-01-05
 ### Added
 - sample parameter for all subcommands
 - added some broad input/output tests
@@ -106,7 +108,8 @@ version -> vYY.MM.PATCH
 - Dropped regex in "extract" in favor of simple string matching
 - Merge can take unzipped fastqs now
 
-[Unreleased]: https://github.com/brocklab/pycashier/compare/v22.10.1...HEAD
+[Unreleased]: https://github.com/brocklab/pycashier/compare/v23.1.1...HEAD
+[23.1.1]: https://github.com/brocklab/pycashier/compare/v22.10.1...v23.1.1
 [22.10.1]: https://github.com/brocklab/pycashier/compare/v22.9.1...v22.10.1
 [22.9.1]: https://github.com/brocklab/pycashier/compare/v22.6.2...v22.9.1
 [22.6.2]: https://github.com/brocklab/pycashier/compare/v22.6.1...v22.6.2
