@@ -74,7 +74,7 @@ class Option:
         return max(self.param_decls, key=len)
 
 
-general_opts = ("verbose", "config", "save-config")
+general_opts = ("verbose", "config", "save-config", "skip-init-check")
 
 
 class OptionMap:
