@@ -47,7 +47,7 @@ class Option:
     required: bool = False
     params: Dict[str, Any] = field(default_factory=dict)
     name: str = ""
-    category: str | None = None
+    category: Optional[str] = None
 
     def __post_init__(self) -> None:
         if not self.name:

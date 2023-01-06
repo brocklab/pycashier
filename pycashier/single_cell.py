@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 from rich.status import Status
 
@@ -166,7 +166,7 @@ def single_cell_process(
 
 def single_cell(
     input_: Path,
-    samples: List[str] | None,
+    samples: Optional[List[str]],
     pipeline: Path,
     output: Path,
     error: float,

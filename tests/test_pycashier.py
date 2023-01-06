@@ -2,7 +2,7 @@ import filecmp
 import shutil
 import subprocess
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 TEST_DIR = Path(__file__).parent
 OUTS_DIR, REF_DIR, MERGED_DIR, PIPELINE_DIR = (
@@ -22,7 +22,7 @@ def cmp_outs(filename: str, paths: Tuple[Path, Path]) -> bool:
     return filecmp.cmp(file_one, file_two)
 
 
-def pycashier_run(cmd: List[str | Path]) -> subprocess.CompletedProcess:
+def pycashier_run(cmd: List[Union[str, Path]]) -> subprocess.CompletedProcess:
     p = subprocess.run(
         ["pycashier", *cmd],
         capture_output=True,

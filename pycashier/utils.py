@@ -5,7 +5,7 @@ import sys
 from collections.abc import Iterable
 from itertools import zip_longest
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import click
 from rich.status import Status
@@ -46,7 +46,7 @@ def filter_input_by_sample(
 
 def get_input_files(
     src: Path,
-    samples: List[str] | None,
+    samples: Optional[List[str]],
     exts: List[str],
 ) -> List[Path]:
     """determine input files
@@ -162,7 +162,7 @@ def get_filter_count(file_in: Path, filter_percent: float) -> int:
 
 
 def combine_outs(
-    input_dir: Path, samples: List[str] | None, output: Path, columns: List[str]
+    input_dir: Path, samples: Optional[List[str]], output: Path, columns: List[str]
 ) -> None:
     """combine output tsvs into one file
 
