@@ -8,6 +8,14 @@ version -> vYY.MM.PATCH
 
 ## [Unreleased]
 
+## [23.1.2] - 2023-01-07
+### Changed
+- updated ci pipeline to incorporate test prior to a tagged release
+
+### Fixed
+- remove `|` type operator for python <3.10 compatibility (#15)
+- ensure init-check is run (#14)
+
 ## [23.1.1] - 2023-01-05
 ### Added
 - sample parameter for all subcommands
@@ -108,7 +116,9 @@ version -> vYY.MM.PATCH
 - Dropped regex in "extract" in favor of simple string matching
 - Merge can take unzipped fastqs now
 
-[Unreleased]: https://github.com/brocklab/pycashier/compare/v23.1.1...HEAD
+
+[Unreleased]: https://github.com/brocklab/pycashier/compare/v23.1.2...HEAD
+[23.1.2]: https://github.com/brocklab/pycashier/compare/v23.1.1...23.1.2
 [23.1.1]: https://github.com/brocklab/pycashier/compare/v22.10.1...v23.1.1
 [22.10.1]: https://github.com/brocklab/pycashier/compare/v22.9.1...v22.10.1
 [22.9.1]: https://github.com/brocklab/pycashier/compare/v22.6.2...v22.9.1
