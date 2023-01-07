@@ -13,7 +13,7 @@ version -> vYY.MM.PATCH
 - updated ci pipeline to incorporate test prior to a tagged release
 
 ### Fixed
-- remove `|` type operator for python <3.10 compatibility (#15)
+- remove `|` type operator for python <3.10 compatibility (#13)
 - ensure init-check is run (#14)
 
 ## [23.1.1] - 2023-01-05
