@@ -1,0 +1,38 @@
+name: Test
+
+on:
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  test:
+    name: Test Pycashier
+    runs-on: "ubuntu-latest"
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.8", "3.9", "3.10"]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniforge-variant: Mambaforge
+          miniforge-version: latest
+          mamba-version: "*"
+          python-version: ${{ matrix.python-version }}
+          channel-priority: true
+          activate-environment: pycashier-test
+          environment-file: ./conda/env-test.yml
+          auto-activate-base: false
+      - shell: bash -el {0}
+        run: |
+          conda info
+          conda list
+          conda config --show-sources
+          conda config --show
+          printenv | sort
+      - shell: bash -el {0}
+        run: |
+          pip install .
+          pytest tests/

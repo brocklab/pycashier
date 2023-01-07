@@ -1,0 +1,17 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+jobs:
+  tests:
+    uses: ./.github/workflows/tests.yml
+  publish-pypi:
+    uses: ./.github/workflows/pypi.yml
+    needs: [tests]
+  docker:
+    uses: ./.github/workflows/docker.yml
+    needs: [tests]
