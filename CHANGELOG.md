@@ -4,9 +4,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to a type of [CalVer](https://calver.org).
 
-version -> vYY.MM.PATCH
+version -> vYYYY.BUILD
+where BUILD is a lexicographically increasing number:
+i.e. 1001, 1002, ..., 1999, 22000
 
 ## [Unreleased]
+
+## [2024.1001]
+
+This release followed a major refactor and some things may be missing from the changelog.
+Please see the documentation for up to date usage instructions.
+
+### Added
+- sphinx-based documentation website
+- a log file produced in `./pipeline` which includes all subproccess output
+- added polars to dependencies to improve tabulated data operations
+- made at least one test case for all commands
+- hidden `checks` command to invoke pre-run checks on demand for debugging
+
+### Changed
+- new version scheme of YYYY.BUILD
+- pycashier will proceed even if a sample fails
+- output is less verbose
+- combine is now receipt and includes headers and basic calculations
+- headers are included in all final tsvs
+
+### Fixed
+- visual indicator of work when running counts on files (#18)
+- filename regex for merge is less stringent (#17)
+- won't fail if unneeded program is missing (#16)
 
 ## [23.1.2] - 2023-01-07
 ### Changed
@@ -117,8 +143,9 @@ version -> vYY.MM.PATCH
 - Merge can take unzipped fastqs now
 
 
-[Unreleased]: https://github.com/brocklab/pycashier/compare/v23.1.2...HEAD
-[23.1.2]: https://github.com/brocklab/pycashier/compare/v23.1.1...23.1.2
+[Unreleased]: https://github.com/brocklab/pycashier/compare/v2024.1001...HEAD
+[2024.1001]: https://github.com/brocklab/pycashier/compare/v23.1.2...v2024.1001
+[23.1.2]: https://github.com/brocklab/pycashier/compare/v23.1.1...v23.1.2
 [23.1.1]: https://github.com/brocklab/pycashier/compare/v22.10.1...v23.1.1
 [22.10.1]: https://github.com/brocklab/pycashier/compare/v22.9.1...v22.10.1
 [22.9.1]: https://github.com/brocklab/pycashier/compare/v22.6.2...v22.9.1
