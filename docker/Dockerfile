@@ -1,14 +1,6 @@
 # FROM python:3.10.9-slim-bullseye as builder
 FROM python@sha256:6862d8ed663a47f649ba5aababed01e44741a032e80d5800db619f5113f65434 as builder
 
-RUN apt-get update \
-  && apt-get install \
-    -y \
-    --no-install-recommends \
-    git \
-  && apt-get clean \
-  && rm -rf /var/lib/apt/lists/*
-
 RUN python -m \
     pip install \
     --user \
@@ -19,10 +11,8 @@ WORKDIR /pkg
 
 COPY . .
 
-# ignore files that weren't copied over so the git status isn't dirty
-RUN git ls-files --deleted | git update-index --assume-unchanged --stdin
-
-RUN python -m \
+ARG VERSION
+RUN PDM_BUILD_SCM_VERSION=${VERSION} python -m \
   build \
   --wheel \
   --outdir dist/

@@ -1,4 +1,3 @@
-import sys
 from pathlib import Path
 
 import click
@@ -14,9 +13,8 @@ def save_params(ctx: click.Context) -> None:
         ctx: Click context.
     """
     cmd = ctx.info_name
-    params = {k: v for k, v in ctx.params.items() if v}
-    save_type = params.pop("save_config")
-
+    all_params = {k: v for k, v in ctx.params.items() if v}
+    save_type = all_params.pop("save_config")
     try:
         config_file = Path(ctx.obj["configfile"])
     except TypeError:
@@ -24,14 +22,29 @@ def save_params(ctx: click.Context) -> None:
 
     if config_file.is_file():
         term.print(f"Updating current config file at [hl]{config_file}")
-        with config_file.open("r") as f:
-            config = tomlkit.load(f)
+        try:
+            with config_file.open("r") as f:
+                config = tomlkit.load(f)
+        except Exception as e:
+            term.print(
+                f"[ConfigFileError] failed to load config file: {config_file}", err=True
+            )
+            term.print(e, err=True)
+            term.quit()
+
     else:
         term.print(f"Staring a config file at [hl]{config_file}")
         config = tomlkit.document()
 
     if save_type == "explicit":
-        params = {k: v for k, v in params.items() if ctx.get_parameter_source(k).value != 3}  # type: ignore
+        params = {}
+        for k, v in all_params.items():
+            print(ctx.get_parameter_source(k))
+            if param_source := ctx.get_parameter_source(k):
+                if param_source.value != 3:
+                    params[k] = v
+    else:
+        params = all_params.copy()
 
     # use readable name for input
     if "input_" in params:
@@ -46,7 +59,7 @@ def save_params(ctx: click.Context) -> None:
 
     null_hints = {"extract": ["filter_count", "fastp_args"], "merge": ["fastp_args"]}
     if cmd in null_hints.keys() and save_type == "full":
-        for param in null_hints[cmd]:  # type: ignore
+        for param in null_hints[cmd]:
             if param not in params.keys():
                 config[cmd].add(tomlkit.comment(f"{param} ="))  # type: ignore
 
@@ -71,9 +84,19 @@ def load_params(ctx: click.Context, param: str, filename: Path) -> None:
         return
 
     ctx.default_map = {}
-    if Path(filename).is_file():
-        with Path(filename).open("r") as f:
-            params = tomlkit.load(f)
+
+    config_file = Path(filename)
+    if config_file.is_file():
+        global_params = {}
+        try:
+            with config_file.open("r") as f:
+                params = tomlkit.load(f)
+        except Exception as e:
+            term.print(
+                f"[ConfigFileError] failed to load config file: {config_file}", err=True
+            )
+            term.print(e, err=True)
+            term.quit()
 
         if params:
             global_params = params.pop("global", {})
@@ -87,13 +110,14 @@ def load_params(ctx: click.Context, param: str, filename: Path) -> None:
             # populate 'default_map' with global params
             for k, v in global_params.items():
                 ctx.default_map.setdefault(k, v)  # type: ignore
-
-        ctx.obj.update(**{"global": global_params, "config-loaded": True})
+        if global_params:
+            ctx.obj.update(**{"global": global_params})
+        ctx.obj["config-loaded"] = True
 
     # using default pycashier can cause unexpected behavior?
-    elif Path(filename) != Path("pycashier.toml"):
+    elif config_file != Path("pycashier.toml"):
         term.print(
             f"[InputError]: Specified config file ({filename}) does not exist.",
             err=True,
         )
-        sys.exit(1)
+        term.quit()

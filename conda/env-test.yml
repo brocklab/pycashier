@@ -10,4 +10,5 @@ dependencies:
   - click-rich-help>=22.1
   - click>=8.1.0
   - tomlkit>=0.10
+  - polars>=0.20
   - pytest

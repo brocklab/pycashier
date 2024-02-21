@@ -3,40 +3,27 @@ name = "pycashier"
 description = "cash in on expressed barcode tags"
 authors = [{ name = "Daylin Morgan", email = "daylinmorgan@gmail.com" }]
 dependencies = [
-  "rich>=12.0.0",
-  "tomlkit>=0.10.1",
-  "click-rich-help>=22.1.0",
-  "click>=8.1.0",
+    "rich>=12.0.0",
+    "tomlkit>=0.10.1",
+    "click-rich-help>=22.1.0",
+    "click>=8.1.0",
+    "polars>=0.20.4",
 ]
-requires-python = ">=3.8,<3.11" # cutadapt requires <3.11
+requires-python = ">=3.8" 
 readme = "README.md"
 license = { text = "MIT" }
 dynamic = ["version"]
 
 [project.urls]
 repository = "https://github.com/brocklab/pycashier/"
+documentation = "https://docs.brocklab.com/pycashier"
 
 [project.scripts]
 pycashier = "pycashier.cli:main"
 
-[project.optional-dependencies]
-[tool.pdm]
-version = { use_scm = true }
-
-[tool.pdm.dev-dependencies]
-dev = [
-    "pre-commit<3.0.0,>=2.15.0",
-    "mypy>=0.982",
-    "pytest>=7.2.0",
-]
-
 [build-system]
-requires = ["pdm-pep517"]
-build-backend = "pdm.pep517.api"
-
-[tool.isort]
-profile = "black"
-multi_line_output = 3
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
 
 [tool.mypy]
 check_untyped_defs = true
@@ -46,5 +33,50 @@ disallow_untyped_decorators = true
 disallow_any_unimported = true
 no_implicit_optional = true
 warn_return_any = true
+warn_no_return = false
 warn_unused_ignores = true
 show_error_codes = true
+ignore_missing_imports = true
+
+[tool.ruff]
+select = [
+    # Pyflakes
+    "F",
+    # Pycodestyle
+    "E",
+    "W",
+    # isort
+    "I001"
+]
+# docstrings are longer because of formatting
+# ruff will handle the code formatting for us
+ignore = ["E501"]
+
+[tool.coverage.run]
+omit = [
+    "tests/",
+    "env/"
+    ]
+
+
+[tool.pdm]
+version = { source = "scm" }
+# need python 3.9 for these which I usually have anyways
+ignore_package_warnings = ["sphinx*", "myst-parser"]
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "pre-commit<3.0.0,>=2.15.0",
+    "mypy>=0.982",
+    "pytest>=7.2.0",
+    "pytest-cov>=4.1.0",
+]
+docs = [
+    "sphinx",
+    "sphinx-autobuild",
+    "sphinx-copybutton",
+    "myst-parser",
+    "shibuya",
+]
+
+

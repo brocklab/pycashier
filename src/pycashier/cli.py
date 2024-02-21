@@ -3,16 +3,14 @@ from typing import Any, Callable, Dict, List
 
 import click
 from click_rich_help import StyledGroup
+from rich.traceback import install
 
 from ._checks import pre_run_check
 from .options import Option, optmap
 from .pycashier import Pycashier
 from .term import theme
 
-
-def init_check(ctx: click.Context, param: str, check: bool) -> None:
-    if not check:
-        pre_run_check(command=ctx.to_info_dict()["command"]["name"])
+install(suppress=[click], show_locals=True)
 
 
 def add_options(
@@ -36,8 +34,9 @@ _help_groups_ref = {
         ],
         "Cluster (Starcode) Options": optmap.long_by_category("cluster"),
         "Quality (Fastp) Options": optmap.long_by_category("quality"),
+        "Merge Options": optmap.long_by_category("merge"),
         "Filter Options": optmap.long_by_category("filter"),
-        "Combine Options": ["--columns"],
+        "Receipt Options": ["--no-overlap"],
         "General Options": [
             *optmap.long_by_category("general"),
             "--help",
@@ -99,21 +98,21 @@ def cli() -> None:
 @add_options([option.get_click_option() for option in optmap.subcmds["extract"]])
 @click.pass_context
 def extract(ctx: click.Context, save_config: bool, **kwargs: Any) -> None:
-    pycashier = Pycashier(ctx, save_config)
+    pycashier = Pycashier(ctx, save_config, **kwargs)
     pycashier.extract(ctx, **kwargs)
 
 
 @cli.command(
     option_groups=get_help_groups(
-        optmap.subcmds["merge"],
+        optmap.subcmds["merge"], extra_groups=["Merge Options"]
     ),
     help=Pycashier.merge.__doc__,
 )
 @add_options([option.get_click_option() for option in optmap.subcmds["merge"]])
 @click.pass_context
 def merge(ctx: click.Context, save_config: bool, **kwargs: Any) -> None:
-    pycashier = Pycashier(ctx, save_config)
-    pycashier.merge(**kwargs)
+    pycashier = Pycashier(ctx, save_config, **kwargs)
+    pycashier.merge()
 
 
 @cli.command(
@@ -128,21 +127,26 @@ def merge(ctx: click.Context, save_config: bool, **kwargs: Any) -> None:
 @add_options([option.get_click_option() for option in optmap.subcmds["scrna"]])
 @click.pass_context
 def scrna(ctx: click.Context, save_config: bool, **kwargs: Any) -> None:
-    pycashier = Pycashier(ctx, save_config)
-    pycashier.scrna(**kwargs)
+    pycashier = Pycashier(ctx, save_config, **kwargs)
+    pycashier.scrna()
 
 
 @cli.command(
     option_groups=get_help_groups(
-        optmap.subcmds["combine"], extra_groups=["Combine Options"]
+        optmap.subcmds["receipt"], extra_groups=["Receipt Options"]
     ),
-    help=Pycashier.combine.__doc__,
+    help=Pycashier.receipt.__doc__,
 )
-@add_options([option.get_click_option() for option in optmap.subcmds["combine"]])
+@add_options([option.get_click_option() for option in optmap.subcmds["receipt"]])
 @click.pass_context
-def combine(ctx: click.Context, save_config: bool, **kwargs: Any) -> None:
-    pycashier = Pycashier(ctx, save_config)
-    pycashier.combine(**kwargs)
+def receipt(ctx: click.Context, save_config: bool, **kwargs: Any) -> None:
+    pycashier = Pycashier(ctx, save_config, **kwargs)
+    pycashier.receipt()
+
+
+@cli.command(hidden=True, help="perform check for pycashier dependencies")
+def checks() -> None:
+    pre_run_check(show=True)
 
 
 def main() -> None:

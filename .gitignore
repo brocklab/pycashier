@@ -170,6 +170,8 @@ cython_debug/
 tmp/
 .pdm.toml
 .task.mk
-
+*.fastq
+*.sam
+*.tsv
 /tests/data/*
 !/tests/data/reference

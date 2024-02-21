@@ -1,0 +1,140 @@
+<svg class="rich-terminal shadow" viewBox="0 0 1439.3333333333333 545.9333333333333" xmlns="http://www.w3.org/2000/svg">
+    <!-- Generated with Rich https://www.textualize.io & yartsu https://github.com/daylinmorgan/yartsu -->
+    <style>
+
+    @font-face {
+        font-family: "Fira Code";
+        src: local("FiraCode-Regular"),
+                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff2/FiraCode-Regular.woff2") format("woff2"),
+                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff/FiraCode-Regular.woff") format("woff");
+        font-style: normal;
+        font-weight: 400;
+    }
+    @font-face {
+        font-family: "Fira Code";
+        src: local("FiraCode-Bold"),
+                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff2/FiraCode-Bold.woff2") format("woff2"),
+                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff/FiraCode-Bold.woff") format("woff");
+        font-style: bold;
+        font-weight: 700;
+    }
+
+    .terminal-3357989663-matrix {
+        font-family: Fira Code, monospace;
+        font-size: 20px;
+        line-height: 24.4px;
+        font-variant-east-asian: full-width;
+    }
+
+    .terminal-3357989663-title {
+        font-size: 18px;
+        font-weight: bold;
+        font-family: arial;
+    }
+
+    .shadow {
+        -webkit-filter: drop-shadow( 2px 5px 2px rgba(0, 0, 0, .7));
+        filter: drop-shadow( 2px 5px 2px rgba(0, 0, 0, .7));
+    }
+    .terminal-3357989663-r1 { fill: #94e2d5;font-weight: bold;font-style: italic; }
+.terminal-3357989663-r2 { fill: #c6d0f5 }
+.terminal-3357989663-r3 { fill: #c6d0f5;font-weight: bold }
+.terminal-3357989663-r4 { fill: #94e2d5;font-weight: bold }
+.terminal-3357989663-r5 { fill: #f9e2af;font-weight: bold }
+.terminal-3357989663-r6 { fill: #a6e3a1 }
+.terminal-3357989663-r7 { fill: #8288a5 }
+    </style>
+
+    <defs>
+    <clipPath id="terminal-3357989663-clip-terminal">
+      <rect x="0" y="0" width="1402.0" height="462.59999999999997" />
+    </clipPath>
+    <clipPath id="terminal-3357989663-line-0">
+    <rect x="0" y="1.5" width="1403" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3357989663-line-1">
+    <rect x="0" y="25.9" width="1403" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3357989663-line-2">
+    <rect x="0" y="50.3" width="1403" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3357989663-line-3">
+    <rect x="0" y="74.7" width="1403" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3357989663-line-4">
+    <rect x="0" y="99.1" width="1403" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3357989663-line-5">
+    <rect x="0" y="123.5" width="1403" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3357989663-line-6">
+    <rect x="0" y="147.9" width="1403" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3357989663-line-7">
+    <rect x="0" y="172.3" width="1403" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3357989663-line-8">
+    <rect x="0" y="196.7" width="1403" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3357989663-line-9">
+    <rect x="0" y="221.1" width="1403" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3357989663-line-10">
+    <rect x="0" y="245.5" width="1403" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3357989663-line-11">
+    <rect x="0" y="269.9" width="1403" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3357989663-line-12">
+    <rect x="0" y="294.3" width="1403" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3357989663-line-13">
+    <rect x="0" y="318.7" width="1403" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3357989663-line-14">
+    <rect x="0" y="343.1" width="1403" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3357989663-line-15">
+    <rect x="0" y="367.5" width="1403" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3357989663-line-16">
+    <rect x="0" y="391.9" width="1403" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3357989663-line-17">
+    <rect x="0" y="416.3" width="1403" height="24.65"/>
+            </clipPath>
+    </defs>
+
+    <rect fill="#1e1e2e" stroke="rgba(255,255,255,0.35)" stroke-width="1" x="10.1667" y="1" width="1419" height="511.6" rx="8"/><text class="terminal-3357989663-title" fill="#c6d0f5" text-anchor="middle" x="709" y="27">pycashier&#160;calc&#160;-h</text>
+            <g transform="translate(32,22)">
+            <circle cx="0" cy="0" r="7" fill="#ff5f57"/>
+            <circle cx="22" cy="0" r="7" fill="#febc2e"/>
+            <circle cx="44" cy="0" r="7" fill="#28c840"/>
+            </g>
+        
+    <g transform="translate(18.166666666666664, 41) scale(.95)" clip-path="url(#terminal-3357989663-clip-terminal)">
+    
+    <g class="terminal-3357989663-matrix">
+    <text class="terminal-3357989663-r1" x="0" y="20" textLength="61" clip-path="url(#terminal-3357989663-line-0)">Usage</text><text class="terminal-3357989663-r2" x="61" y="20" textLength="24.4" clip-path="url(#terminal-3357989663-line-0)">:&#160;</text><text class="terminal-3357989663-r3" x="85.4" y="20" textLength="170.8" clip-path="url(#terminal-3357989663-line-0)">pycashier&#160;calc</text><text class="terminal-3357989663-r3" x="268.4" y="20" textLength="109.8" clip-path="url(#terminal-3357989663-line-0)">[OPTIONS]</text><text class="terminal-3357989663-r2" x="1403" y="20" textLength="12.2" clip-path="url(#terminal-3357989663-line-0)">
+</text><text class="terminal-3357989663-r2" x="1403" y="44.4" textLength="12.2" clip-path="url(#terminal-3357989663-line-1)">
+</text><text class="terminal-3357989663-r2" x="0" y="68.8" textLength="366" clip-path="url(#terminal-3357989663-line-2)">&#160;&#160;combine&#160;resulting&#160;output&#160;of&#160;</text><text class="terminal-3357989663-r4" x="366" y="68.8" textLength="85.4" clip-path="url(#terminal-3357989663-line-2)">extract</text><text class="terminal-3357989663-r2" x="1403" y="68.8" textLength="12.2" clip-path="url(#terminal-3357989663-line-2)">
+</text><text class="terminal-3357989663-r2" x="1403" y="93.2" textLength="12.2" clip-path="url(#terminal-3357989663-line-3)">
+</text><text class="terminal-3357989663-r1" x="0" y="117.6" textLength="244" clip-path="url(#terminal-3357989663-line-4)">Input/Output&#160;Options</text><text class="terminal-3357989663-r2" x="244" y="117.6" textLength="12.2" clip-path="url(#terminal-3357989663-line-4)">:</text><text class="terminal-3357989663-r2" x="1403" y="117.6" textLength="12.2" clip-path="url(#terminal-3357989663-line-4)">
+</text><text class="terminal-3357989663-r5" x="24.4" y="142" textLength="146.4" clip-path="url(#terminal-3357989663-line-5)">-i,&#160;--input&#160;</text><text class="terminal-3357989663-r6" x="170.8" y="142" textLength="109.8" clip-path="url(#terminal-3357989663-line-5)">DIRECTORY</text><text class="terminal-3357989663-r2" x="280.6" y="142" textLength="707.6" clip-path="url(#terminal-3357989663-line-5)">&#160;&#160;&#160;&#160;&#160;source&#160;directory&#160;containing&#160;sam&#160;files&#160;from&#160;scRNA-seq&#160;</text><text class="terminal-3357989663-r7" x="988.2" y="142" textLength="329.4" clip-path="url(#terminal-3357989663-line-5)">[default:&#160;./outs;&#160;required]</text><text class="terminal-3357989663-r2" x="1403" y="142" textLength="12.2" clip-path="url(#terminal-3357989663-line-5)">
+</text><text class="terminal-3357989663-r5" x="24.4" y="166.4" textLength="158.6" clip-path="url(#terminal-3357989663-line-6)">-o,&#160;--output&#160;</text><text class="terminal-3357989663-r6" x="183" y="166.4" textLength="109.8" clip-path="url(#terminal-3357989663-line-6)">DIRECTORY</text><text class="terminal-3357989663-r2" x="292.8" y="166.4" textLength="695.4" clip-path="url(#terminal-3357989663-line-6)">&#160;&#160;&#160;&#160;combined&#160;tsv&#160;of&#160;all&#160;samples&#160;found&#160;in&#160;input&#160;directory&#160;</text><text class="terminal-3357989663-r7" x="988.2" y="166.4" textLength="305" clip-path="url(#terminal-3357989663-line-6)">[default:&#160;./combined.tsv]</text><text class="terminal-3357989663-r2" x="1403" y="166.4" textLength="12.2" clip-path="url(#terminal-3357989663-line-6)">
+</text><text class="terminal-3357989663-r5" x="24.4" y="190.8" textLength="183" clip-path="url(#terminal-3357989663-line-7)">-p,&#160;--pipeline&#160;</text><text class="terminal-3357989663-r6" x="207.4" y="190.8" textLength="109.8" clip-path="url(#terminal-3357989663-line-7)">DIRECTORY</text><text class="terminal-3357989663-r2" x="317.2" y="190.8" textLength="256.2" clip-path="url(#terminal-3357989663-line-7)">&#160;&#160;pipeline&#160;directory&#160;</text><text class="terminal-3357989663-r7" x="573.4" y="190.8" textLength="256.2" clip-path="url(#terminal-3357989663-line-7)">[default:&#160;./pipeline]</text><text class="terminal-3357989663-r2" x="1403" y="190.8" textLength="12.2" clip-path="url(#terminal-3357989663-line-7)">
+</text><text class="terminal-3357989663-r5" x="24.4" y="215.2" textLength="170.8" clip-path="url(#terminal-3357989663-line-8)">-s,&#160;--samples&#160;</text><text class="terminal-3357989663-r6" x="195.2" y="215.2" textLength="48.8" clip-path="url(#terminal-3357989663-line-8)">TEXT</text><text class="terminal-3357989663-r2" x="244" y="215.2" textLength="610" clip-path="url(#terminal-3357989663-line-8)">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;comma&#160;seperated&#160;list&#160;of&#160;samples&#160;to&#160;process</text><text class="terminal-3357989663-r2" x="1403" y="215.2" textLength="12.2" clip-path="url(#terminal-3357989663-line-8)">
+</text><text class="terminal-3357989663-r2" x="1403" y="239.6" textLength="12.2" clip-path="url(#terminal-3357989663-line-9)">
+</text><text class="terminal-3357989663-r1" x="0" y="264" textLength="146.4" clip-path="url(#terminal-3357989663-line-10)">Calc&#160;Options</text><text class="terminal-3357989663-r2" x="146.4" y="264" textLength="12.2" clip-path="url(#terminal-3357989663-line-10)">:</text><text class="terminal-3357989663-r2" x="1403" y="264" textLength="12.2" clip-path="url(#terminal-3357989663-line-10)">
+</text><text class="terminal-3357989663-r5" x="24.4" y="288.4" textLength="146.4" clip-path="url(#terminal-3357989663-line-11)">--no-overlap</text><text class="terminal-3357989663-r2" x="170.8" y="288.4" textLength="402.6" clip-path="url(#terminal-3357989663-line-11)">&#160;&#160;skip&#160;per&#160;lineage&#160;overlap&#160;column</text><text class="terminal-3357989663-r2" x="1403" y="288.4" textLength="12.2" clip-path="url(#terminal-3357989663-line-11)">
+</text><text class="terminal-3357989663-r2" x="1403" y="312.8" textLength="12.2" clip-path="url(#terminal-3357989663-line-12)">
+</text><text class="terminal-3357989663-r1" x="0" y="337.2" textLength="183" clip-path="url(#terminal-3357989663-line-13)">General&#160;Options</text><text class="terminal-3357989663-r2" x="183" y="337.2" textLength="12.2" clip-path="url(#terminal-3357989663-line-13)">:</text><text class="terminal-3357989663-r2" x="1403" y="337.2" textLength="12.2" clip-path="url(#terminal-3357989663-line-13)">
+</text><text class="terminal-3357989663-r5" x="24.4" y="361.6" textLength="158.6" clip-path="url(#terminal-3357989663-line-14)">-v,&#160;--verbose</text><text class="terminal-3357989663-r2" x="183" y="361.6" textLength="707.6" clip-path="url(#terminal-3357989663-line-14)">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;show&#160;more&#160;output,&#160;set&#160;log&#160;level&#160;to&#160;debug</text><text class="terminal-3357989663-r2" x="1403" y="361.6" textLength="12.2" clip-path="url(#terminal-3357989663-line-14)">
+</text><text class="terminal-3357989663-r5" x="24.4" y="386" textLength="158.6" clip-path="url(#terminal-3357989663-line-15)">-c,&#160;--config&#160;</text><text class="terminal-3357989663-r6" x="183" y="386" textLength="48.8" clip-path="url(#terminal-3357989663-line-15)">FILE</text><text class="terminal-3357989663-r2" x="231.8" y="386" textLength="646.6" clip-path="url(#terminal-3357989663-line-15)">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;read&#160;parameter&#160;values&#160;from&#160;config&#160;file&#160;</text><text class="terminal-3357989663-r7" x="878.4" y="386" textLength="305" clip-path="url(#terminal-3357989663-line-15)">[default:&#160;pycashier.toml]</text><text class="terminal-3357989663-r2" x="1403" y="386" textLength="12.2" clip-path="url(#terminal-3357989663-line-15)">
+</text><text class="terminal-3357989663-r5" x="24.4" y="410.4" textLength="170.8" clip-path="url(#terminal-3357989663-line-16)">--save-config&#160;</text><text class="terminal-3357989663-r2" x="195.2" y="410.4" textLength="12.2" clip-path="url(#terminal-3357989663-line-16)">[</text><text class="terminal-3357989663-r6" x="207.4" y="410.4" textLength="97.6" clip-path="url(#terminal-3357989663-line-16)">explicit</text><text class="terminal-3357989663-r2" x="305" y="410.4" textLength="12.2" clip-path="url(#terminal-3357989663-line-16)">|</text><text class="terminal-3357989663-r6" x="317.2" y="410.4" textLength="48.8" clip-path="url(#terminal-3357989663-line-16)">full</text><text class="terminal-3357989663-r2" x="366" y="410.4" textLength="658.8" clip-path="url(#terminal-3357989663-line-16)">]&#160;&#160;save&#160;current&#160;params&#160;to&#160;file&#160;specified&#160;by&#160;`--config`</text><text class="terminal-3357989663-r2" x="1403" y="410.4" textLength="12.2" clip-path="url(#terminal-3357989663-line-16)">
+</text><text class="terminal-3357989663-r5" x="24.4" y="434.8" textLength="134.2" clip-path="url(#terminal-3357989663-line-17)">--log-file&#160;</text><text class="terminal-3357989663-r6" x="158.6" y="434.8" textLength="48.8" clip-path="url(#terminal-3357989663-line-17)">FILE</text><text class="terminal-3357989663-r2" x="207.4" y="434.8" textLength="402.6" clip-path="url(#terminal-3357989663-line-17)">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;path&#160;to&#160;log&#160;file&#160;</text><text class="terminal-3357989663-r7" x="610" y="434.8" textLength="488" clip-path="url(#terminal-3357989663-line-17)">[default:&#160;&lt;pipeline-dir&gt;/pycashier.log]&#160;</text><text class="terminal-3357989663-r2" x="1403" y="434.8" textLength="12.2" clip-path="url(#terminal-3357989663-line-17)">
+</text><text class="terminal-3357989663-r5" x="24.4" y="459.2" textLength="122" clip-path="url(#terminal-3357989663-line-18)">-h,&#160;--help</text><text class="terminal-3357989663-r2" x="146.4" y="459.2" textLength="585.6" clip-path="url(#terminal-3357989663-line-18)">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Show&#160;this&#160;message&#160;and&#160;exit.</text><text class="terminal-3357989663-r2" x="1403" y="459.2" textLength="12.2" clip-path="url(#terminal-3357989663-line-18)">
+</text>
+    </g>
+    </g>
+</svg>
