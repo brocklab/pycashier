@@ -23,7 +23,7 @@ build-dist: ## make wheel & source distribution
 
 ## build-docker |> build and tag docker image with version
 build-docker: docker/prod.lock
-	docker build --build-arg="VERSION=$(VERSION)" --tag ghcr.io/brocklab/pycashier:$(VERSION) -f docker/Dockerfile .
+	docker build --tag ghcr.io/brocklab/pycashier:$(VERSION) -f docker/Dockerfile .
 	docker tag ghcr.io/brocklab/pycashier:$(VERSION) pycashier:latest
 
 docker/%.lock: docker/%.yml

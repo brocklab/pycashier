@@ -1,6 +1,15 @@
 # FROM python:3.10.9-slim-bullseye as builder
 FROM python@sha256:6862d8ed663a47f649ba5aababed01e44741a032e80d5800db619f5113f65434 as builder
 
+RUN apt-get update \
+  && apt-get install \
+    -y \
+    --no-install-recommends \
+    git \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
+
+
 RUN python -m \
     pip install \
     --user \
@@ -11,14 +20,16 @@ WORKDIR /pkg
 
 COPY . .
 
-ARG VERSION
-RUN PDM_BUILD_SCM_VERSION=${VERSION} python -m \
+# ignore files that weren't copied over so the git status isn't dirty
+RUN bash -o pipefail -c 'git ls-files --deleted | git update-index --assume-unchanged --stdin'
+
+RUN python -m \
   build \
   --wheel \
   --outdir dist/
 
 # FROM mambaorg/micromamba:git-4427b19-bullseye as prod
-FROM mambaorg/micromamba@sha256:53697a4bae2d9a4407463b8f314d370e201c58f6b5e5ff7c1f24699ed7e37a41 as prod
+FROM mambaorg/micromamba@sha256:e0bf91ac1ef7cedd7c8b9347d4041cd61049b0016fea41ac4c19d4917145c9c2 as prod
 
 COPY --chown=$MAMBA_USER:$MAMBA_USER docker/prod.lock tmp/prod.lock
 
@@ -52,7 +63,7 @@ ARG MAMBA_DOCKERFILE_ACTIVATE=1  # (otherwise python will not be found)
 
 COPY --from=builder --chown=$MAMBA_USER:$MAMBA_USER /pkg/dist/ /pkg
 
-RUN pip install /pkg/*
+RUN pip install /pkg/* --no-cache-dir
 
 WORKDIR /data
 

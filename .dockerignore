@@ -7,8 +7,8 @@
 !README.md
 !LICENSE
 !docker/*.lock
-# !.gitignore
-# !.git/
+!.gitignore
+!.git/
 
 # Ignore unnecessary files inside allowed directories
 # This should go after the allowed directories
