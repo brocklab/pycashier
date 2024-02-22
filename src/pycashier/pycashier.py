@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+from collections import Counter
 from pathlib import Path
 from typing import Any, Generator, List
 
@@ -30,7 +31,9 @@ class Pycashier:
 
         # must be after logger is initialized
         term.log.debug("pycashier command line:\n  " + " ".join(sys.argv))
-        term.mode(cmd=str(ctx.info_name))
+        self.mode = str(ctx.info_name)
+        self.check_duplicates = self.mode != "merge"
+        term.mode(cmd=self.mode)
         if save_config:
             save_params(ctx)
         print_params(ctx)
@@ -65,6 +68,16 @@ class Pycashier:
             if not any(f.name.endswith(suffix) for suffix in exts)
         ]
         symlinks = [f for f in candidate_files if f.is_symlink() and not f.exists()]
+        duplicates = []
+
+        if self.check_duplicates:
+            duplicates = [
+                name
+                for name, count in Counter(
+                    [f.name.split(".")[0] for f in candidate_files]
+                ).items()
+                if count > 1
+            ]
 
         if bad_files:
             term.print(
@@ -80,11 +93,22 @@ class Pycashier:
                 err=True,
             )
 
-        if bad_files or symlinks:
+        if duplicates:
+            term.print(
+                "[InputError]: There appears to be duplicates files in input directory for sample(s): "
+                f"{';'.join((dup for dup in duplicates))} \n"
+                "See [b]pycashier merge[/b] for overlapping PE reads.",
+                err=True,
+            )
+
+        if bad_files or symlinks or duplicates:
             term.quit()
 
         if self.opts.samples:
-            return filter_input_by_sample(candidate_files, self.opts.samples.split(","))
+            candidate_files = filter_input_by_sample(
+                candidate_files, self.opts.samples.split(",")
+            )
+
         else:
             return candidate_files
 

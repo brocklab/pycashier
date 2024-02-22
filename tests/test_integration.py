@@ -90,8 +90,8 @@ def test_pycashier(
         ["-i", input_dir, "-o", outs_dir, "-p", pipe_dir, "-y", *options],
     )
 
+    print(result.output)
     assert result.exit_code == 0
-    print(list(outs_dir.glob("*")))
     assert cmp_outs(file_name, (ref_dir, outs_dir))
 
 
