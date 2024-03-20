@@ -1,70 +1,24 @@
-# FROM python:3.10.9-slim-bullseye as builder
-FROM python@sha256:6862d8ed663a47f649ba5aababed01e44741a032e80d5800db619f5113f65434 as builder
+FROM ghcr.io/prefix-dev/pixi:0.17.0 AS build
 
-RUN apt-get update \
-  && apt-get install \
-    -y \
-    --no-install-recommends \
-    git \
-  && apt-get clean \
-  && rm -rf /var/lib/apt/lists/*
+COPY . /app
+WORKDIR /app
+RUN pixi install --frozen --environment build
+RUN pixi install --frozen --environment prod
+RUN pixi run -e build -vv build-wheel
+RUN pixi run -e prod -vv postinstall-production
+RUN pixi shell-hook -e prod > /shell-hook
+RUN echo 'pycashier "$@"' >> /shell-hook
 
+# cleanup unnecessary files from environment to reduce image size
+RUN bash docker/purge.sh
 
-RUN python -m \
-    pip install \
-    --user \
-    --no-warn-script-location \
-    build
+FROM debian:bookworm-slim as production
 
-WORKDIR /pkg
+RUN groupadd -g 2009 pycashier && useradd -u 2009 -g 2009 pycashier
+USER pycashier
 
-COPY . .
-
-# ignore files that weren't copied over so the git status isn't dirty
-RUN bash -o pipefail -c 'git ls-files --deleted | git update-index --assume-unchanged --stdin'
-
-RUN python -m \
-  build \
-  --wheel \
-  --outdir dist/
-
-# FROM mambaorg/micromamba:git-4427b19-bullseye as prod
-FROM mambaorg/micromamba@sha256:e0bf91ac1ef7cedd7c8b9347d4041cd61049b0016fea41ac4c19d4917145c9c2 as prod
-
-COPY --chown=$MAMBA_USER:$MAMBA_USER docker/prod.lock tmp/prod.lock
-
-RUN micromamba \
-  install --name base \
-  --yes \
-  -f tmp/prod.lock \
-  && \
-  micromamba clean --all --force-pkgs-dirs --yes
-
-# clean up some stuff we dont't need for space
-RUN find -name '*.a' -delete && \
-  rm -rf /opt/conda/conda-meta && \
-  rm -rf /opt/conda/include && \
-  rm -rf /opt/conda/lib/libpython3*.so.1.0 && \
-  find -name '__pycache__' -type d -exec rm -rf '{}' '+' && \
-  rm -rf /opt/conda/lib/python3*/idlelib /opt/conda/lib/python3*/ensurepip \
-    /opt/conda/lib/libasan.so.5.0.0 \
-    /opt/conda/lib/libtsan.so.0.0.0 \
-    /opt/conda/lib/liblsan.so.0.0.0 \
-    /opt/conda/lib/libubsan.so.1.0.0 \
-    /opt/conda/bin/x86_64-conda-linux-gnu-ld \
-    /opt/conda/bin/sqlite3 \
-    /opt/conda/bin/openssl \
-    /opt/conda/share/terminfo && \
-  find /opt/conda/lib/python3.10/site-packages/ -name 'tests' -type d -exec rm -rf '{}' '+' && \
-  find /opt/conda/lib/python3.10/site-packages -name '*.pyx' -delete && \
-  rm -rf /opt/conda/lib/python3.10/site-packages/uvloop/loop.c
-
-ARG MAMBA_DOCKERFILE_ACTIVATE=1  # (otherwise python will not be found)
-
-COPY --from=builder --chown=$MAMBA_USER:$MAMBA_USER /pkg/dist/ /pkg
-
-RUN pip install /pkg/* --no-cache-dir
-
+# only copy the production environment into prod container
+COPY --from=build /app/.pixi/envs/prod /app/.pixi/envs/prod
+COPY --from=build /shell-hook /shell-hook
 WORKDIR /data
-
-ENTRYPOINT ["/usr/local/bin/_entrypoint.sh", "pycashier"]
+ENTRYPOINT ["/bin/bash", "/shell-hook"]

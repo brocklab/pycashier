@@ -9,7 +9,7 @@ dependencies = [
     "click>=8.1.0",
     "polars>=0.20.4",
 ]
-requires-python = ">=3.8" 
+requires-python = ">=3.8"
 readme = "README.md"
 license = { text = "MIT" }
 dynamic = ["version"]
