@@ -3,6 +3,7 @@ from pathlib import Path
 import click
 import tomlkit
 
+from ._checks import check_file_permissions
 from .term import term
 
 
@@ -85,6 +86,7 @@ def load_params(ctx: click.Context, param: str, filename: Path) -> None:
 
     ctx.default_map = {}
 
+    check_file_permissions()
     config_file = Path(filename)
     if config_file.is_file():
         global_params = {}

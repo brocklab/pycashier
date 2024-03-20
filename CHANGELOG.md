@@ -10,6 +10,9 @@ i.e. 1001, 1002, ..., 1999, 22000
 
 ## [Unreleased]
 
+### Fixed
+- warn user if there is a permission error on local directory
+
 ## [2024.1001]
 
 This release followed a major refactor and some things may be missing from the changelog.

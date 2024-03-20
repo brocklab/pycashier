@@ -1,5 +1,6 @@
 import importlib.util
 import sys
+from pathlib import Path
 from shutil import which
 from typing import Dict, List, Optional
 
@@ -36,6 +37,21 @@ def generate_table(command: str, pkg_map: Dict[str, Optional[str]]) -> Table:
     return table
 
 
+def check_file_permissions() -> None:
+    try:
+        # attempt to trigger PermissionError
+        Path("pycashier.toml").is_file()
+    except PermissionError:
+        term.print(
+            "[PycashierPermissionError] reading and writing from current directory not possible",
+            err=True,
+        )
+        term.print(
+            "If you are using docker please supply user flag, for example `-u $(id -u):$(id -g)`"
+        )
+        term.quit()
+
+
 def pre_run_check(command: str = "", show: bool = False) -> None:
     """Check for runtime dependencies
 
@@ -65,6 +81,8 @@ def pre_run_check(command: str = "", show: bool = False) -> None:
                 f"\n[red bold] FAILED PRE-RUN CHECKS for [hl]pycashier {command}[/hl]!\n",
             )
             term.quit()
+
+    check_file_permissions()
 
 
 def find_tool(name: str) -> Optional[str]:
