@@ -10,6 +10,9 @@ i.e. 1001, 1002, ..., 1999, 22000
 
 ## [Unreleased]
 
+### Changed
+- Docker container uses pixi for tighter control (actual lock file)
+
 ### Fixed
 - warn user if there is a permission error on local directory
 
