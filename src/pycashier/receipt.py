@@ -21,7 +21,7 @@ def parse_column_not_found_error(message: str) -> Tuple[str, str]:
 
 
 def receipt(files: Dict[str, Path], opts: PycashierOpts) -> None:
-    term.log.info(f"Combing output files for {len(files)} samples.")
+    term.log.info(f"Combining output files for {len(files)} samples.")
     term.log.debug("samples: " + ", ".join(files))
 
     lzdf = pl.concat(gen_queries(sample, file) for sample, file in files.items())
