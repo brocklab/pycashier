@@ -22,14 +22,9 @@ build-dist: ## make wheel & source distribution
 	pdm build
 
 ## build-docker |> build and tag docker image with version
-build-docker: docker/prod.lock
-	docker build --tag ghcr.io/brocklab/pycashier:$(VERSION) -f docker/Dockerfile .
+build-docker:
+	docker build --progress=plain --tag ghcr.io/brocklab/pycashier:$(VERSION) -f docker/Dockerfile .
 	docker tag ghcr.io/brocklab/pycashier:$(VERSION) pycashier:latest
-
-docker/%.lock: docker/%.yml
-	docker run -it --rm -v $$(pwd):/tmp -u $$(id -u):$$(id -g) mambaorg/micromamba:0.24.0 \
-   /bin/bash -c "micromamba create --yes --name env --file $< && \
-      micromamba env export --name env --explicit > $@"
 
 docs: ## build docs
 	sphinx-build docs site
@@ -37,15 +32,15 @@ docs: ## build docs
 docs-serve: ## serve live docs
 	sphinx-autobuild docs site --port 8234
 
-## env |> bootstrap conda/pdm/pre-commit
+## env |> bootstrap environment & pdm/pre-commit
 env: conda-env setup-env
 
-conda-env: conda/env-dev.yml ##
-	micromamba env create -f $< -p ./env
+conda-env: pixi.toml pixi.lock ##
+	pixi install -e dev
 
 setup-env: ##
-	micromamba run -p ./env pdm install
-	micromamba run -p ./env pre-commit install
+	pixi run -e dev pdm install
+	pixi run -e dev pre-commit install
 
 .PHONY: version-check
 version-check:

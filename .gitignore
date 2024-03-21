@@ -175,3 +175,6 @@ tmp/
 *.tsv
 /tests/data/*
 !/tests/data/reference
+# pixi environments
+.pixi
+

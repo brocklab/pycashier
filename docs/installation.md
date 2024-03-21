@@ -26,6 +26,16 @@ micromamba create -f env.yml
 micromamba activate cashierenv
 ```
 
+Additionally, you may use [`pixi`](https://pixi.sh) to install and use pycashier.
+
+```sh
+pixi init --channel conda-forge --channel bioconda myproject
+cd myproject
+pixi add pycashier starcode pysam cutadapt fastp
+pixi shell
+```
+
+
 ## Docker
 
 If you prefer to use use `docker` you can use the below command.

@@ -4,9 +4,11 @@
 # Allow files and directories
 !src/
 !pyproject.toml
-!README.md
+!pixi.toml
+!pixi.lock
 !LICENSE
-!docker/*.lock
+!README.md
+!docker/purge.sh
 !.gitignore
 !.git/
 

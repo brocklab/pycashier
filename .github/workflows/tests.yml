@@ -5,6 +5,11 @@ on:
   workflow_dispatch:
   workflow_call:
 
+# cancel workflow if newer commits
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     name: Test Pycashier
@@ -12,34 +17,24 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: 
-          - "3.8"
-          - "3.9"
-          - "3.10"
+        environment:
+          - "test38"
+          - "test39"
+          - "test310"
           # https://bioconda.github.io/faqs.html#python
           # TLDR: these aren't supported as of Jan 2024
-          # - "3.11"
-          # - "3.12"
+          # - "test311"
+          # - "test312"
     steps:
       - uses: actions/checkout@v4
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: prefix-dev/setup-pixi@v0.5.1
         with:
-          miniforge-variant: Mambaforge
-          miniforge-version: latest
-          mamba-version: "*"
-          python-version: ${{ matrix.python-version }}
-          channel-priority: true
-          activate-environment: pycashier-test
-          environment-file: ./conda/env-test.yml
-          auto-activate-base: false
-      - shell: bash -el {0}
-        run: |
-          conda info
-          conda list
-          conda config --show-sources
-          conda config --show
-          printenv | sort
-      - shell: bash -el {0}
-        run: |
-          pip install .
-          pytest tests/
+          pixi-version: v0.17.0
+          cache: true
+          environments: ${{ matrix.environment }}
+
+      - name: Install pycashier for tests
+        run: pixi run -e ${{ matrix.environment }} pdm install -d -G dev
+
+      - name: Run tests
+        run: pixi run -e ${{ matrix.environment }} pytest
