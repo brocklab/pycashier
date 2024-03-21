@@ -109,8 +109,7 @@ class Pycashier:
                 candidate_files, self.opts.samples.split(",")
             )
 
-        else:
-            return candidate_files
+        return candidate_files
 
     def _log_samples(
         self, samples: List[ExtractSample] | List[MergeSample] | List[ScrnaSample]
