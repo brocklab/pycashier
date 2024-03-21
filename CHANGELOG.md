@@ -10,6 +10,8 @@ i.e. 1001, 1002, ..., 1999, 22000
 
 ## [Unreleased]
 
+## [2024.1003] - 2024-03-21
+
 ### Changed
 - Docker container uses pixi for tighter control (actual lock file)
 
@@ -17,7 +19,12 @@ i.e. 1001, 1002, ..., 1999, 22000
 - warn user if there is a permission error on local directory
 - #22
 
-## [2024.1001]
+## [2024.1002] - 2024-02-22
+
+### Fixed
+- #21
+
+## [2024.1001] - 2024-02-21
 
 This release followed a major refactor and some things may be missing from the changelog.
 Please see the documentation for up to date usage instructions.
@@ -150,7 +157,9 @@ Please see the documentation for up to date usage instructions.
 - Merge can take unzipped fastqs now
 
 
-[Unreleased]: https://github.com/brocklab/pycashier/compare/v2024.1001...HEAD
+[Unreleased]: https://github.com/brocklab/pycashier/compare/v2024.1003...HEAD
+[2024.1003]: https://github.com/brocklab/pycashier/compare/v2024.1002...v2024.1003
+[2024.1002]: https://github.com/brocklab/pycashier/compare/v2024.1001...v2024.1002
 [2024.1001]: https://github.com/brocklab/pycashier/compare/v23.1.2...v2024.1001
 [23.1.2]: https://github.com/brocklab/pycashier/compare/v23.1.1...v23.1.2
 [23.1.1]: https://github.com/brocklab/pycashier/compare/v22.10.1...v23.1.1
