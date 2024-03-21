@@ -15,6 +15,7 @@ i.e. 1001, 1002, ..., 1999, 22000
 
 ### Fixed
 - warn user if there is a permission error on local directory
+- #22
 
 ## [2024.1001]
 
