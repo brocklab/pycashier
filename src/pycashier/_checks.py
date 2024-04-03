@@ -59,10 +59,11 @@ def pre_run_check(command: str = "", show: bool = False) -> None:
         command: Name of pycashier subcommand.
         show: If true, show table regardless.
     """
-    pkg_locs = {name: find_tool(name) for name in PACKAGES}
+    pkg_locations = {name: find_tool(name) for name in PACKAGES}
+    cmd_pkg_locations = {k: pkg_locations[k] for k in CMD_PACKAGES[command]}
 
-    if None in pkg_locs.values() or show:
-        table = generate_table(command, pkg_locs)
+    if None in cmd_pkg_locations.values() or show:
+        table = generate_table(command, pkg_locations)
 
         term.print(
             Panel(
@@ -76,7 +77,7 @@ def pre_run_check(command: str = "", show: bool = False) -> None:
             "It's recommended to install pycashier within a conda environment.\n"
             "See the repo for details: [link]https://github.com/brocklab/pycashier[/link]",
         )
-        if None in pkg_locs.values():
+        if None in pkg_locations.values():
             term.print(
                 f"\n[red bold] FAILED PRE-RUN CHECKS for [hl]pycashier {command}[/hl]!\n",
             )
