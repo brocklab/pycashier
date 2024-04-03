@@ -15,7 +15,7 @@ def get_pefastqs(fastqs: List[Path]) -> Dict[str, Dict[str, Path]]:
     """
     pefastqs: Dict[str, Dict[str, Path]] = {}
     for f in fastqs:
-        m = re.search(r"(?P<sample>.+?)\..*(?P<read>R[1-2])\..*\.fastq.*", f.name)
+        m = re.search(r"(?P<sample>.+?)\..*(?P<read>R[1-2])\..*fastq(?:.gz)?", f.name)
         if m:
             sample, read = m.groups()
             pefastqs.setdefault(sample, {})
