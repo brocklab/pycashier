@@ -4,7 +4,7 @@ Pycashier has 4 subcommands to facilitate barcode extraction from illumina seque
 
 - [extract](#extract): extract sequences from standard illumina reads
 - [merge](#merge): merge overlapping sequences PE sequencings prior to extracting
-- [receipt](#recipt): merge and summarize individual sample outputs of extract
+- [receipt](#receipt): merge and summarize individual sample outputs of extract
 - [scrna](#scrna): extract UMI/Cell labeled expressed barcode reads from 10X unmapped sam
 
 All of the above commands can be configured using the appropriate [flags](/cli) or additionally a [config file](#config-file).
