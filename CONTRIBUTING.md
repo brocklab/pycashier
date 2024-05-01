@@ -44,7 +44,7 @@ using known inputs/output files.
 After making any changes to the source you can run tests
 with `pytest` or using the below command:
 
-Any additional functionality or feature should be covered my an integration test using known inputs/outputs.
+Any additional functionality or feature should be covered by an integration test using known inputs/outputs.
 
 ```sh
 make test
