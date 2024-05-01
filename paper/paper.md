@@ -14,7 +14,7 @@ authors:
     corresponding: true
     affiliation: 1
 affiliations:
- - name: The University of Texas at Austin, USA
+ - name: The University of Texas at Austin, United States of America
    index: 1
 date: 04 April 2024
 bibliography: paper.bib
