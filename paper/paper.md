@@ -36,9 +36,17 @@ DNA sequencing and DNA barcoding specifically, have become
 more common as a modality for the characterization of clonal and lineage-specific subpopulations of cells.
 As researchers leverage these technologies, they'll require tools easy to setup
 and use to facilitate downstream biological analysis.
-DNA barcode sequencing data is prone to noise from both preparation
-and sequencing that requires identification and correction prior to statistical testing.
-`Pycashier` fills this gap while also providing a simple-to-use interface.
+DNA barcode sequencing suffers from several sources of noise that must be accounted for prior to statistical analysis.
+This noise can arise in typical Polymerase Chain Reaction (PCR) preparation [@kebschull2015;@potapov2017] or during read-out [@manley2016].
+Historically, the analysis of DNA barcoding has relied on tailored computational workflows,
+such as TimeMachine [@emert2021], that are difficult to parameterize
+or extend to similarly designed DNA barcoding systems.
+Recently, there has been the development of several NextFlow-based techniques,
+such as BARtab [@holze2024] and NextClone [@putri2023],
+which offer improved support for generalized approaches to processing barcode sequencing data.
+However, they require familiarity with NextFlow, which may be uncommon for experimentalists.
+`Pycashier` aims to be simple to install and generalizable enough to be useful to the broader community
+while also providing a user friendly interface.
 
 # Implementation and Usage
 
@@ -52,7 +60,7 @@ The `pycashier` CLI has four subcommands to facilitate processing of DNA barcode
 Users can specify parameters either through command-line flags or through a `toml` file.
 
 `Pycashier` is primarily used for generating counts of individual barcode sequences
-from targeted PCR (Polymerase Chain Reaction) amplifications of DNA-barcoded cells.
+from targeted PCR amplifications of DNA-barcoded cells.
 This is done with `pycashier extract`, which accepts a directory of
 `fastq` files directly from Illumina sequencing and generates
 a `tsv` of individual barcodes and counts for each input `fastq`.
