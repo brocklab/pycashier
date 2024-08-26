@@ -22,6 +22,6 @@ Default parameters are designed for use by the Brock Lab to process data generat
 
 installation.md
 usage.md
-cli.md
+cli
 ```
 
