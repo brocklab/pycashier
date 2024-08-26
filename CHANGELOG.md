@@ -10,6 +10,10 @@ i.e. 1001, 1002, ..., 1999, 22000
 
 ## [Unreleased]
 
+### Changed
+
+-  upgraded pixi to v0.28.2
+
 ## [2024.1004] - 2024-04-02
 
 ### Changed 
