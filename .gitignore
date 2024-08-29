@@ -177,7 +177,3 @@ tmp/
 !/tests/data/reference
 # pixi environments
 .pixi
-
-
-paper/*.jats
-paper/*.pdf

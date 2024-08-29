@@ -1,0 +1,34 @@
+digraph G {
+  rankdir="LR"
+  // files
+  {
+    node [shape= rect];
+    fastqs          [label = "fastqs"          ];
+    bam             [label = "10X bam"         ];
+    sam             [label = "unmapped 10X sam"];
+    {
+      node [ color = "#005f86"];
+      counts          [label = "barcode counts"    ];
+      combined_counts [label = "combined counts"   ];
+      sc_counts       [label = "single cell counts"];
+    }
+  }
+
+  // commands
+  samtools [label = "samtools view -f 4";]
+  {
+    node [ color = "#bf5700"];
+    extract  [label = "pycashier extract"]
+    merge    [label = "pycashier merge"  ]
+    scrna    [label = "pycashier scrna"  ]
+    receipt  [label = "pycashier receipt"]
+  }
+ 
+  // dag
+  fastqs -> extract [label = "single-end"];
+  fastqs -> merge   [label = "paired-end"];
+  merge -> extract;
+  extract -> counts;
+  counts -> receipt -> combined_counts;
+  bam -> samtools -> sam -> scrna -> sc_counts;
+}
