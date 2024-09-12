@@ -34,8 +34,7 @@ def receipt(files: Dict[str, Path], opts: PycashierOpts) -> None:
             )
             .with_columns(pl.col("samples").list.join(";")),
             on=pl.col("barcode"),
-        ).sort("sample", "count", descending=True)
-
+        ).sort("sample", "count", "barcode", descending=True)
     try:
         lzdf.collect().write_csv(opts.output, separator="\t")
     except pl.ColumnNotFoundError as e:
