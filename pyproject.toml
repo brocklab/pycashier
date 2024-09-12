@@ -68,6 +68,7 @@ platforms = ["linux-64"]
 
 [tool.pixi.environments]
 dev = ["base", "bioconda", "dev", "build", "docs", "tutorial"]
+docs = ["base", "docs", "tutorial"]
 prod = ["base", "bioconda", "prod"]
 build = ["base", "build"]
 test = ["base", "bioconda", "dev", "test"]
@@ -92,11 +93,12 @@ sphinx-tabs = "*"
 myst-parser = "*"
 shibuya = "*"
 
+[tool.pixi.feature.dev.pypi-dependencies]
+pycashier = { path = ".", editable = true }
+
 [tool.pixi.feature.dev.dependencies]
 pre-commit = "<3.0.0,>=2.15.0"
 mypy = ">=0.982"
-pytest = ">=7.2.0"
-pytest-cov = ">=4.1.0"
 
 [tool.pixi.feature.prod.dependencies]
 rich = ">=12.0.0"
@@ -115,9 +117,8 @@ pysam = ">=0.22.0,<0.23"
 pytest = ">=7.2.0"
 pytest-cov = ">=4.1.0"
 
-
 [tool.pixi.feature.test.pypi-dependencies]
-pycashier = {path =".", editable = true}
+pycashier = { path = ".", editable = true }
 
 [tool.pixi.feature.tutorial.dependencies]
 ipykernel = "*"
