@@ -13,16 +13,16 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-
-      - uses: pdm-project/setup-pdm@v3
+      - uses: prefix-dev/setup-pixi@v0.8.1
         with:
-          python-version: 3.11
+          pixi-version: v0.28.2
           cache: true
+          manifest-path: pyproject.toml
+          environments: docs
 
       - name: Build Docs
         run: |
-          pdm install -G docs
-          pdm run make docs
+          make docs
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2

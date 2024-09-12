@@ -27,12 +27,14 @@ build-docker:
 	docker tag ghcr.io/brocklab/pycashier:$(VERSION) pycashier:latest
 
 docs: ## build docs
-	sphinx-build docs site
+	pixi run -e docs \
+		sphinx-build docs site
 
 docs-serve: ## serve live docs
-	sphinx-autobuild docs site --port 8234
+	pixi run -e docs \
+		sphinx-autobuild docs site --port 8234
 
-## env |> bootstrap environment & pdm/pre-commit
+## env |> bootstrap environment & pre-commit
 env: conda-env setup-env
 
 conda-env: pixi.toml pixi.lock ##
