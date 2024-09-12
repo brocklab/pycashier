@@ -4,15 +4,15 @@ checks: lint types ## run lint,types
 
 lint: ## run pre-commit (ruff lint/format)
 	$(call msg,Linting w/ Pre-commit)
-	@pre-commit run --all || pre-commit run --all
+	@pixi run -e dev pre-commit run --all || pixi run -e dev pre-commit run --all
 
 types: ## typecheck with mypy
 	$(call msg,Typechecking w/ Mypy)
-	@mypy src/pycashier/ tests/
+	@pixi run -e dev mypy src/pycashier/ tests/
 
 test: ## run test w/ pytest
 	$(call msg, Testing w/ Pytest)
-	@pytest tests/ --cov=src/pycashier
+	@pixi run -e test pytest tests/ --cov=src/pycashier
 
 build: ## build-{dist,docker}
 	$(MAKE) build-dist
@@ -37,7 +37,7 @@ docs-serve: ## serve live docs
 ## env |> bootstrap environment & pre-commit
 env: conda-env setup-env
 
-conda-env: pixi.toml pixi.lock ##
+conda-env: pyproject.toml pixi.lock ##
 	pixi install -e dev
 
 setup-env: ##
