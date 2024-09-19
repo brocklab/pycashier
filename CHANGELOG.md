@@ -10,8 +10,11 @@ i.e. 1001, 1002, ..., 1999, 22000
 
 ## [Unreleased]
 
+## [2024.1005] - 2024-09-19
+
 ### Changed
 
+-  change python reqs to >=3.8
 -  upgraded pixi to v0.28.2
 
 ## [2024.1004] - 2024-04-02
@@ -172,7 +175,8 @@ Please see the documentation for up to date usage instructions.
 - Merge can take unzipped fastqs now
 
 
-[Unreleased]: https://github.com/brocklab/pycashier/compare/v2024.1004...HEAD
+[Unreleased]: https://github.com/brocklab/pycashier/compare/v2024.1005...HEAD
+[2024.1005]: https://github.com/brocklab/pycashier/compare/v2024.1004...v2024.1005
 [2024.1004]: https://github.com/brocklab/pycashier/compare/v2024.1003...v2024.1004
 [2024.1003]: https://github.com/brocklab/pycashier/compare/v2024.1002...v2024.1003
 [2024.1002]: https://github.com/brocklab/pycashier/compare/v2024.1001...v2024.1002
