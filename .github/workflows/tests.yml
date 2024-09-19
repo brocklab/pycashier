@@ -21,10 +21,9 @@ jobs:
           - "test38"
           - "test39"
           - "test310"
-          # https://bioconda.github.io/faqs.html#python
-          # TLDR: these aren't supported as of Jan 2024
-          # - "test311"
-          # - "test312"
+          - "test311"
+          - "test312"
+
     steps:
       - uses: actions/checkout@v4
       - uses: prefix-dev/setup-pixi@v0.8.1

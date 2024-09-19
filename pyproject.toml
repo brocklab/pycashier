@@ -75,12 +75,15 @@ test = ["base", "bioconda", "dev", "test"]
 test38 = ["base", "bioconda", "dev", "test", "test38"]
 test39 = ["base", "bioconda", "dev", "test", "test39"]
 test310 = ["base", "bioconda", "dev", "test", "test310"]
+test311 = ["base", "bioconda", "dev", "test", "test311"]
+test312 = ["base", "bioconda", "dev", "test", "test312"]
+
 
 [tool.pixi.host-dependencies]
 pip = "*"
 
 [tool.pixi.feature.base.dependencies]
-python = ">=3.8,<3.11" # https://bioconda.github.io/faqs.html#what-versions-are-supported
+python = ">=3.8,<3.13" # https://bioconda.github.io/faqs.html#what-versions-are-supported
 # when pixi add polars to pypi-dependencies it was trying to build it with cargo
 # adding it here to use pre-built objects from conda-forge
 polars = ">=1.0.0"
@@ -97,7 +100,7 @@ shibuya = "*"
 pycashier = { path = ".", editable = true }
 
 [tool.pixi.feature.dev.dependencies]
-pre-commit = "<3.0.0,>=2.15.0"
+pre-commit = ">=3"
 mypy = ">=0.982"
 
 [tool.pixi.feature.prod.dependencies]
@@ -129,6 +132,10 @@ python = "3.8.*"
 python = "3.9.*"
 [tool.pixi.feature.test310.dependencies]
 python = "3.10.*"
+[tool.pixi.feature.test311.dependencies]
+python = "3.11.*"
+[tool.pixi.feature.test312.dependencies]
+python = "3.12.*"
 
 [tool.pixi.feature.build.dependencies]
 python-build = ">=1.2.1,<2"
