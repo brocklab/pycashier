@@ -130,8 +130,14 @@ def print_params(ctx: click.Context) -> None:
             continue
         tree = Tree(f"[italic]{header}", style="bold")
         for k, v in param_map.items():
-            tree.add(f"[bold][cyan]{k.replace('_', ' ')}[/cyan]: [yellow]{v}[/yellow]")
-
+            if k == "samples":
+                sample_tree = tree.add(f"[bold][cyan]{k.replace('_',' ')}[/cyan]:")
+                for sample in v.split(","):
+                    sample_tree.add(f"[yellow]{sample}[/yellow]")
+            else:
+                tree.add(
+                    f"[bold][cyan]{k.replace('_', ' ')}[/cyan]: [yellow]{v}[/yellow]"
+                )
         with term._console.capture() as capture:
             term.print(tree)
 
