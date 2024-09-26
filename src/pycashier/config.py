@@ -40,7 +40,6 @@ def save_params(ctx: click.Context) -> None:
     if save_type == "explicit":
         params = {}
         for k, v in all_params.items():
-            print(ctx.get_parameter_source(k))
             if param_source := ctx.get_parameter_source(k):
                 if param_source.value != 3:
                     params[k] = v
