@@ -5,6 +5,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Callable, Dict, Optional, Tuple
 
+from .deps import cutadapt, fastp, starcode
 from .filters import read_filter
 from .options import PycashierOpts
 from .scrna import labeled_fastq_to_tsv, sam_to_name_labeled_fastq
@@ -166,14 +167,17 @@ class ExtractSample(Sample):
             msg,
         ):
             command = (
-                "cutadapt "
-                f"-e {self.opts.error} "
-                f"-j {self.opts.threads} "
-                f"--minimum-length={self.opts.length - self.opts.distance} "
-                f"--maximum-length={self.opts.length + self.opts.distance} "
-                f"{adapter_string} "
-                f"{self.opts.cutadapt_args or ''} "
-                f"-o {self.files.barcode_fastq} {self.files.quality}"
+                cutadapt
+                + " "
+                + (
+                    f"-e {self.opts.error} "
+                    f"-j {self.opts.threads} "
+                    f"--minimum-length={self.opts.length - self.opts.distance} "
+                    f"--maximum-length={self.opts.length + self.opts.distance} "
+                    f"{adapter_string} "
+                    f"{self.opts.cutadapt_args or ''} "
+                    f"-o {self.files.barcode_fastq} {self.files.quality}"
+                )
             )
             with term.process(msg):
                 return run_cmd(
@@ -196,8 +200,12 @@ class ExtractSample(Sample):
 
         if not check_output(self.files.clustered, msg):
             command = (
-                f"starcode -d {self.opts.distance} -r {self.opts.ratio} "
-                f"-t {self.opts.threads} -i {self.files.barcode_fastq} -o {self.files.clustered}"
+                starcode
+                + " "
+                + (
+                    f"-d {self.opts.distance} -r {self.opts.ratio} "
+                    f"-t {self.opts.threads} -i {self.files.barcode_fastq} -o {self.files.clustered}"
+                )
             )
             with term.process(msg):
                 return run_cmd(
@@ -236,14 +244,17 @@ class MergeSample(Sample):
         msg = "merging paired end reads with fastp"
         if not check_output(self.merged, msg):
             command = (
-                "fastp "
-                f"-i {self.fastqR1}  "
-                f"-I {self.fastqR2}  "
-                f"-w {self.opts.threads} "
-                f"-j {self.opts.pipeline}/merge_qc/{self.name}.json "
-                f"-h {self.opts.pipeline}/merge_qc/{self.name}.html "
-                f"--merged_out {self.merged} "
-                f"{self.opts.fastp_args or ''}"
+                fastp
+                + " "
+                + (
+                    f"-i {self.fastqR1}  "
+                    f"-I {self.fastqR2}  "
+                    f"-w {self.opts.threads} "
+                    f"-j {self.opts.pipeline}/merge_qc/{self.name}.json "
+                    f"-h {self.opts.pipeline}/merge_qc/{self.name}.html "
+                    f"--merged_out {self.merged} "
+                    f"{self.opts.fastp_args or ''}"
+                )
             )
 
             with term.process(msg):
@@ -288,14 +299,17 @@ class ScrnaSample(Sample):
 
         if not check_output(self.barcode_fastq, msg):
             command = (
-                "cutadapt "
-                f"-e {self.opts.error} "
-                f"-j {self.opts.threads} "
-                f"--minimum-length={self.opts.minimum_length} "
-                f"--maximum-length={self.opts.length} "
-                f"{adapter_string} "
-                f"{self.opts.cutadapt_args or ''} "
-                f"-o {self.barcode_fastq} {self.fastq}"
+                cutadapt
+                + " "
+                + (
+                    f"-e {self.opts.error} "
+                    f"-j {self.opts.threads} "
+                    f"--minimum-length={self.opts.minimum_length} "
+                    f"--maximum-length={self.opts.length} "
+                    f"{adapter_string} "
+                    f"{self.opts.cutadapt_args or ''} "
+                    f"-o {self.barcode_fastq} {self.fastq}"
+                )
             )
             with term.process(msg):
                 return run_cmd(

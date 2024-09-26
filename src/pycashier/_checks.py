@@ -9,11 +9,12 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
+from .deps import cutadapt, fastp, starcode
 from .term import term
 
-PACKAGES = ["cutadapt", "fastp", "starcode", "pysam"]
+PACKAGES = {"cutadapt": cutadapt, "fastp": fastp, "starcode": starcode, "pysam": ""}
 CMD_PACKAGES: Dict[str, List[str]] = {
-    "": PACKAGES,
+    "": sorted(PACKAGES),
     "receipt": [],
     "merge": ["fastp"],
     "extract": ["fastp", "cutadapt", "starcode"],
@@ -59,7 +60,7 @@ def pre_run_check(command: str = "", show: bool = False) -> None:
         command: Name of pycashier subcommand.
         show: If true, show table regardless.
     """
-    pkg_locations = {name: find_tool(name) for name in PACKAGES}
+    pkg_locations = {name: find_tool(name, path) for name, path in PACKAGES.items()}
     cmd_pkg_locations = {k: pkg_locations[k] for k in CMD_PACKAGES[command]}
 
     if None in cmd_pkg_locations.values() or show:
@@ -71,9 +72,8 @@ def pre_run_check(command: str = "", show: bool = False) -> None:
                 title="Dependencies",
             ),
         )
-        term.print(f"python exe: [bold]{sys.executable}[/bold]")
-
         term.print(
+            f"python exe: [bold]{sys.executable}[/bold]"
             "It's recommended to install pycashier within a conda environment.\n"
             "See the repo for details: [link]https://github.com/brocklab/pycashier[/link]",
         )
@@ -86,7 +86,7 @@ def pre_run_check(command: str = "", show: bool = False) -> None:
     check_file_permissions()
 
 
-def find_tool(name: str) -> Optional[str]:
+def find_tool(name: str, path: str = "") -> Optional[str]:
     """Check whether `name` is on PATH and marked as executable.
 
     Args:
@@ -96,7 +96,7 @@ def find_tool(name: str) -> Optional[str]:
     """
 
     if not name == "pysam":
-        return which(name)
+        return which(name if not path else path)
 
     spec = importlib.util.find_spec("pysam")
     if spec:

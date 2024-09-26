@@ -109,7 +109,9 @@ This data can be noisy an it will be necessary to apply domain-specific ad-hoc f
 Typically, this can be a achieved with a combination of UMI and cell doublet filtering.
 :::
 
-## Config File
+## Configuration
+
+### Config File
 
 You may generate and supply `pycashier` with a toml config file using `-c/--config`.
 The expected structure is each command followed by key value pairs of flags with hypens replaced by underscores:
@@ -142,6 +144,18 @@ All non-default values will be printed prior to execution. You can view all para
 For convenience, you can update/create your config file with `pycasher COMMAND --save-config [explicit|full]`.
 "Explicit" will only save parameters already included in the config file or specified at runtime.
 "Full" will include all parameters, again, maintaining preset values in config or specified at runtime.
+
+See the [cli reference](./cli.rst) for all options for each command.
+
+### Executables
+
+`Pycashier` depends on three executables (`cutadapt`, `starcode`, `fastp`) existing on your `$PATH`, you can force the use of a specific executable using environment variables of the form `PYCASHIER_<NAME>`.
+For example to override the `cutadapt` used you could use something like the below command:
+
+```sh
+PYCASHIER_CUTADAPT="$HOME/important-software/cutadapt-v4" pycashier extract
+```
+
 
 ## Caveats
 
