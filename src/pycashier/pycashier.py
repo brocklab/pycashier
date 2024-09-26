@@ -130,7 +130,7 @@ class Pycashier:
         self, samples: List[ExtractSample] | List[MergeSample] | List[ScrnaSample]
     ) -> None:
         if all((sample.completed for sample in samples)):
-            term.quit()
+            term.quit(0)
 
     def _check_failure(
         self, samples: List[ExtractSample] | List[MergeSample] | List[ScrnaSample]
