@@ -67,16 +67,25 @@ platforms = ["linux-64"]
 
 
 [tool.pixi.environments]
-dev = ["base", "bioconda", "dev", "build", "docs", "tutorial", "test"]
-docs = ["base", "docs", "tutorial"]
+dev = [
+  "base",
+  "bioconda",
+  "dev",
+  "pycashier",
+  "build",
+  "docs",
+  "tutorial",
+  "test",
+]
+docs = ["base", "pycashier", "docs", "tutorial"]
 prod = ["base", "bioconda", "prod"]
 build = ["base", "build"]
-test = ["base", "bioconda", "dev", "test"]
-test38 = ["base", "bioconda", "dev", "test", "test38"]
-test39 = ["base", "bioconda", "dev", "test", "test39"]
-test310 = ["base", "bioconda", "dev", "test", "test310"]
-test311 = ["base", "bioconda", "dev", "test", "test311"]
-test312 = ["base", "bioconda", "dev", "test", "test312"]
+test = ["base", "bioconda", "dev","test", "pycashier"]
+test38 = ["base", "bioconda", "dev", "test", "pycashier", "test38"]
+test39 = ["base", "bioconda", "dev", "test", "pycashier", "test39"]
+test310 = ["base", "bioconda", "dev", "test", "pycashier", "test310"]
+test311 = ["base", "bioconda", "dev", "test", "pycashier", "test311"]
+test312 = ["base", "bioconda", "dev", "test", "pycashier", "test312"]
 
 
 [tool.pixi.host-dependencies]
@@ -92,11 +101,11 @@ polars = ">=1.0.0"
 sphinx = "*"
 sphinx-autobuild = "*"
 sphinx-copybutton = "*"
-sphinx-tabs = "*"
+sphinx-inline-tabs = "*"
 myst-parser = "*"
 shibuya = "*"
 
-[tool.pixi.feature.dev.pypi-dependencies]
+[tool.pixi.feature.pycashier.pypi-dependencies]
 pycashier = { path = ".", editable = true }
 
 [tool.pixi.feature.dev.dependencies]
@@ -119,9 +128,6 @@ pysam = ">=0.22.0,<0.23"
 [tool.pixi.feature.test.dependencies]
 pytest = ">=7.2.0"
 pytest-cov = ">=4.1.0"
-
-[tool.pixi.feature.test.pypi-dependencies]
-pycashier = { path = ".", editable = true }
 
 [tool.pixi.feature.tutorial.dependencies]
 ipykernel = "*"

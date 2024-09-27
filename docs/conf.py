@@ -2,7 +2,7 @@ project = "Pycashier"
 copyright = "2024, BrockLab"
 author = "BrockLab"
 
-extensions = ["myst_parser", "sphinx_copybutton", "sphinx_tabs.tabs"]
+extensions = ["myst_parser", "sphinx_copybutton", "sphinx_inline_tabs"]
 myst_enable_extensions = ["colon_fence", "deflist"]
 myst_heading_anchors = 1
 

@@ -5,15 +5,14 @@ CLI Reference
 pycashier 
 ----------------------------------
 
-.. tabs::
 
-  .. tab:: image
+.. tab:: image
 
-    .. image:: svgs/pycashier.svg
+  .. image:: svgs/pycashier.svg
 
-  .. tab:: plaintext
+.. tab:: plaintext
 
-    .. code-block::
+  .. code-block::
 
       Usage: pycashier [OPTIONS] COMMAND [ARGS]...
 
@@ -36,15 +35,14 @@ pycashier
 pycashier extract
 ----------------------------------
 
-.. tabs::
 
-  .. tab:: image
+.. tab:: image
 
-    .. image:: svgs/pycashier-extract.svg
+  .. image:: svgs/pycashier-extract.svg
 
-  .. tab:: plaintext
+.. tab:: plaintext
 
-    .. code-block::
+  .. code-block::
 
       Usage: pycashier extract [OPTIONS]
 
@@ -102,15 +100,14 @@ pycashier extract
 pycashier merge
 ----------------------------------
 
-.. tabs::
 
-  .. tab:: image
+.. tab:: image
 
-    .. image:: svgs/pycashier-merge.svg
+  .. image:: svgs/pycashier-merge.svg
 
-  .. tab:: plaintext
+.. tab:: plaintext
 
-    .. code-block::
+  .. code-block::
 
       Usage: pycashier merge [OPTIONS]
 
@@ -141,15 +138,14 @@ pycashier merge
 pycashier receipt
 ----------------------------------
 
-.. tabs::
 
-  .. tab:: image
+.. tab:: image
 
-    .. image:: svgs/pycashier-receipt.svg
+  .. image:: svgs/pycashier-receipt.svg
 
-  .. tab:: plaintext
+.. tab:: plaintext
 
-    .. code-block::
+  .. code-block::
 
       Usage: pycashier receipt [OPTIONS]
 
@@ -178,15 +174,14 @@ pycashier receipt
 pycashier scrna
 ----------------------------------
 
-.. tabs::
 
-  .. tab:: image
+.. tab:: image
 
-    .. image:: svgs/pycashier-scrna.svg
+  .. image:: svgs/pycashier-scrna.svg
 
-  .. tab:: plaintext
+.. tab:: plaintext
 
-    .. code-block::
+  .. code-block::
 
       Usage: pycashier scrna [OPTIONS]
 

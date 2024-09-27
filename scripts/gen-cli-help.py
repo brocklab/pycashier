@@ -21,15 +21,14 @@ COMMAND_RST_TMPL = """
 pycashier {command}
 ----------------------------------
 
-.. tabs::
 
-  .. tab:: image
+.. tab:: image
 
-    .. image:: svgs/{image_name}
+  .. image:: svgs/{image_name}
 
-  .. tab:: plaintext
+.. tab:: plaintext
 
-    .. code-block::
+  .. code-block::
 
 {code}
 """
