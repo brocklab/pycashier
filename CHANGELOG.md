@@ -10,6 +10,15 @@ i.e. 1001, 1002, ..., 1999, 22000
 
 ## [Unreleased]
 
+### Added
+
+- override runtime executables with env vars (#31)
+
+### Fixed
+
+- proper exit code when nothing to process (#37)
+- remove erroneous debug print (#28)
+
 ## [2024.1005] - 2024-09-19
 
 ### Changed
