@@ -10,6 +10,10 @@ i.e. 1001, 1002, ..., 1999, 22000
 
 ## [Unreleased]
 
+### Changed
+
+- minimum python version bumped to 3.9
+
 ### Added
 
 - override runtime executables with env vars (#31)

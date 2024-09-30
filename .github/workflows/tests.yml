@@ -18,7 +18,6 @@ jobs:
       fail-fast: false
       matrix:
         environment:
-          - "test38"
           - "test39"
           - "test310"
           - "test311"

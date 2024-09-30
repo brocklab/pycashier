@@ -9,7 +9,7 @@ dependencies = [
   "click>=8.1.0",
   "polars>=1.0.0",
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 readme = "README.md"
 license = { text = "MIT" }
 dynamic = ["version"]
@@ -81,7 +81,6 @@ docs = ["base", "pycashier", "docs", "tutorial"]
 prod = ["base", "bioconda", "prod"]
 build = ["base", "build"]
 test = ["base", "bioconda", "dev", "test", "pycashier", "prod"]
-test38 = ["base", "bioconda", "dev", "test", "pycashier", "prod", "test38"]
 test39 = ["base", "bioconda", "dev", "test", "pycashier", "prod", "test39"]
 test310 = ["base", "bioconda", "dev", "test", "pycashier", "prod", "test310"]
 test311 = ["base", "bioconda", "dev", "test", "pycashier", "prod", "test311"]
@@ -92,7 +91,7 @@ test312 = ["base", "bioconda", "dev", "test", "pycashier", "prod", "test312"]
 pip = "*"
 
 [tool.pixi.feature.base.dependencies]
-python = ">=3.8,<3.13" # https://bioconda.github.io/faqs.html#what-versions-are-supported
+python = ">=3.9,<3.13" # https://bioconda.github.io/faqs.html#what-versions-are-supported
 # when pixi add polars to pypi-dependencies it was trying to build it with cargo
 # adding it here to use pre-built objects from conda-forge
 polars = ">=1.0.0"
@@ -133,8 +132,6 @@ pytest-cov = ">=4.1.0"
 [tool.pixi.feature.tutorial.dependencies]
 ipykernel = "*"
 
-[tool.pixi.feature.test38.dependencies]
-python = "3.8.*"
 [tool.pixi.feature.test39.dependencies]
 python = "3.9.*"
 [tool.pixi.feature.test310.dependencies]
