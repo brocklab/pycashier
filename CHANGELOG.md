@@ -10,6 +10,8 @@ i.e. 1001, 1002, ..., 1999, 22000
 
 ## [Unreleased]
 
+## [2024.1006] - 2024-09-30
+
 ### Changed
 
 - minimum python version bumped to 3.9
@@ -230,7 +232,8 @@ Please see the documentation for up to date usage instructions.
 - Merge can take unzipped fastqs now
 
 
-[Unreleased]: https://github.com/brocklab/pycashier/compare/v2024.1005...HEAD
+[Unreleased]: https://github.com/brocklab/pycashier/compare/v2024.1006...HEAD
+[2024.1006]: https://github.com/brocklab/pycashier/compare/v2024.1005...v2024.1006
 [2024.1005]: https://github.com/brocklab/pycashier/compare/v2024.1004...v2024.1005
 [2024.1004]: https://github.com/brocklab/pycashier/compare/v2024.1003...v2024.1004
 [2024.1003]: https://github.com/brocklab/pycashier/compare/v2024.1002...v2024.1003
