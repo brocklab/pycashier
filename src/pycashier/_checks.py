@@ -73,7 +73,7 @@ def pre_run_check(command: str = "", show: bool = False) -> None:
             ),
         )
         term.print(
-            f"python exe: [bold]{sys.executable}[/bold]"
+            f"python exe: [bold]{sys.executable}[/bold]\n"
             "It's recommended to install pycashier within a conda environment.\n"
             "See the repo for details: [link]https://github.com/brocklab/pycashier[/link]",
         )
