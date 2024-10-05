@@ -48,7 +48,8 @@ or extend to similarly designed cellular DNA barcoding systems.
 Recently, there has been the development of several NextFlow-based techniques,
 such as BARtab [@holze2024] and NextClone [@putri2023],
 In particular BARtab and it's associated post-processing library bartools, offer an end-to-end toolkit for barcoding analysis.
-As a more feature complete end-to-end toolkit BARtab differs from `pycashier` by including support for spatial transcriptomics data and reference-based processing of barcodes.Additionally, being based on NextFlow offers some advantages to these tools including sample-level parameterization and tighter control on system resources.
+As a more feature complete end-to-end toolkit BARtab differs from `pycashier` by including support for spatial transcriptomics data and reference-based processing of barcodes.
+Additionally, being based on NextFlow offers some advantages to these tools including sample-level parameterization and tighter control on system resources.
 However, experience using NextFlow may be uncommon for experimentalists.
 `Pycashier` aims to be simple to install and generalizable enough to be useful to the broader community while also providing a user friendly interface.
 
