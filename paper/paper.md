@@ -23,8 +23,8 @@ bibliography: paper.bib
 # Summary
 
 `Pycashier` is a tool designed to extract cellular DNA barcode tags from next generation sequencing data.
-These DNA barcode tags are heritable and stably integrated genetic markers useful for clonal tracking (CITE) (clontracr?)
-and lineage tracing (development) (gestalt) within *in vitro* and *in vivo* cell-based disease models.
+These DNA barcode tags are heritable and stably integrated genetic markers useful for clonal tracking [@bhang2015]
+and lineage tracing [@mckenna2016] within *in vitro* and *in vivo* cell-based disease models.
 These exogenous cell-based DNA barcodes, when amplified from genomic DNA and sequenced,
 can be used as a proxy for assessing changes in clonal abundance and better understanding population dynamics.
 `Pycashier` was originally developed for use with the
