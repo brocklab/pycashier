@@ -106,7 +106,7 @@ along with calculating some basic metrics across samples.
 Documentation and further usage instructions for `pycashier`
 can be found at [docs.brocklab.com/pycashier](https://docs.brocklab.com/pycashier).
 
-[^1]: CellRanger `bam` files can be converted to a `sam` with unmapped reads using `samptools view -f 4`.
+[^1]: CellRanger `bam` files can be converted to a `sam` with unmapped reads using `samtools view -f 4`.
 
 # Acknowledgments
 
