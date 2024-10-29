@@ -8,8 +8,8 @@ cd $BASE_PATH
 
 find -name '*.a' -delete
 find -name '__pycache__' -type d -exec rm -rf '{}' '+'
-find lib/python3.10/site-packages/ -name 'tests' -type d -exec rm -rf '{}' '+'
-find lib/python3.10/site-packages/ -name '*.pyx' -delete
+find lib/python3*/site-packages/ -name 'tests' -type d -exec rm -rf '{}' '+'
+find lib/python3*/site-packages/ -name '*.pyx' -delete
 
 rm -rf {conda-meta,include,man}
 rm -rf lib/libpython3*.so.1.0
