@@ -1,22 +1,16 @@
-import filecmp
 from pathlib import Path
-from typing import List, Tuple
+from typing import List
 
 import pytest
 from click import BaseCommand
 from pycashier.cli import checks, cli, extract, merge, receipt, scrna
-from utils import click_run, purge
+from utils import click_run, cmp_outs, purge
 
 TEST_DIR = Path(__file__).parent
 OUTS_DIR, REF_DIR, MERGED_DIR, PIPELINE_DIR = (
     TEST_DIR / "data" / name
     for name in ("outs", "reference", "mergedfastqs", "pipeline")
 )
-
-
-def cmp_outs(filename: str, paths: Tuple[Path, Path]) -> bool:
-    file_one, file_two = (filepath / filename for filepath in paths)
-    return filecmp.cmp(file_one, file_two)
 
 
 def test_help() -> None:
@@ -52,6 +46,16 @@ def test_pycashier_checks() -> None:
             OUTS_DIR,
             "test.q30.barcodes.r3d1.min0_off1.tsv",
             ["--filter-count", "0"],
+        ),
+        # brocklab/pycashier#42
+        (
+            extract,
+            REF_DIR / "rawfastqgzs",
+            PIPELINE_DIR / "pipe-extract-float-ratio",
+            REF_DIR / "outs-float-ratio",
+            OUTS_DIR,
+            "test.q30.barcodes.r3_1d1.min0_off1.tsv",
+            ["--ratio", "3.1"],
         ),
         (
             scrna,
@@ -105,5 +109,6 @@ def test_pycashier_receipt() -> None:
         ["-i", REF_DIR / "outs", "-p", PIPELINE_DIR / "pipe-receipt", "-o", outfile],
     )
 
+    print(result.output)
     assert result.exit_code == 0
     assert cmp_outs("combined.tsv", (REF_DIR, TEST_DIR / "data"))

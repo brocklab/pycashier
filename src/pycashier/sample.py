@@ -72,9 +72,12 @@ class ExtractFiles:
         self.quality = opts.pipeline / f"{name}.q{opts.quality}.fastq"
         self.barcode_fastq = self.quality.with_suffix(".barcode.fastq")
         self.barcodes = self.quality.with_suffix(".barcodes.tsv")
-        self.clustered = self.barcodes.with_suffix(
-            f".r{opts.ratio}d{opts.distance}.tsv"
-        )
+        # if opts.ratio doesn't look like an integer replace the decimal
+        if int(opts.ratio) != opts.ratio:
+            ratio_str = str(opts.ratio).replace(".", "_")
+        else:
+            ratio_str = str(int(opts.ratio))
+        self.clustered = self.barcodes.with_suffix(f".r{ratio_str}d{opts.distance}.tsv")
 
     def final(self, opts: PycashierOpts) -> Optional[Path]:
         if not self.clustered.is_file():
@@ -113,8 +116,6 @@ class ExtractSample(Sample):
             exists["final"] = (file_exists := final.is_file())
             # size of 'barcode count'
             if file_exists and final.stat().st_size <= 14:
-                print(final)
-                print(final.stat().st_size)
                 term.log.warning(f"{final} appears to be empty")
         else:
             exists["final"] = False
@@ -213,7 +214,7 @@ class ExtractSample(Sample):
                 )
 
     def _read_filter(self) -> None:
-        if read_filter(self.name, self.opts):
+        if read_filter(self.files.clustered, self.opts):
             self.status = SampleStatus.WARN
         else:
             self.status = SampleStatus.COMPLETE

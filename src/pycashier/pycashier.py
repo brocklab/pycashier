@@ -94,6 +94,7 @@ class Pycashier:
             )
 
         if duplicates:
+            # NOTE: if running with receipt then the message should be different
             term.print(
                 "[InputError]: There appears to be duplicates files in input directory for sample(s): "
                 f"{';'.join((dup for dup in duplicates))} \n"
@@ -147,7 +148,7 @@ class Pycashier:
     def extract(
         self,
         ctx: click.Context,
-        yes: bool,
+        yes: bool,  # TODO: this should be accessed...
         **kwargs: Any,
     ) -> None:
         """

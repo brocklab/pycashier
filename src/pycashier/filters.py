@@ -64,7 +64,7 @@ def filter_by_count(
 
 
 def read_filter(
-    sample: str,
+    clustered_counts: Path,
     opts: PycashierOpts,
 ) -> bool | None:
     """filter clusted barcodes with final abundance cutoff
@@ -74,16 +74,16 @@ def read_filter(
         opts: pycashier options
     """
 
-    file_in = (
-        opts.pipeline
-        / f"{sample}.q{opts.quality}.barcodes.r{opts.ratio}d{opts.distance}.tsv"
-    )
     if opts.filter_count is not None:
         term.log.debug(
             f"post-clustering filtering with [b]{opts.filter_count}[/] read cutoff"
         )
         return filter_by_count(
-            file_in, int(opts.filter_count), opts.length, opts.offset, opts.output
+            clustered_counts,
+            int(opts.filter_count),
+            opts.length,
+            opts.offset,
+            opts.output,
         )
 
     else:
@@ -92,7 +92,7 @@ def read_filter(
         )
 
         return filter_by_percent(
-            file_in,
+            clustered_counts,
             opts.filter_percent,
             opts.length,
             opts.offset,

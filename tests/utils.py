@@ -22,4 +22,10 @@ def purge(*paths: Path) -> None:
 
 def cmp_outs(filename: str, paths: Tuple[Path, Path]) -> bool:
     file_one, file_two = (filepath / filename for filepath in paths)
+    if not file_one.is_file():
+        print(list(file_one.parent.iterdir()))
+        return False
+    if not file_two.is_file():
+        print(list(file_two.parent.iterdir()))
+        return False
     return filecmp.cmp(file_one, file_two)

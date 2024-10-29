@@ -285,7 +285,8 @@ _options = [
     Option(
         ["-r", "--ratio"],
         help="ratio to use for message passing clustering",
-        default=3,
+        default=3.0,
+        type=float,
         show_default=True,
         category="cluster",
     ),
