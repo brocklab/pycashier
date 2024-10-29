@@ -8,9 +8,9 @@ version -> vYYYY.BUILD
 where BUILD is a lexicographically increasing number:
 i.e. 1001, 1002, ..., 1999, 22000
 
-## [Unreleased]
+## Unreleased
 
-## [2024.1006] - 2024-09-30
+## 2024.1006 - 2024-09-30
 
 ### Changed
 
@@ -25,16 +25,16 @@ i.e. 1001, 1002, ..., 1999, 22000
 - proper exit code when nothing to process (#37)
 - remove erroneous debug print (#28)
 
-## [2024.1005] - 2024-09-19
+## 2024.1005 - 2024-09-19
 
 ### Changed
 
 -  change python reqs to >=3.8
 -  upgraded pixi to v0.28.2
 
-## [2024.1004] - 2024-04-02
+## 2024.1004 - 2024-04-02
 
-### Changed 
+### Changed
 
 - upgraded pixi to v0.18 for pyproject.toml support
 
@@ -43,7 +43,7 @@ i.e. 1001, 1002, ..., 1999, 22000
 - fix(#25)
 - actually fix(#17)
 
-## [2024.1003] - 2024-03-21
+## 2024.1003 - 2024-03-21
 
 ### Changed
 
@@ -54,13 +54,13 @@ i.e. 1001, 1002, ..., 1999, 22000
 - warn user if there is a permission error on local directory
 - #22
 
-## [2024.1002] - 2024-02-22
+## 2024.1002 - 2024-02-22
 
 ### Fixed
 
 - #21
 
-## [2024.1001] - 2024-02-21
+## 2024.1001 - 2024-02-21
 
 This release followed a major refactor and some things may be missing from the changelog.
 Please see the documentation for up to date usage instructions.
@@ -87,7 +87,7 @@ Please see the documentation for up to date usage instructions.
 - filename regex for merge is less stringent (#17)
 - won't fail if unneeded program is missing (#16)
 
-## [23.1.2] - 2023-01-07
+## 23.1.2 - 2023-01-07
 
 ### Changed
 
@@ -98,7 +98,7 @@ Please see the documentation for up to date usage instructions.
 - remove `|` type operator for python <3.10 compatibility (#13)
 - ensure init-check is run (#14)
 
-## [23.1.1] - 2023-01-05
+## 23.1.1 - 2023-01-05
 
 ### Added
 
@@ -117,7 +117,7 @@ Please see the documentation for up to date usage instructions.
 - removed extra whitespace in single cell output tsv
 - added warning about broken symlinks (especially for docker) (#12)
 
-## [22.10.1] - 2022-10-21
+## 22.10.1 - 2022-10-21
 
 ### Added
 
@@ -127,7 +127,7 @@ Please see the documentation for up to date usage instructions.
 
 - pinned docker image base to stable tag
 
-## [22.9.1] - 2022-09-11
+## 22.9.1 - 2022-09-11
 
 ### Changed
 
@@ -142,7 +142,7 @@ Please see the documentation for up to date usage instructions.
 - separate `rich.console.Console` for stderr outputs
 - automated docker build and switched to ghcr.io
 
-## [22.6.2] - 2022-06-30
+## 22.6.2 - 2022-06-30
 
 ### Added
 
@@ -155,7 +155,7 @@ Please see the documentation for up to date usage instructions.
 - made docker build multi-stage to reduce footprint
 - updated ci to use python action instead of poetry
 
-## [22.6.1] - 2022-06-27
+## 22.6.1 - 2022-06-27
 
 ### Fixed
 
@@ -166,7 +166,7 @@ Please see the documentation for up to date usage instructions.
 - refactored cli source for simplicity
 - project now adheres to [CalVer](https://calver.org)
 
-## [0.3.5] - 2022-06-17
+## 0.3.5 - 2022-06-17
 
 ### Added
 
@@ -176,7 +176,7 @@ Please see the documentation for up to date usage instructions.
 
 - Drop `just` for `make` to streamline development
 
-## [0.3.4] - 2022-06-07
+## 0.3.4 - 2022-06-07
 
 ### Added
 
@@ -186,7 +186,7 @@ Please see the documentation for up to date usage instructions.
 
 - Use wider format help on bigger terminals
 
-## [0.3.3] - 2022-05-23
+## 0.3.3 - 2022-05-23
 
 ### Added
 
@@ -196,13 +196,13 @@ Please see the documentation for up to date usage instructions.
 
 - Fix #8 to allow .fastq.gz in input directory
 
-## [0.3.2] - 2022-04-06
+## 0.3.2 - 2022-04-06
 
 ### Changed
 
 - Swapped `rich-click` for `click-rich-help`
 
-## [0.3.1] - 2022-03-29
+## 0.3.1 - 2022-03-29
 
 ### Added
 
@@ -213,7 +213,7 @@ Please see the documentation for up to date usage instructions.
 - Dropped yaml-based config for toml
 
 
-## [0.3.0] - 2022-03-16
+## 0.3.0 - 2022-03-16
 
 ### Added
 
@@ -230,24 +230,3 @@ Please see the documentation for up to date usage instructions.
 - Sample Queue table is formatted inline with new CLI
 - Dropped regex in "extract" in favor of simple string matching
 - Merge can take unzipped fastqs now
-
-
-[Unreleased]: https://github.com/brocklab/pycashier/compare/v2024.1006...HEAD
-[2024.1006]: https://github.com/brocklab/pycashier/compare/v2024.1005...v2024.1006
-[2024.1005]: https://github.com/brocklab/pycashier/compare/v2024.1004...v2024.1005
-[2024.1004]: https://github.com/brocklab/pycashier/compare/v2024.1003...v2024.1004
-[2024.1003]: https://github.com/brocklab/pycashier/compare/v2024.1002...v2024.1003
-[2024.1002]: https://github.com/brocklab/pycashier/compare/v2024.1001...v2024.1002
-[2024.1001]: https://github.com/brocklab/pycashier/compare/v23.1.2...v2024.1001
-[23.1.2]: https://github.com/brocklab/pycashier/compare/v23.1.1...v23.1.2
-[23.1.1]: https://github.com/brocklab/pycashier/compare/v22.10.1...v23.1.1
-[22.10.1]: https://github.com/brocklab/pycashier/compare/v22.9.1...v22.10.1
-[22.9.1]: https://github.com/brocklab/pycashier/compare/v22.6.2...v22.9.1
-[22.6.2]: https://github.com/brocklab/pycashier/compare/v22.6.1...v22.6.2
-[22.6.1]: https://github.com/brocklab/pycashier/compare/v0.3.5...v22.6.1
-[0.3.5]: https://github.com/brocklab/pycashier/compare/v0.3.4...v0.3.5
-[0.3.4]: https://github.com/brocklab/pycashier/compare/v0.3.3...v0.3.4
-[0.3.3]: https://github.com/brocklab/pycashier/compare/v0.3.2...v0.3.3
-[0.3.2]: https://github.com/brocklab/pycashier/compare/v0.3.1...v0.3.2
-[0.3.1]: https://github.com/brocklab/pycashier/compare/v0.3.0...v0.3.1
-[0.3.0]: https://github.com/brocklab/pycashier/compare/v0.2.8...v0.3.0
