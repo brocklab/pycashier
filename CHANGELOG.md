@@ -10,6 +10,17 @@ i.e. 1001, 1002, ..., 1999, 22000
 
 ## Unreleased
 
+## 2024.1007 - 2024-10-29
+
+### Fixed
+
+- changed ratio to a float (#42)
+
+### Changed
+
+- use pixi v0.34 for dev env/docker build
+- bumped minimum polars to 1.10.0
+
 ## 2024.1006 - 2024-09-30
 
 ### Changed
