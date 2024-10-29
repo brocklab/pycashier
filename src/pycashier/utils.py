@@ -7,6 +7,7 @@ from typing import Dict, List
 
 import click
 import polars as pl
+from polars.exceptions import NoDataError
 
 from .term import term
 
@@ -61,7 +62,7 @@ def fastq_to_tsv(in_file: Path, out_file: Path) -> bool | None:
             "ensure fastq was not corrupted and contains all reads"
         )
         return True
-    except pl.NoDataError:
+    except NoDataError:
         term.log.error(
             f"failed to convert fastq to tsv: {in_file}\n"
             "no reads found, check cutadapt output"
@@ -103,7 +104,7 @@ def get_filter_count(file_in: Path, filter_percent: float, quit: bool = False) -
             .collect(streaming=True)
             .item()
         )
-    except pl.NoDataError:
+    except NoDataError:
         term.log.error(
             f"Failed to determine filter cutoff for empty file {file_in}.\n"
             " Please remove it and try again."

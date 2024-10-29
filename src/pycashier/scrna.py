@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import polars as pl
+from polars.exceptions import ComputeError, NoDataError
 
 try:
     import pysam
@@ -108,13 +109,13 @@ def labeled_fastq_to_tsv(in_file: Path, out_file: Path) -> bool | None:
             .collect()
             .write_csv(out_file, separator="\t")
         )
-    except pl.ComputeError:
+    except ComputeError:
         term.log.error(
             f"failed to convert fastq to tsv: {in_file}\n"
             "ensure fastq was not corrupted and contains all reads"
         )
         return True
-    except pl.NoDataError:
+    except NoDataError:
         term.log.error(
             f"failed to convert fastq to tsv: {in_file}\n"
             "no reads found, check cutadapt output"
