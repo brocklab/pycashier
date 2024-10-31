@@ -6,6 +6,7 @@
 [![PyVersion][pyversion-shield]][pyversion-url]
 [![Conda][conda-shield]][conda-url]
 [![ghcr.io][ghcrio-shield]][ghcrio-url]
+[![joss][joss-shield]][joss-url]
 
 # Pycashier
 
@@ -100,3 +101,5 @@ See `pycashier --help` and `pycashier SUBCMD --help` for additional subcommands 
 [issues-url]: https://github.com/brocklab/pycashier/issues
 [license-shield]: https://img.shields.io/github/license/brocklab/pycashier.svg
 [license-url]: https://github.com/brocklab/pycashier/blob/main/LICENSE
+[joss-shield]: https://joss.theoj.org/papers/10.21105/joss.06891/status.svg
+[joss-url]: https://doi.org/10.21105/joss.06891
