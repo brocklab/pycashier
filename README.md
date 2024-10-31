@@ -17,7 +17,7 @@ Default parameters are designed for use by the [Brock Lab](https://github.com/br
 
 ## Documentation
 
-See the [documentation](https://docs.brocklab.com/pycashier) for more in-depth installation and usage instructions.
+See the [paper][joss-url] for a high-level overview and the [documentation](https://docs.brocklab.com/pycashier) for more in-depth installation and usage instructions.
 
 
 ## Getting Started
